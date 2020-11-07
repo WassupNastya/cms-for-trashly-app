@@ -9,13 +9,22 @@
   }
   .MuiDivider-root {
     margin-left: 0.5em;
-    margin-right: 0.5em;
+    margin-right: 1em;
   }
   .hideSidebar {
     display: flex;
     justify-content: flex-end;
     button {
       color: #556679;
+    }
+  }
+}
+
+@media screen and (max-width: 600px) {
+  .sidebar {
+    .MuiPaper-root {
+      width: 100vw;
+      padding: 0.5em;
     }
   }
 }
