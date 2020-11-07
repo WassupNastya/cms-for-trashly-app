@@ -1,0 +1,21 @@
+.sidebar {
+  .MuiPaper-root {
+    width: 10em;
+    border-right: none;
+  }
+  .MuiList-root {
+    padding-top: 0;
+    color: #556679;
+  }
+  .MuiDivider-root {
+    margin-left: 0.5em;
+    margin-right: 0.5em;
+  }
+  .hideSidebar {
+    display: flex;
+    justify-content: flex-end;
+    button {
+      color: #556679;
+    }
+  }
+}
