@@ -7,7 +7,13 @@
   .MuiListItem-root {
     justify-content: center;
   }
-  .IsActive {
+  .MuiIconButton-root {
+    color: #9BA6B2;
+  }
+  .MuiIconButton-root.IsActive {
     color: #00BCCA;
+  }
+  .MuiIconButton-root.Description {
+    color: #334650;
   }
 }

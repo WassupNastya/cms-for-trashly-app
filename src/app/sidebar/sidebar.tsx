@@ -32,7 +32,7 @@ export const Sidebar: React.FC = () => {
   return (
     <div className="Sidebar">
       <ListItem>
-        <IconButton>
+        <IconButton className="Description">
           <Reorder />
         </IconButton>
       </ListItem>
