@@ -1,43 +1,23 @@
-import React, { useState } from 'react';
-import classnames from 'classnames';
-import { Home } from 'app/home';
+import React from 'react';
 import { Sidebar } from 'app/sidebar/sidebar';
-import { AppBar, IconButton, Toolbar, Typography } from '@material-ui/core';
-import MenuIcon from '@material-ui/icons/Menu';
+import { Route } from 'react-router';
+import { Root } from 'data/enums';
+import { Rules } from 'app/rules';
+import { Decisions } from 'app/decisions';
+import { Items } from 'app/items';
+import { Locations } from 'app/locations';
 
 import './app.scss';
 
 export const App = () => {
-  const [showSidebar, setShowSidebar] = useState(false);
-
   return (
-    <div className="app">
-      <AppBar
-        position="fixed"
-        className={classnames('bar', { 'bar-shift': showSidebar })}
-      >
-        <Toolbar>
-          {!showSidebar && (
-            <IconButton
-              color="inherit"
-              aria-label="open drawer"
-              edge="start"
-              onClick={() => setShowSidebar(true)}
-            >
-              <MenuIcon />
-            </IconButton>
-          )}
-          <Typography variant="h6" noWrap>
-            Dashboard
-          </Typography>
-        </Toolbar>
-      </AppBar>
-      <Sidebar
-        isOpen={showSidebar}
-        onClose={() => setShowSidebar(false)}
-      ></Sidebar>
-      <div className={classnames('content', { 'content-shift': showSidebar })}>
-        <Home></Home>
+    <div className="App">
+      <Sidebar></Sidebar>
+      <div className="Content">
+        <Route path={Root.Rules} component={Rules} />
+        <Route path={Root.Decisions} component={Decisions} />
+        <Route path={Root.Locations} component={Locations} />
+        <Route exact path={Root.Items} component={Items} />
       </div>
     </div>
   );

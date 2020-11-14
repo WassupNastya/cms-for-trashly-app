@@ -1,52 +1,61 @@
 import React from 'react';
+import classnames from 'classnames';
+import { IconButton, List, ListItem } from '@material-ui/core';
 import {
-  Divider,
-  Drawer,
-  IconButton,
-  List,
-  ListItem,
-  ListItemText,
-} from '@material-ui/core';
-import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
+  AnnouncementOutlined,
+  Reorder,
+  PlaylistAdd,
+  AddCircleOutline,
+  RoomOutlined,
+  PowerSettingsNewOutlined,
+} from '@material-ui/icons';
+import { Link, useLocation } from 'react-router-dom';
+import { Root } from 'data/enums';
 
 import './sidebar.scss';
 
-interface Props {
-  isOpen: boolean;
-  onClose: () => void;
-}
+type LinkType = {
+  icon: JSX.Element;
+  pathname: string;
+};
 
-export const Sidebar: React.FC<Props> = ({ isOpen, onClose }) => {
+const links: LinkType[] = [
+  { icon: <AddCircleOutline />, pathname: Root.Items },
+  { icon: <AnnouncementOutlined />, pathname: Root.Rules },
+  { icon: <PlaylistAdd />, pathname: Root.Decisions },
+  { icon: <RoomOutlined />, pathname: Root.Locations },
+];
+
+export const Sidebar: React.FC = () => {
+  const location = useLocation();
+
   return (
-    <Drawer
-      open={isOpen}
-      variant="persistent"
-      anchor="left"
-      className="sidebar"
-    >
+    <div className="Sidebar">
+      <ListItem>
+        <IconButton>
+          <Reorder />
+        </IconButton>
+      </ListItem>
       <List>
-        <ListItem className="hideSidebar">
-          <IconButton onClick={onClose}>
-            <ChevronLeftIcon />
-          </IconButton>
-        </ListItem>
-        <ListItem button>
-          <ListItemText primary="Item 1" />
-        </ListItem>
-        <ListItem button>
-          <ListItemText primary="Item 2" />
-        </ListItem>
-        <ListItem button>
-          <ListItemText primary="Item 3" />
-        </ListItem>
-        <Divider />
-        <ListItem button>
-          <ListItemText primary="Settings" />
-        </ListItem>
-        <ListItem button className="logout">
-          <ListItemText primary="Logout" />
-        </ListItem>
+        {links.map((link, key) => (
+          <Link key={key} to={link.pathname}>
+            <ListItem>
+              <IconButton
+                className={classnames({
+                  IsActive: location.pathname === link.pathname,
+                })}
+              >
+                {link.icon}
+              </IconButton>
+            </ListItem>
+          </Link>
+        ))}
       </List>
-    </Drawer>
+      <ListItem>
+        <IconButton>
+          <PowerSettingsNewOutlined />
+        </IconButton>
+      </ListItem>
+    </div>
   );
 };

@@ -1,17 +1,11 @@
-.app {
-  background-color: #F7F8FA;
+@import url('https://fonts.googleapis.com/css2?family=Heebo:wght@500&display=swap');
+
+.App {
+  background-color: #F5F8FA;
   height: 100vh;
-  .bar {
-    background-color: white;
-    color: #182B33;
-    box-shadow: none;
-  }
-  .content {
-    height: 100%;
-    padding: 5em 1em;
-  }
-  .bar-shift, .content-shift {
-    width: calc(100% - 10em);
-    margin-left: 10em;
+  display: flex;
+  font-family: 'Heebo', sans-serif;
+  .Content {
+    width: calc(100vw - 6em);
   }
 }

@@ -11,6 +11,7 @@ module.exports = {
       app: path.resolve(__dirname, './src/app/'),
       core: path.resolve(__dirname, './src/core/'),
       data: path.resolve(__dirname, './src/data/'),
+      shared: path.resolve(__dirname, './src/shared/'),
     },
   },
   output: {
