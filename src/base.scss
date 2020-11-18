@@ -6,3 +6,11 @@ $base-font: 'Roboto';
 h1 {
   font-family: $base-font;
 }
+
+body {
+  margin: 0;
+}
+
+a {
+  text-decoration: none;
+}
