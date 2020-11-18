@@ -42,7 +42,7 @@ export const Sidebar: React.FC = () => {
             <ListItem>
               <IconButton
                 className={classnames({
-                  IsActive: location.pathname === link.pathname,
+                  IsActive: location.pathname.startsWith(link.pathname),
                 })}
               >
                 {link.icon}

@@ -1,0 +1,35 @@
+.Header {
+  display: flex;
+  flex-direction: column;
+  .TitlePanel {
+    padding: 2em;
+    border-bottom: 1px solid #EAEAEA;
+  }
+  .Title {
+    font-size: 1.5em;
+    color: #334650;
+    margin-bottom: 1em;
+  }
+  .LinkButton {
+    margin-right: 1em;
+    border-radius: 20em;
+    font-size: 0.8em;
+    width: 8em;
+  }
+  .LinkButton.items {
+    background-color: #CAE2FF;
+    color: #5B86C6;
+  }
+  .LinkButton.groups {
+    background-color: #D8F2DF;
+    color: #74B17C;
+  }
+  .LinkButton.categories {
+    background-color: #FFF0B9;
+    color: #D5AA3D;
+  }
+  .LinkButton.properties {
+    background-color: #F5EBFF;
+    color: #8267CB;
+  }
+}

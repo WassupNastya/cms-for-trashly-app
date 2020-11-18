@@ -1,0 +1,9 @@
+.Block {
+  display: flex;
+  flex-direction: column;
+  padding: 2em;
+  .Title {
+    color: #334650;
+    font-size: 1.2em;
+  }
+}

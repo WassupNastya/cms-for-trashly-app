@@ -1,15 +1,20 @@
 import React from 'react';
 
+import { Header } from './header';
+
 import './page.scss';
 
 interface Props {
   title: string;
+  url: string;
+  needPanel?: boolean;
 }
 
-export const Page: React.FC<Props> = ({ title }) => {
+export const Page: React.FC<Props> = ({ title, url, needPanel, children }) => {
   return (
-    <div className="page">
-      <div className="title">{title}</div>
+    <div className="Page">
+      <Header title={title} url={url} needPanel={needPanel} />
+      {children}
     </div>
   );
 };

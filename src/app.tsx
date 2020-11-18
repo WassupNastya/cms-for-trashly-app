@@ -17,7 +17,8 @@ export const App = () => {
         <Route path={Root.Rules} component={Rules} />
         <Route path={Root.Decisions} component={Decisions} />
         <Route path={Root.Locations} component={Locations} />
-        <Route exact path={Root.Items} component={Items} />
+        <Route path={Root.Items} component={Items} />
+        <Route exact path="/" component={Items} />
       </div>
     </div>
   );

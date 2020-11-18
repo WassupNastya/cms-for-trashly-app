@@ -1,5 +1,5 @@
 export enum Root {
-  Items = '/',
+  Items = '/items',
   Rules = '/rules',
   Decisions = '/decisions',
   Locations = '/locations',
