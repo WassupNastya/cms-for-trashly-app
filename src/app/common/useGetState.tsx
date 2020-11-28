@@ -17,5 +17,5 @@ export const useGetState = (
     else if (currentPath.endsWith('/groups')) return groups;
     else if (currentPath.endsWith('/categories')) return categories;
     else if (currentPath.endsWith('/properties')) return properties;
-  }, [currentPath]);
+  }, [currentPath, categories, groups, items, mainPath, properties]);
 };

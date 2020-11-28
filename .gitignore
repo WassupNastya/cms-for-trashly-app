@@ -109,4 +109,4 @@ firebase-debug.log
 .firebase
 
 # firebase config
-src/config.ts
+src/database/config.ts
