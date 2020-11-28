@@ -12,6 +12,7 @@ module.exports = {
       core: path.resolve(__dirname, './src/core/'),
       data: path.resolve(__dirname, './src/data/'),
       shared: path.resolve(__dirname, './src/shared/'),
+      database: path.resolve(__dirname, './src/database/'),
     },
   },
   output: {

@@ -107,3 +107,6 @@ dist
 .firebaserc
 firebase-debug.log
 .firebase
+
+# firebase config
+src/config.ts

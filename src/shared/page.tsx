@@ -1,4 +1,5 @@
 import React from 'react';
+import { Container } from '@material-ui/core';
 
 import { Header } from './header';
 
@@ -12,9 +13,9 @@ interface Props {
 
 export const Page: React.FC<Props> = ({ title, url, needPanel, children }) => {
   return (
-    <div className="Page">
+    <Container className="Page">
       <Header title={title} url={url} needPanel={needPanel} />
-      {children}
-    </div>
+      <div className="children">{children}</div>
+    </Container>
   );
 };

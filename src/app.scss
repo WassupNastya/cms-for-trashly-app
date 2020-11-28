@@ -2,10 +2,11 @@
 
 .App {
   background-color: #F5F8FA;
-  height: 100vh;
+  height: 100%;;
   display: flex;
   font-family: 'Heebo', sans-serif;
   .Content {
     width: calc(100vw - 6em);
+    height: 100%;
   }
 }

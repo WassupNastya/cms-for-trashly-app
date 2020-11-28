@@ -4,7 +4,8 @@
     "paths": {
       "app": ["app"],
       "core": ["core"],
-      "data": ["data"]
+      "data": ["data"],
+      "database": ["database"]
     },
     "target": "es5",
     "lib": ["dom", "dom.iterable", "esnext"],
