@@ -13,7 +13,14 @@
   .MuiIconButton-root.IsActive {
     color: #00BCCA;
   }
-  .MuiIconButton-root.Description {
+  .MuiIconButton-root.Description, .Label {
     color: #334650;
+  }
+}
+
+.Sidebar.Mobile {
+  width: auto;
+  .MuiListItem-root {
+    justify-content: start;
   }
 }

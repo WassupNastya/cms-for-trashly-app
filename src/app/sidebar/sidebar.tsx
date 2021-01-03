@@ -14,28 +14,44 @@ import { Root } from 'data/enums';
 
 import './sidebar.scss';
 
+interface IProps {
+  isMobile?: boolean;
+  showOnboarding?: boolean;
+  setShowOnboarding?: (value: boolean) => void;
+}
+
 type LinkType = {
   icon: JSX.Element;
   pathname: string;
+  label: string;
 };
 
 const links: LinkType[] = [
-  { icon: <AddCircleOutline />, pathname: Root.Items },
-  { icon: <AnnouncementOutlined />, pathname: Root.Rules },
-  { icon: <PlaylistAdd />, pathname: Root.Decisions },
-  { icon: <RoomOutlined />, pathname: Root.Locations },
+  { icon: <AddCircleOutline />, pathname: Root.Items, label: 'Items' },
+  { icon: <AnnouncementOutlined />, pathname: Root.Rules, label: 'Rules' },
+  { icon: <PlaylistAdd />, pathname: Root.Decisions, label: 'Decision' },
+  { icon: <RoomOutlined />, pathname: Root.Locations, label: 'Locations' },
 ];
 
-export const Sidebar: React.FC = () => {
+export const Sidebar: React.FC<IProps> = ({
+  isMobile,
+  showOnboarding,
+  setShowOnboarding,
+}) => {
   const location = useLocation();
 
   return (
-    <div className="Sidebar">
-      <ListItem>
-        <IconButton className="Description">
-          <Reorder />
-        </IconButton>
-      </ListItem>
+    <div className={classnames('Sidebar', { Mobile: isMobile })}>
+      {!isMobile && (
+        <ListItem>
+          <IconButton
+            className="Description"
+            onClick={() => setShowOnboarding?.(!showOnboarding)}
+          >
+            <Reorder />
+          </IconButton>
+        </ListItem>
+      )}
       <List>
         {links.map((link, key) => (
           <Link key={key} to={link.pathname}>
@@ -47,6 +63,7 @@ export const Sidebar: React.FC = () => {
               >
                 {link.icon}
               </IconButton>
+              {isMobile && <div className="Label">{link.label}</div>}
             </ListItem>
           </Link>
         ))}
@@ -55,6 +72,7 @@ export const Sidebar: React.FC = () => {
         <IconButton>
           <PowerSettingsNewOutlined />
         </IconButton>
+        {isMobile && <div className="Label">Log out</div>}
       </ListItem>
     </div>
   );

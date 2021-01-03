@@ -1,0 +1,33 @@
+.Onboarding {
+  width: 12em;
+  background-color: white;
+  border-left: 1px solid #eaeaea;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-left: 0.5em;
+  padding-right: 1em;
+  .Title {
+    display: flex;
+    align-items: flex-end;
+    padding-bottom: 1em;
+  }
+  .Label {
+    padding-left: 0.5em;
+    font-weight: 500;
+    color: #334650;
+  }
+  .Subtitle {
+    font-size: 0.9em;
+    font-weight: 400;
+    color: #9ba6b2;
+  }
+  .Description {
+    font-size: 0.8em;
+    font-weight: 200;
+    color: #9ba6b2;
+  }
+  .Description:not(:last-child) {
+    padding-bottom: 1em;
+  }
+}

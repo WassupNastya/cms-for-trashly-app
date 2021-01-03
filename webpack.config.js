@@ -13,6 +13,7 @@ module.exports = {
       data: path.resolve(__dirname, './src/data/'),
       shared: path.resolve(__dirname, './src/shared/'),
       database: path.resolve(__dirname, './src/database/'),
+      assets: path.resolve(__dirname, './src/assets/'),
     },
   },
   output: {
@@ -45,6 +46,17 @@ module.exports = {
         test: /\.tsx?$/,
         exclude: /node_modules/,
         loader: 'eslint-loader',
+      },
+      {
+        test: /\.svg$/,
+        use: [
+          {
+            loader: 'svg-url-loader',
+            options: {
+              limit: 10000,
+            },
+          },
+        ],
       },
     ],
   },

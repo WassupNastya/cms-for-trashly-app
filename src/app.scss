@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Heebo:wght@500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Heebo:wght@200;400;500&display=swap');
 
 .App {
   background-color: #F5F8FA;
@@ -8,5 +8,14 @@
   .Content {
     width: calc(100vw - 6em);
     height: 100%;
+  }
+  .Content.Mobile {
+    width: 100%;
+  }
+  .Content.Fixed {
+    position: fixed;
+  }
+  .Content.ShowInfo {
+    width: calc(100vw - 20em);
   }
 }

@@ -1,0 +1,15 @@
+.AppBar {
+  height: 3em;
+  background-color: white;
+  display: flex;
+  align-items: center;
+  .MuiIconButton-label {
+    color: #334650;
+  }
+}
+
+.MobileSidebar {
+  height: 100vh;
+  background-color: white;
+  z-index: 2;
+}
