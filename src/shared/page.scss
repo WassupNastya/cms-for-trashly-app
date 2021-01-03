@@ -1,10 +1,6 @@
 .Page {
   display: flex;
   flex-direction: column;
-  height: 100%;
-  .children {
-    height: calc(100% - 10em);
-  }
 }
 
 .MuiContainer-root.Page {

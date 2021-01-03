@@ -1,5 +1,5 @@
 import React from 'react';
-import { Container } from '@material-ui/core';
+import { Grid } from '@material-ui/core';
 
 import { Header } from './header';
 
@@ -13,9 +13,9 @@ interface Props {
 
 export const Page: React.FC<Props> = ({ title, url, needPanel, children }) => {
   return (
-    <Container className="Page">
+    <Grid className="Page">
       <Header title={title} url={url} needPanel={needPanel} />
       <div className="children">{children}</div>
-    </Container>
+    </Grid>
   );
 };

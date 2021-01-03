@@ -1,6 +1,6 @@
 import React from 'react';
 import classnames from 'classnames';
-import { Button } from '@material-ui/core';
+import { Button, Grid } from '@material-ui/core';
 import { Link } from 'react-router-dom';
 
 import './header.scss';
@@ -26,7 +26,7 @@ const LinkLayout: React.FC<LinkProps> = ({ url, title }) => {
 
 export const Header: React.FC<Props> = ({ title, url, needPanel = true }) => {
   return (
-    <div className="Header">
+    <Grid className="Header">
       <div className="TitlePanel">
         <div className="Title">{title}</div>
         {needPanel && (
@@ -38,6 +38,6 @@ export const Header: React.FC<Props> = ({ title, url, needPanel = true }) => {
           </div>
         )}
       </div>
-    </div>
+    </Grid>
   );
 };

@@ -1,7 +1,7 @@
 .Header {
   display: flex;
   flex-direction: column;
-  height: 10em;
+  min-height: 10em;
   .TitlePanel {
     padding: 2em;
     border-bottom: 1px solid #EAEAEA;
@@ -17,6 +17,7 @@
     border-radius: 20em;
     font-size: 0.8em;
     width: 8em;
+    margin-bottom: 1em;
   }
   .LinkButton.items {
     background-color: #CAE2FF;

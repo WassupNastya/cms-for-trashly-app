@@ -1,8 +1,9 @@
-import React, { useCallback, useEffect, useMemo } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { Page } from 'shared/page';
 import { Root } from 'data/enums';
 import { getLocationsAsync } from 'data/actions';
+import { Grid } from '@material-ui/core';
 
 import { LocationsTable } from './table';
 
@@ -19,9 +20,9 @@ export const Locations: React.FC = () => {
 
   return (
     <Page title="Locations" url={Root.Locations} needPanel={false}>
-      <div className="locations">
+      <Grid className="locations">
         <LocationsTable />
-      </div>
+      </Grid>
     </Page>
   );
 };
