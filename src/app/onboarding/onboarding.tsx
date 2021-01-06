@@ -16,18 +16,15 @@ export const Onboarding: React.FC = () => {
   const location = useLocation();
 
   const title: IInfo = useMemo(() => {
-    switch (location.pathname) {
-      case '/items':
-        return { label: 'Recyclable items', image: items };
-      case '/rules':
-        return { label: 'Rules', image: rules };
-      case '/decisions':
-        return { label: 'Decisions', image: decisions };
-      case '/locations':
-        return { label: 'Locations', image: locations };
-      default:
-        return { label: 'Recyclable items', image: items };
-    }
+    if (location.pathname.includes('/items'))
+      return { label: 'Recyclable items', image: items };
+    if (location.pathname.includes('/rules'))
+      return { label: 'Rules', image: rules };
+    if (location.pathname.includes('/decisions'))
+      return { label: 'Decisions', image: decisions };
+    if (location.pathname.includes('/locations'))
+      return { label: 'Locations', image: locations };
+    else return { label: 'Recyclable items', image: items };
   }, [location.pathname]);
 
   return (

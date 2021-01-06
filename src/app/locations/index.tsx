@@ -1,9 +1,9 @@
 import React, { useCallback, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { Page } from 'shared/page';
-import { Root } from 'data/enums';
 import { getLocationsAsync } from 'data/actions';
-import { Grid } from '@material-ui/core';
+import { Button, Grid } from '@material-ui/core';
+import { Link } from 'react-router-dom';
 
 import { LocationsTable } from './table';
 
@@ -19,8 +19,13 @@ export const Locations: React.FC = () => {
   useEffect(() => getLocations(), [getLocations]);
 
   return (
-    <Page title="Locations" url={Root.Locations} needPanel={false}>
+    <Page title="Locations" needPanel={false}>
       <Grid className="locations">
+        <div className="AddButton">
+          <Link to="locations/add">
+            <Button variant="contained">Create new</Button>
+          </Link>
+        </div>
         <LocationsTable />
       </Grid>
     </Page>

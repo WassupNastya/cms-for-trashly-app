@@ -10,6 +10,7 @@ import { Hidden, Grid, useMediaQuery, useTheme } from '@material-ui/core';
 import { AppBar } from 'app/common';
 import classnames from 'classnames';
 import { Onboarding } from 'app/onboarding/onboarding';
+import { CreateLocation } from 'app/locations/createLocation';
 
 import './app.scss';
 
@@ -47,10 +48,12 @@ export const App = () => {
         <Hidden mdUp>
           <AppBar isOpen={openSidebar} onClick={onClick} />
         </Hidden>
-        <Route path={Root.Rules} component={Rules} />
-        <Route path={Root.Decisions} component={Decisions} />
-        <Route path={Root.Locations} component={Locations} />
-        <Route path={Root.Items} component={Items} />
+        <Route path={Root.Locations + '/add'} component={CreateLocation} />
+        <Route path={Root.Locations + '/edit/:id'} component={CreateLocation} />
+        <Route exact path={Root.Rules} component={Rules} />
+        <Route exact path={Root.Decisions} component={Decisions} />
+        <Route exact path={Root.Locations} component={Locations} />
+        <Route exact path={Root.Items} component={Items} />
         <Route exact path="/" component={Items} />
       </Grid>
     </Grid>

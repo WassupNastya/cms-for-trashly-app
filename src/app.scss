@@ -5,6 +5,7 @@
   height: 100%;;
   display: flex;
   font-family: 'Heebo', sans-serif;
+
   .Content {
     width: calc(100vw - 6em);
     height: 100%;
@@ -18,4 +19,8 @@
   .Content.ShowInfo {
     width: calc(100vw - 20em);
   }
+}
+
+.App.MuiGrid-container {
+  flex-wrap: nowrap;
 }

@@ -1,0 +1,13 @@
+.CreateLocation {
+  display: flex;
+  flex-direction: column;
+  padding: 0.5em;
+  .Buttons {
+    align-self: flex-end;
+    .Save {
+      margin-left: 1em;
+      color: white;
+      background-color: #00bcca;
+    }
+  }
+}

@@ -2,9 +2,10 @@ import React, { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { Table } from 'shared/table';
 import { StoreType } from 'core/rootReducer';
-import { IconButton, TableCell, TableRow } from '@material-ui/core';
+import { TableCell, TableRow } from '@material-ui/core';
 import { Location } from 'data/model';
-import { MoreVert } from '@material-ui/icons';
+import { MenuButton } from 'shared/menuButton';
+import { Link } from 'react-router-dom';
 
 const columns = (
   <>
@@ -24,15 +25,15 @@ export const LocationsTable: React.FC = () => {
     return locations.map((item: Location, i: number) => {
       return (
         <TableRow key={i} hover>
-          <TableCell>{item.displayName}</TableCell>
+          <TableCell>
+            <Link to={`/locations/edit/${item.id}`}>{item.displayName}</Link>
+          </TableCell>
           <TableCell>{item.locationCode}</TableCell>
           <TableCell>{item.county}</TableCell>
           <TableCell>{item.state}</TableCell>
           <TableCell>{item.country}</TableCell>
           <TableCell>
-            <IconButton>
-              <MoreVert />
-            </IconButton>
+            <MenuButton id={item.id} />
           </TableCell>
         </TableRow>
       );

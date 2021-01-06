@@ -1,21 +1,21 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Page } from 'shared/page';
-import { Root } from 'data/enums';
-import { useGetState } from 'app/common/useGetState';
+import { Tab } from 'data/enums';
 import { Block } from 'shared/block';
 
+const tabMap = new Map([
+  [Tab.Items, <Block key="items" title="Items" />],
+  [Tab.Groups, <Block key="groups" title="Groups" />],
+  [Tab.Categories, <Block key="categories" title="Categories" />],
+  [Tab.Properties, <Block key="properties" title="Properties" />],
+]);
+
 export const Rules: React.FC = () => {
-  const state = useGetState(
-    <Block title="Items" />,
-    <Block title="Groups" />,
-    <Block title="Categories" />,
-    <Block title="Properties" />,
-    '/rules'
-  );
+  const [state, setState] = useState(Tab.Items);
 
   return (
-    <Page title="Rules" url={Root.Rules}>
-      {state}
+    <Page title="Rules" onClick={(value) => setState(value)}>
+      {tabMap.get(state)}
     </Page>
   );
 };

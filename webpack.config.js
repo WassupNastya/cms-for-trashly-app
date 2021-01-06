@@ -19,6 +19,7 @@ module.exports = {
   output: {
     path: path.join(__dirname, '/dist'),
     filename: 'bundle.min.js',
+    publicPath: '/'
   },
   devServer: {
     stats: 'minimal',
@@ -69,5 +70,8 @@ module.exports = {
   performance: {
     maxEntrypointSize: 750000,
     maxAssetSize: 750000,
+  },
+  devServer: {
+    historyApiFallback: true
   },
 };

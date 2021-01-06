@@ -4,3 +4,10 @@ export enum Root {
   Decisions = '/decisions',
   Locations = '/locations',
 }
+
+export enum Tab {
+  Items = 0,
+  Groups,
+  Categories,
+  Properties,
+}

@@ -3,11 +3,11 @@ import classnames from 'classnames';
 import { IconButton, List, ListItem } from '@material-ui/core';
 import {
   AnnouncementOutlined,
-  Reorder,
   PlaylistAdd,
   AddCircleOutline,
   RoomOutlined,
   PowerSettingsNewOutlined,
+  HelpOutline
 } from '@material-ui/icons';
 import { Link, useLocation } from 'react-router-dom';
 import { Root } from 'data/enums';
@@ -48,7 +48,7 @@ export const Sidebar: React.FC<IProps> = ({
             className="Description"
             onClick={() => setShowOnboarding?.(!showOnboarding)}
           >
-            <Reorder />
+            <HelpOutline />
           </IconButton>
         </ListItem>
       )}
