@@ -15,3 +15,15 @@ export const getLocations = () => {
     )
     .catch((error) => console.log(error));
 };
+
+export const getLocation = (id: string) => {
+  return db
+    .collection('locations')
+    .doc(id)
+    .get()
+    .then((response) => {
+      const location = response.data() as Location;
+      return location;
+    })
+    .catch((error) => console.log(error));
+};

@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 import { Router } from 'react-router-dom';
 import { createBrowserHistory } from 'history';
+import { SnackbarProvider } from 'notistack';
 
 import { store } from './core/store';
 import { App } from './app';
@@ -15,7 +16,9 @@ ReactDOM.render(
   <Provider store={store}>
     <Router history={history}>
       <React.StrictMode>
-        <App />
+        <SnackbarProvider maxSnack={3}>
+          <App />
+        </SnackbarProvider>
       </React.StrictMode>
     </Router>
   </Provider>,

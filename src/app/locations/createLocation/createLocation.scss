@@ -4,10 +4,35 @@
   padding: 0.5em;
   .Buttons {
     align-self: flex-end;
+    margin-bottom: 0.5em;
     .Save {
       margin-left: 1em;
       color: white;
       background-color: #00bcca;
     }
+    .MuiButtonBase-root {
+      box-shadow: none;
+    }
   }
+  form {
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    padding: 2em;
+    align-self: center;
+    border-radius: 0.5em;
+    div {
+      margin-bottom: 0.5em;
+    }
+    .MuiFormLabel-root {
+      font-size: 0.9em;
+    }
+    .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
+      border-color: #8267cb;
+    }
+  }
+}
+
+.MuiDialog-paperWidthSm {
+  width: 50em;
 }
