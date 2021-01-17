@@ -1,4 +1,5 @@
 import React from 'react';
+import classnames from 'classnames';
 import {
   TableContainer,
   TableHead,
@@ -10,11 +11,12 @@ import {
 interface Props {
   columns: JSX.Element;
   rows: JSX.Element;
+  className?: string;
 }
 
-export const Table: React.FC<Props> = ({ columns, rows }) => {
+export const Table: React.FC<Props> = ({ columns, rows, className }) => {
   return (
-    <div className="table" style={{ height: '100%' }}>
+    <div className={classnames('table', className)} style={{ height: '100%' }}>
       <TableContainer style={{ height: '100%' }}>
         <BaseTable>
           <TableHead>

@@ -5,10 +5,17 @@ import { Tab } from 'data/enums';
 
 import './header.scss';
 
+const allTabs: { key: number; title: string }[] = [
+  { key: Tab.Items, title: 'items' },
+  { key: Tab.Groups, title: 'groups' },
+  { key: Tab.Categories, title: 'categories' },
+  { key: Tab.Properties, title: 'properties' },
+];
 interface Props {
   title: string;
   needPanel?: boolean;
   onClick?: (value: number) => void;
+  tabsToExclude?: number[];
 }
 
 interface LinkProps {
@@ -28,6 +35,7 @@ export const Header: React.FC<Props> = ({
   title,
   onClick,
   needPanel = true,
+  tabsToExclude,
 }) => {
   return (
     <Grid className="Header">
@@ -35,10 +43,17 @@ export const Header: React.FC<Props> = ({
         <div className="Title">{title}</div>
         {needPanel && (
           <div className="Links">
-            <LinkLayout title="items" onClick={() => onClick(Tab.Items)} />
-            <LinkLayout title="groups" onClick={() => onClick(Tab.Groups)} />
-            <LinkLayout title="categories" onClick={() => onClick(Tab.Categories)} />
-            <LinkLayout title="properties" onClick={() => onClick(Tab.Properties)} />
+            {allTabs.flatMap((x) =>
+              tabsToExclude?.includes(x.key)
+                ? []
+                : [
+                    <LinkLayout
+                      key={x.key}
+                      title={x.title}
+                      onClick={() => onClick(x.key)}
+                    />,
+                  ]
+            )}
           </div>
         )}
       </div>

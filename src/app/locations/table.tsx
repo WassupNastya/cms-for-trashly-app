@@ -32,7 +32,7 @@ export const LocationsTable: React.FC = () => {
           <TableCell>{item.county}</TableCell>
           <TableCell>{item.state}</TableCell>
           <TableCell>{item.country}</TableCell>
-          <TableCell>
+          <TableCell align="right">
             <MenuButton id={item.id} />
           </TableCell>
         </TableRow>

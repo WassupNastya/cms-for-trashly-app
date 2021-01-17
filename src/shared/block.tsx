@@ -6,10 +6,11 @@ interface Props {
   title: string;
 }
 
-export const Block: React.FC<Props> = ({ title }) => {
+export const Block: React.FC<Props> = ({ title, children }) => {
   return (
     <div className="Block">
       <div className="Title">{title}</div>
+      {children}
     </div>
   );
 };

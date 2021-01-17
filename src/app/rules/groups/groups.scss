@@ -1,0 +1,11 @@
+.groups {
+  display: flex;
+  flex-direction: column;
+  .MuiTableHead-root {
+    background-color: #d8f2df;
+  }
+  .header {
+    color: #74b17c;
+    font-weight: bolder;
+  }
+}
