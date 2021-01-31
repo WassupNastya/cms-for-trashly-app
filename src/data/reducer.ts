@@ -1,15 +1,11 @@
 import { ActionType } from './actionType';
 import {
   Action,
-  DecisionForGroup,
-  DecisionForItem,
-  DecisionForProperties,
+  DecisionView,
   ItemsGroup,
   ItemsItem,
   ItemsProperty,
-  RuleForCategory,
-  RuleForGroup,
-  RuleForItem,
+  RuleView,
 } from './model';
 
 export interface StateType {
@@ -17,12 +13,8 @@ export interface StateType {
   itemsItems: ItemsItem[];
   itemsGroups: ItemsGroup[];
   itemsProperties: ItemsProperty[];
-  rulesForItems: RuleForItem[];
-  rulesForGroups: RuleForGroup[];
-  rulesForCategories: RuleForCategory[];
-  decisionsForItems: DecisionForItem[];
-  decisionsForGroups: DecisionForGroup[];
-  decisionsForProperties: DecisionForProperties[];
+  rules: RuleView[];
+  decisions: DecisionView[];
 }
 
 const InitialState: StateType = {
@@ -30,12 +22,8 @@ const InitialState: StateType = {
   itemsItems: [],
   itemsGroups: [],
   itemsProperties: [],
-  rulesForItems: [],
-  rulesForGroups: [],
-  rulesForCategories: [],
-  decisionsForItems: [],
-  decisionsForGroups: [],
-  decisionsForProperties: [],
+  rules: [],
+  decisions: [],
 };
 
 export const reducer = (state = InitialState, action: Action) => {
@@ -52,23 +40,11 @@ export const reducer = (state = InitialState, action: Action) => {
     case ActionType.SETITEMSPROPERTIES: {
       return { ...state, itemsProperties: action.data };
     }
-    case ActionType.SETRULESFORITEMS: {
-      return { ...state, rulesForItems: action.data };
+    case ActionType.SETRULES: {
+      return { ...state, rules: action.data };
     }
-    case ActionType.SETRULESFORGROUPS: {
-      return { ...state, rulesForGroups: action.data };
-    }
-    case ActionType.SETRULESFORCATEGORIES: {
-      return { ...state, rulesForCategories: action.data };
-    }
-    case ActionType.SETDECISIONSFORITEMS: {
-      return { ...state, decisionsForItems: action.data };
-    }
-    case ActionType.SETDECISIONSFORGROUPS: {
-      return { ...state, decisionsForGroups: action.data };
-    }
-    case ActionType.SETDECISIONSFORPROPERTIES: {
-      return { ...state, decisionsForProperties: action.data };
+    case ActionType.SETDECISIONS: {
+      return { ...state, decisions: action.data };
     }
     default:
       return state;

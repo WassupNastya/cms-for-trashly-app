@@ -4,28 +4,20 @@ import { filter, ignoreElements, map, mergeMap, tap } from 'rxjs/operators';
 import { from } from 'rxjs';
 
 import {
-  DecisionForGroup,
-  DecisionForItem,
-  DecisionForProperties,
+  DecisionView,
   ItemsGroup,
   ItemsItem,
   ItemsProperty,
   Location,
-  RuleForCategory,
-  RuleForGroup,
-  RuleForItem,
+  RuleView,
 } from './model';
 import {
-  setDecisionsForGroups,
-  setDecisionsForItems,
-  setDecisionsForProperties,
+  setDecisions,
   setItemsGroup,
   setItemsItems,
   setItemsProperties,
   setLocations,
-  setRulesForCategories,
-  setRulesForGroups,
-  setRulesForItems,
+  setRules,
 } from './actions';
 import { ActionType } from './actionType';
 import {
@@ -34,12 +26,8 @@ import {
   getItemsItems,
   getItemsGroups,
   getItemsProperties,
-  getRulesForItems,
-  getRulesForGroups,
-  getRulesForCategories,
-  getDecisionsForItems,
-  getDecisionsForGroups,
-  getDecisionsForProperties,
+  getRules,
+  getDecisions,
 } from './api';
 
 const getLocationsEpic = (action$: ActionsObservable<{ type: string }>) =>
@@ -99,72 +87,20 @@ const getItemsPropertiesEpic = (action$: ActionsObservable<{ type: string }>) =>
     )
   );
 
-const getRulesForItemsEpic = (action$: ActionsObservable<{ type: string }>) =>
+const getRulesEpic = (action$: ActionsObservable<{ type: string }>) =>
   action$.pipe(
-    filter(isOfType(ActionType.GETRULESFORITEMSASYNC)),
+    filter(isOfType(ActionType.GETRULESASYNC)),
     mergeMap(() =>
-      from(getRulesForItems()).pipe(
-        map((response: RuleForItem[]) => setRulesForItems(response))
-      )
+      from(getRules()).pipe(map((response: RuleView[]) => setRules(response)))
     )
   );
 
-const getRulesForGroupsEpic = (action$: ActionsObservable<{ type: string }>) =>
+const getDecisionsEpic = (action$: ActionsObservable<{ type: string }>) =>
   action$.pipe(
-    filter(isOfType(ActionType.GETRULESFORITEMSASYNC)),
+    filter(isOfType(ActionType.GETDECISIONSASYNC)),
     mergeMap(() =>
-      from(getRulesForGroups()).pipe(
-        map((response: RuleForGroup[]) => setRulesForGroups(response))
-      )
-    )
-  );
-
-const getRulesForCategoriesEpic = (
-  action$: ActionsObservable<{ type: string }>
-) =>
-  action$.pipe(
-    filter(isOfType(ActionType.GETRULESFORCATEGORIESASYNC)),
-    mergeMap(() =>
-      from(getRulesForCategories()).pipe(
-        map((response: RuleForCategory[]) => setRulesForCategories(response))
-      )
-    )
-  );
-
-const getDecisionsForItemsEpic = (
-  action$: ActionsObservable<{ type: string }>
-) =>
-  action$.pipe(
-    filter(isOfType(ActionType.GETDECISIONSFORITEMSASYNC)),
-    mergeMap(() =>
-      from(getDecisionsForItems()).pipe(
-        map((response: DecisionForItem[]) => setDecisionsForItems(response))
-      )
-    )
-  );
-
-const getDecisionsForGroupsEpic = (
-  action$: ActionsObservable<{ type: string }>
-) =>
-  action$.pipe(
-    filter(isOfType(ActionType.GETDECISIONSFORGROUPSASYNC)),
-    mergeMap(() =>
-      from(getDecisionsForGroups()).pipe(
-        map((response: DecisionForGroup[]) => setDecisionsForGroups(response))
-      )
-    )
-  );
-
-const getDecisionsForPropertiesEpic = (
-  action$: ActionsObservable<{ type: string }>
-) =>
-  action$.pipe(
-    filter(isOfType(ActionType.GETDECISIONSFORPROPERTIESASYNC)),
-    mergeMap(() =>
-      from(getDecisionsForProperties()).pipe(
-        map((response: DecisionForProperties[]) =>
-          setDecisionsForProperties(response)
-        )
+      from(getDecisions()).pipe(
+        map((response: DecisionView[]) => setDecisions(response))
       )
     )
   );
@@ -175,10 +111,6 @@ export const epic = combineEpics(
   getItemsItemsEpic,
   getItemsGroupEpic,
   getItemsPropertiesEpic,
-  getRulesForItemsEpic,
-  getRulesForGroupsEpic,
-  getRulesForCategoriesEpic,
-  getDecisionsForItemsEpic,
-  getDecisionsForGroupsEpic,
-  getDecisionsForPropertiesEpic
+  getRulesEpic,
+  getDecisionsEpic
 );

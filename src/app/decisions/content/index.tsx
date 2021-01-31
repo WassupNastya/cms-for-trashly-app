@@ -4,9 +4,7 @@ import { Button, Grid } from '@material-ui/core';
 
 import { Table } from './table';
 
-import './items.scss';
-
-export const Items: React.FC = () => {
+export const Content: React.FC = () => {
   return (
     <Grid className="sub-items">
       <div className="AddButton">

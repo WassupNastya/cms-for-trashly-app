@@ -1,5 +1,3 @@
-import { ShorthandPropertyAssignment } from 'typescript';
-
 export interface Action {
   type: string;
   data?: any;
@@ -33,51 +31,45 @@ export interface ItemsProperty {
   id: string;
   name: string;
 }
-
-export interface RuleForItem {
-  item: string;
+export interface Rule {
+  id: string;
+  item?: string;
+  group?: string;
+  category?: string;
   location: string;
   description: string;
-  id: string;
+  // { [key: string]: boolean } TODO: handle properties
 }
-
-export interface RuleForGroup {
+export interface RuleView {
   id: string;
+  ruleFor: string;
+  type: number;
   location: string;
   description: string;
-  group: string;
-}
-
-export interface RuleForCategory {
-  id: string;
-  category: string;
-  description: string;
-  location: string;
   // { [key: string]: boolean } TODO: handle properties
 }
 
-export interface DecisionForItem {
-  decisionNameType: string;
-  item: string;
-  location: string;
-  name: string;
-  priority: string;
+export interface Decision {
   id: string;
-}
-
-export interface DecisionForGroup {
+  item?: string;
+  group?: string;
+  category?: string;
+  location: string;
   description: string;
-  group: string;
-  location: string;
+  priority: string;
   name: string;
-  id: string;
+  decisionNameType: string;
+  // { [key: string]: boolean } TODO: handle properties
 }
 
-export interface DecisionForProperties {
-  // { [key: string]: boolean } TODO: handle properties
-  decisionNameType: string;
-  location: string;
-  name: string;
-  priority: string;
+export interface DecisionView {
   id: string;
+  ruleFor: string;
+  type: number;
+  location: string;
+  description: string;
+  priority: string;
+  name: string;
+  decisionNameType: string;
+  // { [key: string]: boolean } TODO: handle properties
 }

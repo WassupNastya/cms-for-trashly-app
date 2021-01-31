@@ -11,3 +11,10 @@ export enum Tab {
   Categories,
   Properties,
 }
+
+export enum Type {
+  ForItem = 0,
+  ForGroup,
+  ForCategory,
+  ForPropertiesOnly
+}
