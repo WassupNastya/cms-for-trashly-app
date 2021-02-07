@@ -1,17 +1,17 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
+import { StoreType } from 'core/rootReducer';
 import { MenuButton } from 'shared/menuButton';
 import { Table as TableTemplate } from 'shared/table';
 import { CellParams, ColDef } from '@material-ui/data-grid';
-import { StoreType } from 'core/rootReducer';
-import { useProperties } from 'app/common/useData';
+import { useCategories } from 'app/common/useData';
 
 export const Table: React.FC = () => {
   const [loading, setLoading] = useState(false);
 
-  useProperties({ setLoading, needEffect: true });
+  useCategories({ setLoading, needEffect: true });
 
-  const properties = useSelector((state: StoreType) => state.data.properties);
+  const categories = useSelector((state: StoreType) => state.data.categories);
 
   const actionCell = useCallback((params: CellParams) => {
     return <MenuButton id={params.value.toString()} />;
@@ -33,7 +33,7 @@ export const Table: React.FC = () => {
   return (
     <TableTemplate
       columns={columns}
-      rows={properties}
+      rows={categories}
       loading={loading}
     ></TableTemplate>
   );

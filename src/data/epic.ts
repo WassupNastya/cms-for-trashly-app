@@ -4,18 +4,20 @@ import { filter, ignoreElements, map, mergeMap, tap } from 'rxjs/operators';
 import { from } from 'rxjs';
 
 import {
+  Category,
   DecisionView,
-  ItemsGroup,
-  ItemsItem,
-  ItemsProperty,
+  Group,
+  Item,
+  Property,
   Location,
   RuleView,
 } from './model';
 import {
+  setCategories,
   setDecisions,
-  setItemsGroup,
-  setItemsItems,
-  setItemsProperties,
+  setGroups,
+  setItems,
+  setProperties,
   setLocations,
   setRules,
 } from './actions';
@@ -23,11 +25,15 @@ import { ActionType } from './actionType';
 import {
   getLocations,
   getLocation,
-  getItemsItems,
-  getItemsGroups,
-  getItemsProperties,
+  getItems,
+  getGroups,
+  getProperties,
   getRules,
   getDecisions,
+  getCategories,
+  createGroup,
+  getGroup,
+  createItem,
 } from './api';
 
 const getLocationsEpic = (action$: ActionsObservable<{ type: string }>) =>
@@ -57,32 +63,50 @@ const getLocationEpic = (
     )
   );
 
-const getItemsItemsEpic = (action$: ActionsObservable<{ type: string }>) =>
+const getItemsEpic = (
+  action$: ActionsObservable<{
+    type: string;
+    setLoading?: (value: boolean) => void;
+  }>
+) =>
   action$.pipe(
-    filter(isOfType(ActionType.GETITEMSITEMSASYNC)),
-    mergeMap(() =>
-      from(getItemsItems()).pipe(
-        map((response: ItemsItem[]) => setItemsItems(response))
+    filter(isOfType(ActionType.GETITEMSASYNC)),
+    mergeMap(({ setLoading }) =>
+      from(getItems()).pipe(
+        map((response: Item[]) => setItems(response)),
+        tap(() => setLoading?.(false))
       )
     )
   );
 
-const getItemsGroupEpic = (action$: ActionsObservable<{ type: string }>) =>
+const getGroupsEpic = (
+  action$: ActionsObservable<{
+    type: string;
+    setLoading?: (value: boolean) => void;
+  }>
+) =>
   action$.pipe(
-    filter(isOfType(ActionType.GETITEMSGROUPASYNC)),
-    mergeMap(() =>
-      from(getItemsGroups()).pipe(
-        map((response: ItemsGroup[]) => setItemsGroup(response))
+    filter(isOfType(ActionType.GETGROUPSASYNC)),
+    mergeMap(({ setLoading }) =>
+      from(getGroups()).pipe(
+        map((response: Group[]) => setGroups(response)),
+        tap(() => setLoading?.(false))
       )
     )
   );
 
-const getItemsPropertiesEpic = (action$: ActionsObservable<{ type: string }>) =>
+const getPropertiesEpic = (
+  action$: ActionsObservable<{
+    type: string;
+    setLoading?: (value: boolean) => void;
+  }>
+) =>
   action$.pipe(
-    filter(isOfType(ActionType.GETITEMSPROPERTIESASYNC)),
-    mergeMap(() =>
-      from(getItemsProperties()).pipe(
-        map((response: ItemsProperty[]) => setItemsProperties(response))
+    filter(isOfType(ActionType.GETPROPERTIESASYNC)),
+    mergeMap(({ setLoading }) =>
+      from(getProperties()).pipe(
+        map((response: Property[]) => setProperties(response)),
+        tap(() => setLoading?.(false))
       )
     )
   );
@@ -105,12 +129,83 @@ const getDecisionsEpic = (action$: ActionsObservable<{ type: string }>) =>
     )
   );
 
+const getCategoriesEpic = (
+  action$: ActionsObservable<{
+    type: string;
+    setLoading?: (value: boolean) => void;
+  }>
+) =>
+  action$.pipe(
+    filter(isOfType(ActionType.GETCATEGORIESASYNC)),
+    mergeMap(({ setLoading }) =>
+      from(getCategories()).pipe(
+        map((response: Category[]) => setCategories(response)),
+        tap(() => setLoading?.(false))
+      )
+    )
+  );
+
+const createGroupEpic = (
+  action$: ActionsObservable<{
+    type: string;
+    data: Group;
+    onResponseCallback: () => void;
+  }>
+) =>
+  action$.pipe(
+    filter(isOfType(ActionType.CREATEGROUPASYNC)),
+    mergeMap(({ data, onResponseCallback }) =>
+      from(createGroup(data)).pipe(
+        tap(() => onResponseCallback()),
+        ignoreElements()
+      )
+    )
+  );
+
+const getGroupEpic = (
+  action$: ActionsObservable<{
+    type: string;
+    id: string;
+    onResponseCallback: (response: Group) => void;
+  }>
+) =>
+  action$.pipe(
+    filter(isOfType(ActionType.GETGROUPASYNC)),
+    mergeMap(({ id, onResponseCallback }) =>
+      from(getGroup(id)).pipe(
+        tap((response) => onResponseCallback(response)),
+        ignoreElements()
+      )
+    )
+  );
+
+const createItemEpic = (
+  action$: ActionsObservable<{
+    type: string;
+    data: Item;
+    onResponseCallback: () => void;
+  }>
+) =>
+  action$.pipe(
+    filter(isOfType(ActionType.CREATEITEMASYNC)),
+    mergeMap(({ data, onResponseCallback }) =>
+      from(createItem(data)).pipe(
+        tap(() => onResponseCallback()),
+        ignoreElements()
+      )
+    )
+  );
+
 export const epic = combineEpics(
   getLocationsEpic,
   getLocationEpic,
-  getItemsItemsEpic,
-  getItemsGroupEpic,
-  getItemsPropertiesEpic,
+  getItemsEpic,
+  getGroupsEpic,
+  getPropertiesEpic,
   getRulesEpic,
-  getDecisionsEpic
+  getDecisionsEpic,
+  getCategoriesEpic,
+  createGroupEpic,
+  getGroupEpic,
+  createItemEpic
 );

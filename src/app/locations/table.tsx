@@ -1,44 +1,34 @@
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { Table } from 'shared/table';
 import { StoreType } from 'core/rootReducer';
-import { TableCell, TableRow } from '@material-ui/core';
-import { Location } from 'data/model';
+import { TableCell } from '@material-ui/core';
 import { MenuButton } from 'shared/menuButton';
-import { Link } from 'react-router-dom';
-
-const columns = (
-  <>
-    <TableCell className="header">Name</TableCell>
-    <TableCell className="header">Location Code</TableCell>
-    <TableCell className="header">County</TableCell>
-    <TableCell className="header">State</TableCell>
-    <TableCell className="header">Country</TableCell>
-    <TableCell className="header"></TableCell>
-  </>
-);
+import { CellParams, ColDef } from '@material-ui/data-grid';
 
 export const LocationsTable: React.FC = () => {
   const locations = useSelector((state: StoreType) => state.data.locations);
 
-  const rows = useMemo(() => {
-    return locations.map((item: Location, i: number) => {
-      return (
-        <TableRow key={i} hover>
-          <TableCell>
-            <Link to={`/locations/edit/${item.id}`}>{item.displayName}</Link>
-          </TableCell>
-          <TableCell>{item.locationCode}</TableCell>
-          <TableCell>{item.county}</TableCell>
-          <TableCell>{item.state}</TableCell>
-          <TableCell>{item.country}</TableCell>
-          <TableCell align="right">
-            <MenuButton id={item.id} />
-          </TableCell>
-        </TableRow>
-      );
-    });
-  }, [locations]);
+  const actionCell = useCallback((params: CellParams) => {
+    return <MenuButton id={params.value.toString()} />;
+  }, []);
 
-  return <Table columns={columns} rows={rows}></Table>;
+  const columns: ColDef[] = useMemo(
+    () => [
+      { field: 'displayName', headerName: 'Name', flex: 1 },
+      { field: 'locationCode', headerName: 'Location Code', flex: 1 },
+      { field: 'county', headerName: 'County', flex: 1 },
+      { field: 'state', headerName: 'State', flex: 1 },
+      { field: 'country', headerName: 'Country', flex: 1 },
+      {
+        field: 'id',
+        headerName: 'Actions',
+        renderCell: actionCell,
+        flex: 1,
+      },
+    ],
+    [actionCell]
+  );
+
+  return <Table columns={columns} rows={locations}></Table>;
 };

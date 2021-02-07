@@ -2,14 +2,15 @@ import { db } from 'database';
 
 import { convertDecisionType, convertRuleType } from './helper';
 import {
-  ItemsGroup,
-  ItemsItem,
+  Group,
+  Item,
   Location,
-  ItemsProperty,
+  Property,
   Rule,
   RuleView,
   DecisionView,
   Decision,
+  Category,
 } from './model';
 
 export const getLocations = () => {
@@ -38,13 +39,13 @@ export const getLocation = (id: string) => {
     .catch((error) => console.log(error));
 };
 
-export const getItemsItems = () => {
+export const getItems = () => {
   return db
-    .collection('items-items')
+    .collection('items')
     .get()
     .then((response) =>
-      response.docs.map<ItemsItem>((x) => {
-        const item = x.data() as ItemsItem;
+      response.docs.map<Item>((x) => {
+        const item = x.data() as Item;
         item.id = x.id;
         return item;
       })
@@ -52,13 +53,13 @@ export const getItemsItems = () => {
     .catch((error) => console.log(error));
 };
 
-export const getItemsGroups = () => {
+export const getGroups = () => {
   return db
     .collection('items-groups')
     .get()
     .then((response) =>
-      response.docs.map<ItemsGroup>((x) => {
-        const item = x.data() as ItemsGroup;
+      response.docs.map<Group>((x) => {
+        const item = x.data() as Group;
         item.id = x.id;
         return item;
       })
@@ -66,13 +67,27 @@ export const getItemsGroups = () => {
     .catch((error) => console.log(error));
 };
 
-export const getItemsProperties = () => {
+export const getProperties = () => {
   return db
     .collection('items-properties')
     .get()
     .then((response) =>
-      response.docs.map<ItemsProperty>((x) => {
-        const item = x.data() as ItemsProperty;
+      response.docs.map<Property>((x) => {
+        const item = x.data() as Property;
+        item.id = x.id;
+        return item;
+      })
+    )
+    .catch((error) => console.log(error));
+};
+
+export const getCategories = () => {
+  return db
+    .collection('categories')
+    .get()
+    .then((response) =>
+      response.docs.map<Category>((x) => {
+        const item = x.data() as Category;
         item.id = x.id;
         return item;
       })
@@ -105,5 +120,37 @@ export const getDecisions = () => {
         return convertDecisionType(item);
       })
     )
+    .catch((error) => console.log(error));
+};
+
+export const createGroup = (group: Group) => {
+  return db
+    .collection('items-groups')
+    .add({
+      ...group,
+    })
+    .then((x) => x.id)
+    .catch((error) => console.log(error));
+};
+
+export const getGroup = (id: string) => {
+  return db
+    .collection('items-groups')
+    .doc(id)
+    .get()
+    .then((response) => {
+      const location = response.data() as Group;
+      return location;
+    })
+    .catch((error) => console.log(error));
+};
+
+export const createItem = (item: Item) => {
+  return db
+    .collection('items')
+    .add({
+      ...item,
+    })
+    .then((x) => x.id)
     .catch((error) => console.log(error));
 };

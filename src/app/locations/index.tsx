@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux';
 import { Page } from 'shared/page';
 import { getLocationsAsync } from 'data/actions';
 import { Button, Grid } from '@material-ui/core';
-import { Link } from 'react-router-dom';
+import { Block } from 'shared/block';
 
 import { LocationsTable } from './table';
 
@@ -21,12 +21,12 @@ export const Locations: React.FC = () => {
   return (
     <Page title="Locations" needPanel={false}>
       <Grid className="locations">
-        <div className="AddButton">
-          <Link to="locations/add">
+        <Block>
+          <div className="AddButton">
             <Button variant="contained">Create new</Button>
-          </Link>
-        </div>
-        <LocationsTable />
+          </div>
+          <LocationsTable />
+        </Block>
       </Grid>
     </Page>
   );

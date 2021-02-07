@@ -1,11 +1,11 @@
 .sub-items {
   display: flex;
   flex-direction: column;
-  .MuiTableHead-root {
+  .MuiDataGrid-root .MuiDataGrid-columnsContainer {
+    .MuiDataGrid-colCellTitle {
+      color: #5b86c6;
+      font-weight: bolder;
+    }
     background-color: #cae2ff;
-  }
-  .header {
-    color: #5b86c6;
-    font-weight: bolder;
   }
 }

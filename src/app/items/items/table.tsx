@@ -1,49 +1,42 @@
-import React, { useCallback, useEffect, useMemo } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import React, { useCallback, useMemo, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { StoreType } from 'core/rootReducer';
-import { getItemsItemsAsync } from 'data/actions';
-import { TableCell, TableRow } from '@material-ui/core';
-import { Link } from 'react-router-dom';
-import { ItemsItem } from 'data/model';
 import { MenuButton } from 'shared/menuButton';
 import { Table as TableTemplate } from 'shared/table';
-
-const columns = (
-  <>
-    <TableCell className="header">Name</TableCell>
-    <TableCell className="header">Group</TableCell>
-    <TableCell className="header">Properties</TableCell>
-    <TableCell className="header"></TableCell>
-  </>
-);
+import { CellParams, ColDef } from '@material-ui/data-grid';
+import { useItems } from 'app/common/useData';
 
 export const Table: React.FC = () => {
-  const dispatch = useDispatch();
+  const [loading, setLoading] = useState(false);
 
-  const getItems = useCallback(() => {
-    dispatch(getItemsItemsAsync());
-  }, [dispatch]);
+  useItems({ setLoading, needEffect: true });
 
-  useEffect(() => getItems(), [getItems]);
+  const items = useSelector((state: StoreType) => state.data.items);
 
-  const items = useSelector((state: StoreType) => state.data.itemsItems);
+  const actionCell = useCallback((params: CellParams) => {
+    return <MenuButton id={params.value.toString()} />;
+  }, []);
 
-  const rows = useMemo(() => {
-    return items.map((item: ItemsItem, i: number) => {
-      return (
-        <TableRow key={i} hover>
-          <TableCell>
-            <Link to={`/`}>{item.name}</Link>
-          </TableCell>
-          <TableCell>{item.group}</TableCell>
-          <TableCell>{item.properties.join(',')}</TableCell>
-          <TableCell  align="right">
-            <MenuButton id={item.id} />
-          </TableCell>
-        </TableRow>
-      );
-    });
-  }, [items]);
+  const columns: ColDef[] = useMemo(
+    () => [
+      { field: 'name', headerName: 'Name', flex: 3 },
+      { field: 'group', headerName: 'Group', flex: 3 },
+      { field: 'properties', headerName: 'Properties', flex: 3 },
+      {
+        field: 'id',
+        headerName: 'Actions',
+        flex: 1,
+        renderCell: actionCell,
+      },
+    ],
+    [actionCell]
+  );
 
-  return <TableTemplate columns={columns} rows={rows}></TableTemplate>;
+  return (
+    <TableTemplate
+      columns={columns}
+      rows={items}
+      loading={loading}
+    ></TableTemplate>
+  );
 };

@@ -48,25 +48,25 @@ export const convertDecisionType: (decision: Decision) => DecisionView = (
     return {
       ...result,
       type: Type.ForItem,
-      ruleFor: decision.item,
+      decisionFor: decision.item,
     };
   if (decision.group)
     return {
       ...result,
       type: Type.ForGroup,
-      ruleFor: decision.group,
+      decisionFor: decision.group,
     };
   if (decision.category)
     return {
       ...result,
       type: Type.ForCategory,
-      ruleFor: decision.category,
+      decisionFor: decision.category,
     };
   else
     return {
       ...result,
       type: Type.ForPropertiesOnly,
-      ruleFor: '',
+      decisionFor: '',
     }; // TODO: handle properties
 };
 

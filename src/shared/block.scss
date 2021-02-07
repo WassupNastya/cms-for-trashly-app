@@ -2,6 +2,7 @@
   display: flex;
   flex-direction: column;
   padding: 2em;
+  height: calc(100% - 4em);
   .Title {
     color: #334650;
     font-size: 1.2em;

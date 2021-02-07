@@ -1,0 +1,11 @@
+.table {
+  height: 36em;
+  .MuiDataGrid-root {
+    .MuiDataGrid-window {
+      overflow-x: hidden;
+    }
+    .MuiDataGrid-cellWithRenderer {
+      justify-content: flex-end;
+    }
+  }
+}

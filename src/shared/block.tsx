@@ -3,7 +3,7 @@ import React from 'react';
 import './block.scss';
 
 interface Props {
-  title: string;
+  title?: string;
 }
 
 export const Block: React.FC<Props> = ({ title, children }) => {

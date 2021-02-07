@@ -15,19 +15,25 @@ export interface Location {
   locationCode: string;
 }
 
-export interface ItemsItem {
+export interface Item {
   id: string;
   name: string;
   group: string;
+  category: string;
   properties: string[];
 }
 
-export interface ItemsGroup {
+export interface Group {
   id: string;
   name: string;
 }
 
-export interface ItemsProperty {
+export interface Category {
+  id: string;
+  name: string;
+}
+
+export interface Property {
   id: string;
   name: string;
 }
@@ -64,7 +70,7 @@ export interface Decision {
 
 export interface DecisionView {
   id: string;
-  ruleFor: string;
+  decisionFor: string;
   type: number;
   location: string;
   description: string;

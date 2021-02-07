@@ -1,16 +1,13 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
 import { Button, Grid } from '@material-ui/core';
 
 import { Table } from './table';
 
 export const Content: React.FC = () => {
   return (
-    <Grid className="sub-items">
+    <Grid className="rules">
       <div className="AddButton">
-        <Link to="/">
-          <Button variant="contained">Create new</Button>
-        </Link>
+        <Button variant="contained">Create new</Button>
       </div>
       <Table />
     </Grid>

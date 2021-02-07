@@ -1,25 +1,11 @@
 import React, { useCallback, useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { StoreType } from 'core/rootReducer';
-import { TableCell, TableRow } from '@material-ui/core';
-import { Link } from 'react-router-dom';
 import { MenuButton } from 'shared/menuButton';
 import { Table as TableTemplate } from 'shared/table';
 import { getDecisionsAsync } from 'data/actions';
-import { DecisionView } from 'data/model';
 import { convertType } from 'data/helper';
-
-const columns = (
-  <>
-    <TableCell className="header">Decision for</TableCell>
-    <TableCell className="header">Type</TableCell>
-    <TableCell className="header">Name</TableCell>
-    <TableCell className="header">Decision type</TableCell>
-    <TableCell className="header">Priority</TableCell>
-    <TableCell className="header">Location</TableCell>
-    <TableCell className="header"></TableCell>
-  </>
-);
+import { CellParams, ColDef } from '@material-ui/data-grid';
 
 export const Table: React.FC = () => {
   const dispatch = useDispatch();
@@ -32,25 +18,32 @@ export const Table: React.FC = () => {
 
   const decisions = useSelector((state: StoreType) => state.data.decisions);
 
-  const rows = useMemo(() => {
-    return decisions.map((item: DecisionView, i: number) => {
-      return (
-        <TableRow key={i} hover>
-          <TableCell>
-            <Link to={`/`}>{item.ruleFor}</Link>
-          </TableCell>
-          <TableCell>{convertType(item.type)}</TableCell>
-          <TableCell>{item.name}</TableCell>{' '}
-          <TableCell>{item.decisionNameType}</TableCell>
-          <TableCell>{item.priority}</TableCell>
-          <TableCell>{item.location}</TableCell>
-          <TableCell align="right">
-            <MenuButton id={item.id} />
-          </TableCell>
-        </TableRow>
-      );
-    });
-  }, [decisions]);
+  const getType = useCallback((params: CellParams) => {
+    return convertType(Number(params.value));
+  }, []);
 
-  return <TableTemplate columns={columns} rows={rows}></TableTemplate>;
+
+  const actionCell = useCallback((params: CellParams) => {
+    return <MenuButton id={params.value.toString()} />;
+  }, []);
+
+  const columns: ColDef[] = useMemo(
+    () => [
+      { field: 'decisionFor', headerName: 'Decision for', flex: 1 },
+      { field: 'type', headerName: 'Type', valueGetter: getType, flex: 1 },
+      { field: 'name', headerName: 'Name', flex: 1 },
+      { field: 'decisionNameType', headerName: 'Decision type', flex: 1 },
+      { field: 'priority', headerName: 'Priority', flex: 1 },
+      { field: 'location', headerName: 'Location', flex: 1 },
+      {
+        field: 'id',
+        headerName: 'Actions',
+        renderCell: actionCell,
+        flex: 1,
+      },
+    ],
+    [actionCell, getType]
+  );
+
+  return <TableTemplate columns={columns} rows={decisions}></TableTemplate>;
 };

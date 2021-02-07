@@ -12,11 +12,22 @@ interface Props {
   tabsToExclude?: number[];
 }
 
-export const Page: React.FC<Props> = ({ title, onClick, needPanel, children, tabsToExclude }) => {
+export const Page: React.FC<Props> = ({
+  title,
+  onClick,
+  needPanel = true,
+  children,
+  tabsToExclude,
+}) => {
   return (
     <Grid className="Page">
-      <Header title={title} onClick={onClick} needPanel={needPanel} tabsToExclude={tabsToExclude} />
-      <div className="children">{children}</div>
+      <Header
+        title={title}
+        onClick={onClick}
+        needPanel={needPanel}
+        tabsToExclude={tabsToExclude}
+      />
+      {children}
     </Grid>
   );
 };

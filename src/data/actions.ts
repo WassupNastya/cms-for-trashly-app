@@ -1,10 +1,11 @@
 import { ActionType } from './actionType';
 import {
   Action,
+  Category,
   DecisionView,
-  ItemsGroup,
-  ItemsItem,
-  ItemsProperty,
+  Group,
+  Item,
+  Property,
   Location,
   RuleView,
 } from './model';
@@ -24,28 +25,28 @@ export const getLocationAsync: (
   return { type: ActionType.GETLOCATIONASYNC, id, onResponseCallback };
 };
 
-export const getItemsItemsAsync: () => Action = () => {
-  return { type: ActionType.GETITEMSITEMSASYNC };
+export const getItemsAsync: (setLoading?: (value: boolean) => void) => Action = (setLoading) => {
+  return { type: ActionType.GETITEMSASYNC, setLoading };
 };
 
-export const setItemsItems: (data: ItemsItem[]) => Action = (data) => {
-  return { type: ActionType.SETITEMSITEMS, data };
+export const setItems: (data: Item[]) => Action = (data) => {
+  return { type: ActionType.SETITEMS, data };
 };
 
-export const getItemsGroupsAsync: () => Action = () => {
-  return { type: ActionType.GETITEMSGROUPASYNC };
+export const getGroupsAsync: (setLoading?: (value: boolean) => void) => Action = (setLoading) => {
+  return { type: ActionType.GETGROUPSASYNC, setLoading };
 };
 
-export const setItemsGroup: (data: ItemsGroup[]) => Action = (data) => {
-  return { type: ActionType.SETITEMSGROUP, data };
+export const setGroups: (data: Group[]) => Action = (data) => {
+  return { type: ActionType.SETGROUPS, data };
 };
 
-export const getItemsPropertiesAsync: () => Action = () => {
-  return { type: ActionType.GETITEMSPROPERTIESASYNC };
+export const getPropertiesAsync: (setLoading?: (value: boolean) => void) => Action = (setLoading) => {
+  return { type: ActionType.GETPROPERTIESASYNC, setLoading };
 };
 
-export const setItemsProperties: (data: ItemsProperty[]) => Action = (data) => {
-  return { type: ActionType.SETITEMSPROPERTIES, data };
+export const setProperties: (data: Property[]) => Action = (data) => {
+  return { type: ActionType.SETPROPERTIES, data };
 };
 
 export const getRulesAsync: () => Action = () => {
@@ -62,4 +63,27 @@ export const getDecisionsAsync: () => Action = () => {
 
 export const setDecisions: (data: DecisionView[]) => Action = (data) => {
   return { type: ActionType.SETDECISIONS, data };
+};
+
+export const getCategoriesAsync: (setLoading?: (value: boolean) => void) => Action = (setLoading) => {
+  return { type: ActionType.GETCATEGORIESASYNC, setLoading };
+};
+
+export const setCategories: (data: Category[]) => Action = (data) => {
+  return { type: ActionType.SETCATEGORIES, data };
+};
+
+export const createGroupAsync: (data: Group, onResponseCallback: () => void) => Action = (data, onResponseCallback) => {
+  return { type: ActionType.CREATEGROUPASYNC, data, onResponseCallback };
+};
+
+export const getGroupAsync: (
+  id: string,
+  onResponseCallback: (response: Group) => void
+) => Action = (id, onResponseCallback) => {
+  return { type: ActionType.GETGROUPASYNC, id, onResponseCallback };
+};
+
+export const createItemAsync: (data: Item, onResponseCallback: () => void) => Action = (data, onResponseCallback) => {
+  return { type: ActionType.CREATEITEMASYNC, data, onResponseCallback };
 };

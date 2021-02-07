@@ -1,12 +1,11 @@
 .properties {
-    display: flex;
-    flex-direction: column;
-    .MuiTableHead-root {
-      background-color:#f5ebff;
-    }
-    .header {
+  display: flex;
+  flex-direction: column;
+  .MuiDataGrid-root .MuiDataGrid-columnsContainer {
+    .MuiDataGrid-colCellTitle {
       color: #8267cb;
       font-weight: bolder;
     }
+    background-color: #f5ebff;
   }
-  
+}

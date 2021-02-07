@@ -1,55 +1,50 @@
-import React, { useCallback, useEffect, useMemo } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import React, { useCallback, useMemo, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { StoreType } from 'core/rootReducer';
-import { getItemsGroupsAsync } from 'data/actions';
-import { TableCell, TableRow } from '@material-ui/core';
-import { Link } from 'react-router-dom';
-import { ItemsGroup } from 'data/model';
-import { MenuButton } from 'shared/menuButton';
 import { Table as TableTemplate } from 'shared/table';
+import { useGroups } from 'app/common/useData';
+import { CellParams, ColDef } from '@material-ui/data-grid';
+import { MenuButton } from 'shared/menuButton';
 
-const columns = (
-  <>
-    <TableCell className="header">Name</TableCell>
-    <TableCell className="header"></TableCell>
-  </>
-);
+interface Props {
+  editGroup: ({ show: boolean, id: string }) => void;
+}
 
-export const Table: React.FC = () => {
-  const dispatch = useDispatch();
+export const Table: React.FC<Props> = ({ editGroup }) => {
+  const [loading, setLoading] = useState(false);
 
-  const getGroups = useCallback(() => {
-    dispatch(getItemsGroupsAsync());
-  }, [dispatch]);
+  useGroups({ setLoading, needEffect: true });
 
-  useEffect(() => getGroups(), [getGroups]);
+  const groups = useSelector((state: StoreType) => state.data.groups);
 
-  const groups = useSelector((state: StoreType) => state.data.itemsGroups);
+  const actionCell = useCallback(
+    (params: CellParams) => {
+      const id = params.value.toString();
+      return (
+        <MenuButton id={id} onEdit={() => editGroup({ show: true, id })} />
+      );
+    },
+    [editGroup]
+  );
 
-  const rows = useMemo(() => {
-    return (
-      <>
-        {groups.map((item: ItemsGroup, i: number) => {
-          return (
-            <TableRow key={i} hover>
-              <TableCell>
-                <Link to={`/`}>{item.name}</Link>
-              </TableCell>
-              <TableCell align="right">
-                <MenuButton id={item.id} />
-              </TableCell>
-            </TableRow>
-          );
-        })}
-      </>
-    );
-  }, [groups]);
+  const columns: ColDef[] = useMemo(
+    () => [
+      { field: 'name', headerName: 'Name', flex: 5 },
+      {
+        field: 'id',
+        headerName: 'Actions',
+        flex: 1,
+        renderCell: actionCell,
+      },
+    ],
+    [actionCell]
+  );
 
   return (
     <TableTemplate
       columns={columns}
-      rows={rows}
-      className="groups-table"
+      rows={groups}
+      loading={loading}
     ></TableTemplate>
   );
 };

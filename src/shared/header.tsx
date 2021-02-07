@@ -38,7 +38,7 @@ export const Header: React.FC<Props> = ({
   tabsToExclude,
 }) => {
   return (
-    <Grid className="Header">
+    <Grid className="Header" style={{ height: needPanel ? '12em' : '6em' }}>
       <div className="TitlePanel">
         <div className="Title">{title}</div>
         {needPanel && (

@@ -1,15 +1,16 @@
 import React, { useCallback, useState } from 'react';
 import { IconButton, Menu, MenuItem } from '@material-ui/core';
 import { MoreVert } from '@material-ui/icons';
-import { Link, useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 
 import './menuButton.scss';
 
 interface Props {
   id: string;
+  onEdit?: () => void;
 }
 
-export const MenuButton: React.FC<Props> = ({ id }) => {
+export const MenuButton: React.FC<Props> = ({ id, onEdit }) => {
   const location = useLocation();
 
   const [anchor, setAnchor] = useState<Element>(null);
@@ -36,8 +37,13 @@ export const MenuButton: React.FC<Props> = ({ id }) => {
         onClose={onClose}
         anchorEl={anchor}
       >
-        <MenuItem onClick={onClose}>
-          <Link to={location.pathname + `/edit/${id}`}>Edit</Link>
+        <MenuItem
+          onClick={() => {
+            onEdit?.();
+            onClose();
+          }}
+        >
+          Edit
         </MenuItem>
         <MenuItem onClick={onClose}>Delete</MenuItem>
       </Menu>

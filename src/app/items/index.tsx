@@ -6,6 +6,7 @@ import { Grid } from '@material-ui/core';
 
 import { Items as SubItems } from './items';
 import { Groups } from './groups';
+import { Categories } from './categories';
 import { Properties } from './properties';
 
 import './items.scss';
@@ -24,6 +25,12 @@ const tabMap = new Map([
     </Block>,
   ],
   [
+    Tab.Categories,
+    <Block key="categories" title="Categories">
+      <Categories />
+    </Block>,
+  ],
+  [
     Tab.Properties,
     <Block key="properties" title="Properties">
       <Properties />
@@ -31,17 +38,11 @@ const tabMap = new Map([
   ],
 ]);
 
-const tabsToExclude = [Tab.Categories];
-
 export const Items: React.FC = () => {
   const [state, setState] = useState(Tab.Items);
 
   return (
-    <Page
-      title="Recyclable items"
-      onClick={(value) => setState(value)}
-      tabsToExclude={tabsToExclude}
-    >
+    <Page title="Recyclable items" onClick={(value) => setState(value)}>
       <Grid className="items">{tabMap.get(state)}</Grid>
     </Page>
   );
