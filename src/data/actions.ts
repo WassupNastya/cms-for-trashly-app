@@ -8,6 +8,8 @@ import {
   Property,
   Location,
   RuleView,
+  Rule,
+  Decision,
 } from './model';
 
 export const getLocationsAsync: () => Action = () => {
@@ -25,7 +27,9 @@ export const getLocationAsync: (
   return { type: ActionType.GETLOCATIONASYNC, id, onResponseCallback };
 };
 
-export const getItemsAsync: (setLoading?: (value: boolean) => void) => Action = (setLoading) => {
+export const getItemsAsync: (
+  setLoading?: (value: boolean) => void
+) => Action = (setLoading) => {
   return { type: ActionType.GETITEMSASYNC, setLoading };
 };
 
@@ -33,7 +37,9 @@ export const setItems: (data: Item[]) => Action = (data) => {
   return { type: ActionType.SETITEMS, data };
 };
 
-export const getGroupsAsync: (setLoading?: (value: boolean) => void) => Action = (setLoading) => {
+export const getGroupsAsync: (
+  setLoading?: (value: boolean) => void
+) => Action = (setLoading) => {
   return { type: ActionType.GETGROUPSASYNC, setLoading };
 };
 
@@ -41,7 +47,9 @@ export const setGroups: (data: Group[]) => Action = (data) => {
   return { type: ActionType.SETGROUPS, data };
 };
 
-export const getPropertiesAsync: (setLoading?: (value: boolean) => void) => Action = (setLoading) => {
+export const getPropertiesAsync: (
+  setLoading?: (value: boolean) => void
+) => Action = (setLoading) => {
   return { type: ActionType.GETPROPERTIESASYNC, setLoading };
 };
 
@@ -49,23 +57,29 @@ export const setProperties: (data: Property[]) => Action = (data) => {
   return { type: ActionType.SETPROPERTIES, data };
 };
 
-export const getRulesAsync: () => Action = () => {
-  return { type: ActionType.GETRULESASYNC };
+export const getRulesAsync: (
+  setLoading?: (value: boolean) => void
+) => Action = (setLoading) => {
+  return { type: ActionType.GETRULESASYNC, setLoading };
 };
 
 export const setRules: (data: RuleView[]) => Action = (data) => {
   return { type: ActionType.SETRULES, data };
 };
 
-export const getDecisionsAsync: () => Action = () => {
-  return { type: ActionType.GETDECISIONSASYNC };
+export const getDecisionsAsync: (
+  setLoading?: (value: boolean) => void
+) => Action = (setLoading) => {
+  return { type: ActionType.GETDECISIONSASYNC, setLoading };
 };
 
 export const setDecisions: (data: DecisionView[]) => Action = (data) => {
   return { type: ActionType.SETDECISIONS, data };
 };
 
-export const getCategoriesAsync: (setLoading?: (value: boolean) => void) => Action = (setLoading) => {
+export const getCategoriesAsync: (
+  setLoading?: (value: boolean) => void
+) => Action = (setLoading) => {
   return { type: ActionType.GETCATEGORIESASYNC, setLoading };
 };
 
@@ -73,7 +87,10 @@ export const setCategories: (data: Category[]) => Action = (data) => {
   return { type: ActionType.SETCATEGORIES, data };
 };
 
-export const createGroupAsync: (data: Group, onResponseCallback: () => void) => Action = (data, onResponseCallback) => {
+export const createGroupAsync: (
+  data: Group,
+  onResponseCallback: () => void
+) => Action = (data, onResponseCallback) => {
   return { type: ActionType.CREATEGROUPASYNC, data, onResponseCallback };
 };
 
@@ -84,6 +101,23 @@ export const getGroupAsync: (
   return { type: ActionType.GETGROUPASYNC, id, onResponseCallback };
 };
 
-export const createItemAsync: (data: Item, onResponseCallback: () => void) => Action = (data, onResponseCallback) => {
+export const createItemAsync: (
+  data: Item,
+  onResponseCallback: () => void
+) => Action = (data, onResponseCallback) => {
   return { type: ActionType.CREATEITEMASYNC, data, onResponseCallback };
+};
+
+export const createRuleAsync: (
+  data: Rule,
+  onResponseCallback: () => void
+) => Action = (data, onResponseCallback) => {
+  return { type: ActionType.CREATERULEASYNC, data, onResponseCallback };
+};
+
+export const createDecisionAsync: (
+  data: Decision,
+  onResponseCallback: () => void
+) => Action = (data, onResponseCallback) => {
+  return { type: ActionType.CREATEDECISIONSASYNC, data, onResponseCallback };
 };

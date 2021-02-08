@@ -11,6 +11,8 @@ import {
   Property,
   Location,
   RuleView,
+  Rule,
+  Decision,
 } from './model';
 import {
   setCategories,
@@ -34,6 +36,8 @@ import {
   createGroup,
   getGroup,
   createItem,
+  createRule,
+  createDecision,
 } from './api';
 
 const getLocationsEpic = (action$: ActionsObservable<{ type: string }>) =>
@@ -196,6 +200,40 @@ const createItemEpic = (
     )
   );
 
+const createRuleEpic = (
+  action$: ActionsObservable<{
+    type: string;
+    data: Rule;
+    onResponseCallback: () => void;
+  }>
+) =>
+  action$.pipe(
+    filter(isOfType(ActionType.CREATERULEASYNC)),
+    mergeMap(({ data, onResponseCallback }) =>
+      from(createRule(data)).pipe(
+        tap(() => onResponseCallback()),
+        ignoreElements()
+      )
+    )
+  );
+
+const createDecisionEpic = (
+  action$: ActionsObservable<{
+    type: string;
+    data: Decision;
+    onResponseCallback: () => void;
+  }>
+) =>
+  action$.pipe(
+    filter(isOfType(ActionType.CREATEDECISIONSASYNC)),
+    mergeMap(({ data, onResponseCallback }) =>
+      from(createDecision(data)).pipe(
+        tap(() => onResponseCallback()),
+        ignoreElements()
+      )
+    )
+  );
+
 export const epic = combineEpics(
   getLocationsEpic,
   getLocationEpic,
@@ -207,5 +245,7 @@ export const epic = combineEpics(
   getCategoriesEpic,
   createGroupEpic,
   getGroupEpic,
-  createItemEpic
+  createItemEpic,
+  createRuleEpic,
+  createDecisionEpic
 );

@@ -1,10 +1,4 @@
-import React, {
-  ChangeEvent,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react';
+import React, { ChangeEvent, useCallback, useMemo, useState } from 'react';
 import {
   Button,
   CircularProgress,
@@ -16,45 +10,51 @@ import {
   TextField,
 } from '@material-ui/core';
 import { useDispatch, useSelector } from 'react-redux';
-import { Category, Group, Item } from 'data/model';
+import { Category, Group, Rule, Item } from 'data/model';
 import classnames from 'classnames';
-import { useCategories, useGroups, useItems } from 'app/common/useData';
+import {
+  useCategories,
+  useGroups,
+  useItems,
+  useRules,
+} from 'app/common/useData';
 import { StoreType } from 'core/rootReducer';
-import { createItemAsync } from 'data/actions';
+import { createRuleAsync } from 'data/actions';
 
-import './createItem.scss';
+import './createRule.scss';
 
 interface Props {
   id?: string;
 }
 
-export const CreateItem: React.FC<Props> = ({ id }) => {
+export const CreateRule: React.FC<Props> = ({ id }) => {
   const dispatch = useDispatch();
-  const getItems = useItems({ needEffect: false });
+  const getRules = useRules({ needEffect: false });
 
+  useItems({ needEffect: true });
   useGroups({ needEffect: true });
   useCategories({ needEffect: true });
 
   const [loading, setLoading] = useState(false);
-  const [state, setState] = useState<Item>({
-    name: '',
+  const [state, setState] = useState<Rule>({
     id: '',
-    group: '',
-    category: '',
-    properties: [],
+    location: '',
+    description: '',
   });
   const [success, setSuccess] = useState(false);
 
-  const { groups, categories } = useSelector((state: StoreType) => state.data);
+  const { items, groups, categories } = useSelector(
+    (state: StoreType) => state.data
+  );
 
   const title = useMemo(() => {
-    return id == null ? 'Add item' : 'Edit item';
+    return id == null ? 'Add rule' : 'Edit rule';
   }, [id]);
 
   const handleChange = useCallback(
     (
       e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-      field: keyof Item
+      field: keyof Rule
     ) => {
       setState({ ...state, [field]: e.target.value });
     },
@@ -62,7 +62,7 @@ export const CreateItem: React.FC<Props> = ({ id }) => {
   );
 
   const handleChangeSelect = useCallback(
-    (e, field: keyof Item) => {
+    (e, field: keyof Rule) => {
       setState({ ...state, [field]: e.target.value });
     },
     [state]
@@ -78,7 +78,7 @@ export const CreateItem: React.FC<Props> = ({ id }) => {
     );
 
     dispatch(
-      createItemAsync(
+      createRuleAsync(
         {
           ...state,
           group: group?.name ?? '',
@@ -87,24 +87,32 @@ export const CreateItem: React.FC<Props> = ({ id }) => {
         () => {
           setLoading(false);
           setSuccess(true);
-          getItems();
+          getRules();
         }
       )
     );
-  }, [dispatch, state, categories, groups, getItems]);
+  }, [dispatch, state, categories, groups, getRules]);
 
   return (
     <Grid className="createItem">
       <div className="title">{title}</div>
-      <TextField
-        id="outlined-name"
-        label="Name"
-        variant="outlined"
-        size="small"
-        value={state.name}
-        onChange={(e) => handleChange(e, 'name')}
-        disabled={loading || success}
-      ></TextField>
+      <FormControl variant="outlined">
+        <InputLabel id="group-select-outlined-label">Item</InputLabel>
+        <Select
+          labelId="item-select-outlined-label"
+          id="item-select-outlined"
+          value={state.item}
+          onChange={(e) => handleChangeSelect(e, 'item')}
+          label="Item"
+          disabled={loading || success}
+        >
+          {items.map((x: Item, i: number) => (
+            <MenuItem value={x.id} key={i}>
+              {x.name}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
       <FormControl variant="outlined">
         <InputLabel id="group-select-outlined-label">Group</InputLabel>
         <Select
@@ -139,6 +147,15 @@ export const CreateItem: React.FC<Props> = ({ id }) => {
           ))}
         </Select>
       </FormControl>
+      <TextField
+        id="outlined-description"
+        label="Description"
+        variant="outlined"
+        size="small"
+        value={state.description}
+        onChange={(e) => handleChange(e, 'description')}
+        disabled={loading || success}
+      ></TextField>
       <div className="buttons">
         <Button
           variant="contained"

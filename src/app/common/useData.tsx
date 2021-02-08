@@ -3,6 +3,8 @@ import {
   getGroupsAsync,
   getCategoriesAsync,
   getPropertiesAsync,
+  getRulesAsync,
+  getDecisionsAsync,
 } from 'data/actions';
 import { useCallback, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
@@ -70,5 +72,35 @@ export const useProperties = ({ setLoading, needEffect }: UseDataProps) => {
   }, [needEffect, getProperties]);
 
   return getProperties;
+};
+
+export const useRules = ({ setLoading, needEffect }: UseDataProps) => {
+  const dispatch = useDispatch();
+
+  const getRules = useCallback(() => {
+    setLoading?.(true);
+    dispatch(getRulesAsync(setLoading));
+  }, [dispatch, setLoading]);
+
+  useEffect(() => {
+    if (needEffect) getRules();
+  }, [needEffect, getRules]);
+
+  return getRules;
+};
+
+export const useDecisions = ({ setLoading, needEffect }: UseDataProps) => {
+  const dispatch = useDispatch();
+
+  const getDecisions = useCallback(() => {
+    setLoading?.(true);
+    dispatch(getDecisionsAsync(setLoading));
+  }, [dispatch, setLoading]);
+
+  useEffect(() => {
+    if (needEffect) getDecisions();
+  }, [needEffect, getDecisions]);
+
+  return getDecisions;
 };
 

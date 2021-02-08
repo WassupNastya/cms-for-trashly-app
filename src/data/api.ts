@@ -154,3 +154,23 @@ export const createItem = (item: Item) => {
     .then((x) => x.id)
     .catch((error) => console.log(error));
 };
+
+export const createRule = (rule: Rule) => {
+  return db
+    .collection('rules')
+    .add({
+      ...rule,
+    })
+    .then((x) => x.id)
+    .catch((error) => console.log(error));
+};
+
+export const createDecision = (decision: Decision) => {
+  return db
+    .collection('decisions')
+    .add({
+      ...decision,
+    })
+    .then((x) => x.id)
+    .catch((error) => console.log(error));
+};
