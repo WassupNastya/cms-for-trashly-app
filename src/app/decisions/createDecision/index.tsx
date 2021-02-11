@@ -114,7 +114,7 @@ export const CreateDecision: React.FC<Props> = ({ id }) => {
   }, [dispatch, state, categories, groups, getDecisions, items, properties]);
 
   return (
-    <Grid className="createItem">
+    <Grid className="createDecision">
       <div className="title">{title}</div>
       <TextField
         id="outlined-name"

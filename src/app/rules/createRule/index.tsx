@@ -109,7 +109,7 @@ export const CreateRule: React.FC<Props> = ({ id }) => {
   }, [dispatch, state, categories, groups, getRules, items, properties]);
 
   return (
-    <Grid className="createItem">
+    <Grid className="createRule">
       <div className="title">{title}</div>
       <TextField
         multiline

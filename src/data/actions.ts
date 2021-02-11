@@ -2,18 +2,16 @@ import { ActionType } from './actionType';
 import {
   Action,
   Category,
-  DecisionView,
   Group,
   Item,
   Property,
   Location,
-  RuleView,
   Rule,
   Decision,
 } from './model';
 
-export const getLocationsAsync: () => Action = () => {
-  return { type: ActionType.GETLOCATIONSASYNC };
+export const getLocationsAsync: (setLoading?: (value: boolean) => void) => Action = (setLoading) => {
+  return { type: ActionType.GETLOCATIONSASYNC, setLoading };
 };
 
 export const setLocations: (data: Location[]) => Action = (data) => {
@@ -134,4 +132,11 @@ export const createPropertyAsync: (
   onResponseCallback: () => void
 ) => Action = (data, onResponseCallback) => {
   return { type: ActionType.CREATEPROPERTYASYNC, data, onResponseCallback };
+};
+
+export const createLocationAsync: (
+  data: Location,
+  onResponseCallback: () => void
+) => Action = (data, onResponseCallback) => {
+  return { type: ActionType.CREATELOCATIONASYNC, data, onResponseCallback };
 };

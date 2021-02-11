@@ -194,3 +194,13 @@ export const createProperty = (property: Property) => {
     .then((x) => x.id)
     .catch((error) => console.log(error));
 };
+
+export const createLocation = (location: Location) => {
+  return db
+    .collection('locations')
+    .add({
+      ...location,
+    })
+    .then((x) => x.id)
+    .catch((error) => console.log(error));
+};

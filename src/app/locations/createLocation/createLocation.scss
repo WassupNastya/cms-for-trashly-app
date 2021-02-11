@@ -1,38 +1,34 @@
-.CreateLocation {
+.createLocation {
   display: flex;
   flex-direction: column;
-  padding: 0.5em;
-  .Buttons {
-    align-self: flex-end;
-    margin-bottom: 0.5em;
-    .Save {
-      margin-left: 1em;
-      color: white;
-      background-color: #00bcca;
-    }
+  padding: 2em;
+  .title {
+    font-size: 1.5em;
+    color: #334650;
+    margin-bottom: 1em;
+    font-weight: 500;
+    font-family: 'Heebo';
+  }
+  .buttons {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 1em;
     .MuiButtonBase-root {
+      background-color: #00bcca;
+      color: white;
       box-shadow: none;
     }
-  }
-  form {
-    display: flex;
-    flex-direction: column;
-    background-color: white;
-    padding: 2em;
-    align-self: center;
-    border-radius: 0.5em;
-    div {
-      margin-bottom: 0.5em;
+    .Mui-disabled {
+      background-color: #c8c8c8;
     }
-    .MuiFormLabel-root {
-      font-size: 0.9em;
-    }
-    .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
-      border-color: #8267cb;
+    .success {
+      background-color: #009d00;
     }
   }
-}
-
-.MuiDialog-paperWidthSm {
-  width: 50em;
+  .progress {
+    position: absolute;
+  }
+  .MuiFormControl-root {
+    margin-bottom: 1em;
+  }
 }

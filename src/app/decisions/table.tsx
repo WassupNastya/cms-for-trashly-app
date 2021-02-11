@@ -1,20 +1,14 @@
-import React, { useCallback, useEffect, useMemo } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import React, { useCallback, useMemo } from 'react';
+import { useSelector } from 'react-redux';
 import { StoreType } from 'core/rootReducer';
 import { MenuButton } from 'shared/menuButton';
 import { Table as TableTemplate } from 'shared/table';
-import { getDecisionsAsync } from 'data/actions';
 import { CellParams, ColDef } from '@material-ui/data-grid';
 import { Chip } from '@material-ui/core';
+import { useDecisions } from 'app/common/useData';
 
 export const Table: React.FC = () => {
-  const dispatch = useDispatch();
-
-  const getDecisions = useCallback(() => {
-    dispatch(getDecisionsAsync());
-  }, [dispatch]);
-
-  useEffect(() => getDecisions(), [getDecisions]);
+  useDecisions({ needEffect: true });
 
   const decisions = useSelector((state: StoreType) => state.data.decisions);
 

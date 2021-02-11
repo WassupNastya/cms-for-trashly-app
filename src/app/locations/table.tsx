@@ -2,11 +2,13 @@ import React, { useCallback, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { Table } from 'shared/table';
 import { StoreType } from 'core/rootReducer';
-import { TableCell } from '@material-ui/core';
 import { MenuButton } from 'shared/menuButton';
 import { CellParams, ColDef } from '@material-ui/data-grid';
+import { useLocations } from 'app/common/useData';
 
 export const LocationsTable: React.FC = () => {
+  useLocations({ needEffect: true });
+
   const locations = useSelector((state: StoreType) => state.data.locations);
 
   const actionCell = useCallback((params: CellParams) => {

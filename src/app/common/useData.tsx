@@ -5,6 +5,7 @@ import {
   getPropertiesAsync,
   getRulesAsync,
   getDecisionsAsync,
+  getLocationsAsync,
 } from 'data/actions';
 import { useCallback, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
@@ -102,5 +103,20 @@ export const useDecisions = ({ setLoading, needEffect }: UseDataProps) => {
   }, [needEffect, getDecisions]);
 
   return getDecisions;
+};
+
+export const useLocations = ({ setLoading, needEffect }: UseDataProps) => {
+  const dispatch = useDispatch();
+
+  const getLocations = useCallback(() => {
+    setLoading?.(true);
+    dispatch(getLocationsAsync(setLoading));
+  }, [dispatch, setLoading]);
+
+  useEffect(() => {
+    if (needEffect) getLocations();
+  }, [needEffect, getLocations]);
+
+  return getLocations;
 };
 

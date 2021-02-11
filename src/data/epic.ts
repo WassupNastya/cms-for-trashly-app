@@ -40,14 +40,21 @@ import {
   createDecision,
   createCategory,
   createProperty,
+  createLocation,
 } from './api';
 
-const getLocationsEpic = (action$: ActionsObservable<{ type: string }>) =>
+const getLocationsEpic = (
+  action$: ActionsObservable<{
+    type: string;
+    setLoading?: (value: boolean) => void;
+  }>
+) =>
   action$.pipe(
     filter(isOfType(ActionType.GETLOCATIONSASYNC)),
-    mergeMap(() =>
+    mergeMap(({ setLoading }) =>
       from(getLocations()).pipe(
-        map((response: Location[]) => setLocations(response))
+        map((response: Location[]) => setLocations(response)),
+        tap(() => setLoading?.(false))
       )
     )
   );
@@ -270,6 +277,23 @@ const createPropertyEpic = (
     )
   );
 
+const createLocationEpic = (
+  action$: ActionsObservable<{
+    type: string;
+    data: Location;
+    onResponseCallback: () => void;
+  }>
+) =>
+  action$.pipe(
+    filter(isOfType(ActionType.CREATELOCATIONASYNC)),
+    mergeMap(({ data, onResponseCallback }) =>
+      from(createLocation(data)).pipe(
+        tap(() => onResponseCallback()),
+        ignoreElements()
+      )
+    )
+  );
+
 export const epic = combineEpics(
   getLocationsEpic,
   getLocationEpic,
@@ -285,5 +309,6 @@ export const epic = combineEpics(
   createRuleEpic,
   createDecisionEpic,
   createCategoryEpic,
-  createPropertyEpic
+  createPropertyEpic,
+  createLocationEpic
 );
