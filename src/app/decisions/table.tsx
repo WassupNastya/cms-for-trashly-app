@@ -4,8 +4,8 @@ import { StoreType } from 'core/rootReducer';
 import { MenuButton } from 'shared/menuButton';
 import { Table as TableTemplate } from 'shared/table';
 import { getDecisionsAsync } from 'data/actions';
-import { convertType } from 'data/helper';
 import { CellParams, ColDef } from '@material-ui/data-grid';
+import { Chip } from '@material-ui/core';
 
 export const Table: React.FC = () => {
   const dispatch = useDispatch();
@@ -18,10 +18,16 @@ export const Table: React.FC = () => {
 
   const decisions = useSelector((state: StoreType) => state.data.decisions);
 
-  const getType = useCallback((params: CellParams) => {
-    return convertType(Number(params.value));
+  const propertiesCell = useCallback((params: CellParams) => {
+    const properties = params.value as string[];
+    return (
+      <div style={{ width: '100%' }}>
+        {properties.map((label, key) => (
+          <Chip key={key} label={label} style={{ marginRight: '0.4rem' }} />
+        ))}
+      </div>
+    );
   }, []);
-
 
   const actionCell = useCallback((params: CellParams) => {
     return <MenuButton id={params.value.toString()} />;
@@ -29,12 +35,19 @@ export const Table: React.FC = () => {
 
   const columns: ColDef[] = useMemo(
     () => [
-      { field: 'decisionFor', headerName: 'Decision for', flex: 1 },
-      { field: 'type', headerName: 'Type', valueGetter: getType, flex: 1 },
       { field: 'name', headerName: 'Name', flex: 1 },
-      { field: 'decisionNameType', headerName: 'Decision type', flex: 1 },
+      { field: 'item', headerName: 'Item', flex: 1 },
+      { field: 'group', headerName: 'Group', flex: 1 },
+      { field: 'category', headerName: 'Category', flex: 1 },
       { field: 'priority', headerName: 'Priority', flex: 1 },
+      { field: 'type', headerName: 'Type', flex: 1 },
       { field: 'location', headerName: 'Location', flex: 1 },
+      {
+        field: 'properties',
+        headerName: 'Properties',
+        flex: 2,
+        renderCell: propertiesCell,
+      },
       {
         field: 'id',
         headerName: 'Actions',
@@ -42,7 +55,7 @@ export const Table: React.FC = () => {
         flex: 1,
       },
     ],
-    [actionCell, getType]
+    [actionCell, propertiesCell]
   );
 
   return <TableTemplate columns={columns} rows={decisions}></TableTemplate>;

@@ -38,6 +38,8 @@ import {
   createItem,
   createRule,
   createDecision,
+  createCategory,
+  createProperty,
 } from './api';
 
 const getLocationsEpic = (action$: ActionsObservable<{ type: string }>) =>
@@ -119,7 +121,7 @@ const getRulesEpic = (action$: ActionsObservable<{ type: string }>) =>
   action$.pipe(
     filter(isOfType(ActionType.GETRULESASYNC)),
     mergeMap(() =>
-      from(getRules()).pipe(map((response: RuleView[]) => setRules(response)))
+      from(getRules()).pipe(map((response: Rule[]) => setRules(response)))
     )
   );
 
@@ -128,7 +130,7 @@ const getDecisionsEpic = (action$: ActionsObservable<{ type: string }>) =>
     filter(isOfType(ActionType.GETDECISIONSASYNC)),
     mergeMap(() =>
       from(getDecisions()).pipe(
-        map((response: DecisionView[]) => setDecisions(response))
+        map((response: Decision[]) => setDecisions(response))
       )
     )
   );
@@ -234,6 +236,40 @@ const createDecisionEpic = (
     )
   );
 
+const createCategoryEpic = (
+  action$: ActionsObservable<{
+    type: string;
+    data: Category;
+    onResponseCallback: () => void;
+  }>
+) =>
+  action$.pipe(
+    filter(isOfType(ActionType.CREATECATEGORYASYNC)),
+    mergeMap(({ data, onResponseCallback }) =>
+      from(createCategory(data)).pipe(
+        tap(() => onResponseCallback()),
+        ignoreElements()
+      )
+    )
+  );
+
+const createPropertyEpic = (
+  action$: ActionsObservable<{
+    type: string;
+    data: Property;
+    onResponseCallback: () => void;
+  }>
+) =>
+  action$.pipe(
+    filter(isOfType(ActionType.CREATEPROPERTYASYNC)),
+    mergeMap(({ data, onResponseCallback }) =>
+      from(createProperty(data)).pipe(
+        tap(() => onResponseCallback()),
+        ignoreElements()
+      )
+    )
+  );
+
 export const epic = combineEpics(
   getLocationsEpic,
   getLocationEpic,
@@ -247,5 +283,7 @@ export const epic = combineEpics(
   getGroupEpic,
   createItemEpic,
   createRuleEpic,
-  createDecisionEpic
+  createDecisionEpic,
+  createCategoryEpic,
+  createPropertyEpic
 );

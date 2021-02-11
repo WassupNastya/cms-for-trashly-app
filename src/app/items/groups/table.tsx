@@ -6,26 +6,17 @@ import { useGroups } from 'app/common/useData';
 import { CellParams, ColDef } from '@material-ui/data-grid';
 import { MenuButton } from 'shared/menuButton';
 
-interface Props {
-  editGroup: ({ show: boolean, id: string }) => void;
-}
-
-export const Table: React.FC<Props> = ({ editGroup }) => {
+export const Table: React.FC = () => {
   const [loading, setLoading] = useState(false);
 
   useGroups({ setLoading, needEffect: true });
 
   const groups = useSelector((state: StoreType) => state.data.groups);
 
-  const actionCell = useCallback(
-    (params: CellParams) => {
-      const id = params.value.toString();
-      return (
-        <MenuButton id={id} onEdit={() => editGroup({ show: true, id })} />
-      );
-    },
-    [editGroup]
-  );
+  const actionCell = useCallback((params: CellParams) => {
+    const id = params.value.toString();
+    return <MenuButton id={id} />;
+  }, []);
 
   const columns: ColDef[] = useMemo(
     () => [

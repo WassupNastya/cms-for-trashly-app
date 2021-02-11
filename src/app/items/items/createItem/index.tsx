@@ -1,10 +1,4 @@
-import React, {
-  ChangeEvent,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react';
+import React, { ChangeEvent, useCallback, useMemo, useState } from 'react';
 import {
   Button,
   CircularProgress,
@@ -16,9 +10,14 @@ import {
   TextField,
 } from '@material-ui/core';
 import { useDispatch, useSelector } from 'react-redux';
-import { Category, Group, Item } from 'data/model';
+import { Category, Group, Item, Property } from 'data/model';
 import classnames from 'classnames';
-import { useCategories, useGroups, useItems } from 'app/common/useData';
+import {
+  useCategories,
+  useGroups,
+  useItems,
+  useProperties,
+} from 'app/common/useData';
 import { StoreType } from 'core/rootReducer';
 import { createItemAsync } from 'data/actions';
 
@@ -34,6 +33,7 @@ export const CreateItem: React.FC<Props> = ({ id }) => {
 
   useGroups({ needEffect: true });
   useCategories({ needEffect: true });
+  useProperties({ needEffect: true });
 
   const [loading, setLoading] = useState(false);
   const [state, setState] = useState<Item>({
@@ -42,10 +42,13 @@ export const CreateItem: React.FC<Props> = ({ id }) => {
     group: '',
     category: '',
     properties: [],
+    aliases: '',
   });
   const [success, setSuccess] = useState(false);
 
-  const { groups, categories } = useSelector((state: StoreType) => state.data);
+  const { groups, categories, properties } = useSelector(
+    (state: StoreType) => state.data
+  );
 
   const title = useMemo(() => {
     return id == null ? 'Add item' : 'Edit item';
@@ -76,6 +79,9 @@ export const CreateItem: React.FC<Props> = ({ id }) => {
     const category: Category | undefined = categories.find(
       (x: Category) => x.id === state.category
     );
+    const newProperties: string[] = properties.flatMap((x) =>
+      state.properties.includes(x.id) ? [x.name] : []
+    );
 
     dispatch(
       createItemAsync(
@@ -83,6 +89,7 @@ export const CreateItem: React.FC<Props> = ({ id }) => {
           ...state,
           group: group?.name ?? '',
           category: category?.name ?? '',
+          properties: newProperties,
         },
         () => {
           setLoading(false);
@@ -91,7 +98,7 @@ export const CreateItem: React.FC<Props> = ({ id }) => {
         }
       )
     );
-  }, [dispatch, state, categories, groups, getItems]);
+  }, [dispatch, state, categories, groups, getItems, properties]);
 
   return (
     <Grid className="createItem">
@@ -103,6 +110,15 @@ export const CreateItem: React.FC<Props> = ({ id }) => {
         size="small"
         value={state.name}
         onChange={(e) => handleChange(e, 'name')}
+        disabled={loading || success}
+      ></TextField>
+      <TextField
+        id="outlined-name"
+        label="Aliases"
+        variant="outlined"
+        size="small"
+        value={state.aliases}
+        onChange={(e) => handleChange(e, 'aliases')}
         disabled={loading || success}
       ></TextField>
       <FormControl variant="outlined">
@@ -133,6 +149,26 @@ export const CreateItem: React.FC<Props> = ({ id }) => {
           disabled={loading || success}
         >
           {categories.map((x: Group, i: number) => (
+            <MenuItem value={x.id} key={i}>
+              {x.name}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
+      <FormControl variant="outlined">
+        <InputLabel id="properties-select-outlined-label">
+          Properties
+        </InputLabel>
+        <Select
+          multiple
+          labelId="properties-select-outlined-label"
+          id="properties-select-outlined"
+          value={state.properties}
+          onChange={(e) => handleChangeSelect(e, 'properties')}
+          label="Properties"
+          disabled={loading || success}
+        >
+          {properties.map((x: Property, i: number) => (
             <MenuItem value={x.id} key={i}>
               {x.name}
             </MenuItem>

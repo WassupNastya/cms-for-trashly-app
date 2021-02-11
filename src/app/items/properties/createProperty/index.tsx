@@ -8,19 +8,19 @@ import React, {
 import { Button, CircularProgress, Grid, TextField } from '@material-ui/core';
 import { useDispatch } from 'react-redux';
 import { Group } from 'data/model';
-import { createGroupAsync, getGroupAsync } from 'data/actions';
+import { createPropertyAsync } from 'data/actions';
 import classnames from 'classnames';
-import { useGroups } from 'app/common/useData';
+import { useProperties } from 'app/common/useData';
 
-import './createGroup.scss';
+import './createProperty.scss';
 
 interface Props {
   id?: string;
 }
 
-export const CreateGroup: React.FC<Props> = ({ id }) => {
+export const CreateProperty: React.FC<Props> = ({ id }) => {
   const dispatch = useDispatch();
-  const getGroups = useGroups({ needEffect: false });
+  const getProperties = useProperties({ needEffect: false });
 
   const [loading, setLoading] = useState(false);
   const [state, setState] = useState<Group>({
@@ -30,19 +30,12 @@ export const CreateGroup: React.FC<Props> = ({ id }) => {
   const [success, setSuccess] = useState(false);
 
   const title = useMemo(() => {
-    return id == null ? 'Add group' : 'Edit group';
+    return id == null ? 'Add property' : 'Edit property';
   }, [id]);
 
-  const getGroup = useCallback(
-    (id: string) => {
-      dispatch(
-        getGroupAsync(id, (response) => {
-          setState(response);
-        })
-      );
-    },
-    [dispatch]
-  );
+  const getProperty = useCallback((id: string) => {
+    console.log('Edit: ', id);
+  }, []);
 
   const handleChange = useCallback(
     (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -54,20 +47,20 @@ export const CreateGroup: React.FC<Props> = ({ id }) => {
   const onSave = useCallback(() => {
     setLoading(true);
     dispatch(
-      createGroupAsync(state, () => {
+      createPropertyAsync(state, () => {
         setLoading(false);
         setSuccess(true);
-        getGroups();
+        getProperties();
       })
     );
-  }, [dispatch, state, getGroups]);
+  }, [dispatch, state, getProperties]);
 
   useEffect(() => {
-    if (id != null) getGroup(id);
-  }, [getGroup, id]);
+    if (id != null) getProperty(id);
+  }, [getProperty, id]);
 
   return (
-    <Grid className="createGroup">
+    <Grid className="createProperty">
       <div className="title">{title}</div>
       <TextField
         id="outlined-name"

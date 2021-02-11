@@ -4,11 +4,14 @@ import { StoreType } from 'core/rootReducer';
 import { MenuButton } from 'shared/menuButton';
 import { Table as TableTemplate } from 'shared/table';
 import { getRulesAsync } from 'data/actions';
-import { convertType } from 'data/helper';
 import { CellParams, ColDef } from '@material-ui/data-grid';
+import { useProperties } from 'app/common/useData';
+import { Chip } from '@material-ui/core';
 
 export const Table: React.FC = () => {
   const dispatch = useDispatch();
+
+  useProperties({ needEffect: true });
 
   const getRules = useCallback(() => {
     dispatch(getRulesAsync());
@@ -18,8 +21,15 @@ export const Table: React.FC = () => {
 
   const rules = useSelector((state: StoreType) => state.data.rules);
 
-  const getType = useCallback((params: CellParams) => {
-    return convertType(Number(params.value));
+  const propertiesCell = useCallback((params: CellParams) => {
+    const properties = params.value as string[];
+    return (
+      <div style={{ width: '100%' }}>
+        {properties.map((label, key) => (
+          <Chip key={key} label={label} style={{ marginRight: '0.4rem' }} />
+        ))}
+      </div>
+    );
   }, []);
 
   const actionCell = useCallback((params: CellParams) => {
@@ -28,10 +38,15 @@ export const Table: React.FC = () => {
 
   const columns: ColDef[] = useMemo(
     () => [
-      { field: 'ruleFor', headerName: 'Rule for', flex: 2 },
-      { field: 'type', headerName: 'Type', valueGetter: getType, flex: 2 },
-      { field: 'description', headerName: 'Description', flex: 2 },
-      { field: 'location', headerName: 'Location', flex: 2 },
+      { field: 'item', headerName: 'Item', flex: 1 },
+      { field: 'group', headerName: 'Group', flex: 1 },
+      { field: 'category', headerName: 'Category', flex: 1 },
+      {
+        field: 'properties',
+        headerName: 'Properties',
+        flex: 2,
+        renderCell: propertiesCell,
+      },
       {
         field: 'id',
         headerName: 'Actions',
@@ -39,7 +54,7 @@ export const Table: React.FC = () => {
         flex: 1,
       },
     ],
-    [actionCell, getType]
+    [actionCell, propertiesCell]
   );
 
   return <TableTemplate columns={columns} rows={rules}></TableTemplate>;

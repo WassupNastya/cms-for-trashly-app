@@ -10,7 +10,7 @@ import {
   TextField,
 } from '@material-ui/core';
 import { useDispatch, useSelector } from 'react-redux';
-import { Category, Group, Rule, Item } from 'data/model';
+import { Category, Group, Rule, Item, Property } from 'data/model';
 import classnames from 'classnames';
 import {
   useCategories,
@@ -40,10 +40,11 @@ export const CreateRule: React.FC<Props> = ({ id }) => {
     id: '',
     location: '',
     description: '',
+    properties: [],
   });
   const [success, setSuccess] = useState(false);
 
-  const { items, groups, categories } = useSelector(
+  const { items, groups, categories, properties } = useSelector(
     (state: StoreType) => state.data
   );
 
@@ -70,32 +71,56 @@ export const CreateRule: React.FC<Props> = ({ id }) => {
 
   const onSave = useCallback(() => {
     setLoading(true);
-    const group: Group | undefined = groups.find(
+
+    const itemName: string | undefined = items.find(
+      (x: Item) => x.id === state.item
+    )?.name;
+
+    const groupName: string | undefined = groups.find(
       (x: Group) => x.id === state.group
-    );
-    const category: Category | undefined = categories.find(
+    )?.name;
+
+    const categoryName: string | undefined = categories.find(
       (x: Category) => x.id === state.category
+    )?.name;
+
+    const propertiesName: string[] = properties.flatMap((x: Property) =>
+      state.properties.includes(x.id) ? [x.name] : []
     );
 
+    const newRule = { ...state };
+    delete newRule.item;
+    delete newRule.group;
+    delete newRule.category;
+    delete newRule.properties;
+
+    if (itemName) newRule.item = itemName;
+    if (groupName) newRule.group = groupName;
+    if (categoryName) newRule.category = categoryName;
+    newRule.properties = propertiesName;
+
     dispatch(
-      createRuleAsync(
-        {
-          ...state,
-          group: group?.name ?? '',
-          category: category?.name ?? '',
-        },
-        () => {
-          setLoading(false);
-          setSuccess(true);
-          getRules();
-        }
-      )
+      createRuleAsync(newRule, () => {
+        setLoading(false);
+        setSuccess(true);
+        getRules();
+      })
     );
-  }, [dispatch, state, categories, groups, getRules]);
+  }, [dispatch, state, categories, groups, getRules, items, properties]);
 
   return (
     <Grid className="createItem">
       <div className="title">{title}</div>
+      <TextField
+        multiline
+        id="outlined-description"
+        label="Description"
+        variant="outlined"
+        size="small"
+        value={state.description}
+        onChange={(e) => handleChange(e, 'description')}
+        disabled={loading || success}
+      ></TextField>
       <FormControl variant="outlined">
         <InputLabel id="group-select-outlined-label">Item</InputLabel>
         <Select
@@ -147,15 +172,26 @@ export const CreateRule: React.FC<Props> = ({ id }) => {
           ))}
         </Select>
       </FormControl>
-      <TextField
-        id="outlined-description"
-        label="Description"
-        variant="outlined"
-        size="small"
-        value={state.description}
-        onChange={(e) => handleChange(e, 'description')}
-        disabled={loading || success}
-      ></TextField>
+      <FormControl variant="outlined">
+        <InputLabel id="properties-select-outlined-label">
+          Properties
+        </InputLabel>
+        <Select
+          multiple
+          labelId="properties-select-outlined-label"
+          id="properties-select-outlined"
+          value={state.properties}
+          onChange={(e) => handleChangeSelect(e, 'properties')}
+          label="Properties"
+          disabled={loading || success}
+        >
+          {properties.map((x: Property, i: number) => (
+            <MenuItem value={x.id} key={i}>
+              {x.name}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
       <div className="buttons">
         <Button
           variant="contained"

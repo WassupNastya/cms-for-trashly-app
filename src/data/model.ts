@@ -21,6 +21,7 @@ export interface Item {
   group: string;
   category: string;
   properties: string[];
+  aliases: string;
 }
 
 export interface Group {
@@ -44,7 +45,7 @@ export interface Rule {
   category?: string;
   location: string;
   description: string;
-  // { [key: string]: boolean } TODO: handle properties
+  properties: string[];
 }
 export interface RuleView {
   id: string;
@@ -65,7 +66,7 @@ export interface Decision {
   priority: string;
   name: string;
   decisionNameType: string;
-  // { [key: string]: boolean } TODO: handle properties
+  properties: string[];
 }
 
 export interface DecisionView {

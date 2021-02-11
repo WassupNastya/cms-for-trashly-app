@@ -55,7 +55,7 @@ export const getItems = () => {
 
 export const getGroups = () => {
   return db
-    .collection('items-groups')
+    .collection('groups')
     .get()
     .then((response) =>
       response.docs.map<Group>((x) => {
@@ -69,7 +69,7 @@ export const getGroups = () => {
 
 export const getProperties = () => {
   return db
-    .collection('items-properties')
+    .collection('properties')
     .get()
     .then((response) =>
       response.docs.map<Property>((x) => {
@@ -100,10 +100,10 @@ export const getRules = () => {
     .collection('rules')
     .get()
     .then((response) =>
-      response.docs.map<RuleView>((x) => {
+      response.docs.map<Rule>((x) => {
         const item = x.data() as Rule;
         item.id = x.id;
-        return convertRuleType(item);
+        return item;
       })
     )
     .catch((error) => console.log(error));
@@ -114,10 +114,10 @@ export const getDecisions = () => {
     .collection('decisions')
     .get()
     .then((response) =>
-      response.docs.map<DecisionView>((x) => {
+      response.docs.map<Decision>((x) => {
         const item = x.data() as Decision;
         item.id = x.id;
-        return convertDecisionType(item);
+        return item;
       })
     )
     .catch((error) => console.log(error));
@@ -125,7 +125,7 @@ export const getDecisions = () => {
 
 export const createGroup = (group: Group) => {
   return db
-    .collection('items-groups')
+    .collection('groups')
     .add({
       ...group,
     })
@@ -135,7 +135,7 @@ export const createGroup = (group: Group) => {
 
 export const getGroup = (id: string) => {
   return db
-    .collection('items-groups')
+    .collection('groups')
     .doc(id)
     .get()
     .then((response) => {
@@ -170,6 +170,26 @@ export const createDecision = (decision: Decision) => {
     .collection('decisions')
     .add({
       ...decision,
+    })
+    .then((x) => x.id)
+    .catch((error) => console.log(error));
+};
+
+export const createCategory = (category: Category) => {
+  return db
+    .collection('categories')
+    .add({
+      ...category,
+    })
+    .then((x) => x.id)
+    .catch((error) => console.log(error));
+};
+
+export const createProperty = (property: Property) => {
+  return db
+    .collection('properties')
+    .add({
+      ...property,
     })
     .then((x) => x.id)
     .catch((error) => console.log(error));

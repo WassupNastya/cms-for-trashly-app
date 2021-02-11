@@ -10,13 +10,14 @@ import {
   TextField,
 } from '@material-ui/core';
 import { useDispatch, useSelector } from 'react-redux';
-import { Category, Group, Item, Decision } from 'data/model';
+import { Category, Group, Item, Decision, Property } from 'data/model';
 import classnames from 'classnames';
 import {
   useCategories,
   useDecisions,
   useGroups,
   useItems,
+  useProperties,
 } from 'app/common/useData';
 import { StoreType } from 'core/rootReducer';
 import { createDecisionAsync } from 'data/actions';
@@ -34,6 +35,7 @@ export const CreateDecision: React.FC<Props> = ({ id }) => {
   useItems({ needEffect: true });
   useGroups({ needEffect: true });
   useCategories({ needEffect: true });
+  useProperties({ needEffect: true });
 
   const [loading, setLoading] = useState(false);
   const [state, setState] = useState<Decision>({
@@ -43,10 +45,11 @@ export const CreateDecision: React.FC<Props> = ({ id }) => {
     priority: '',
     name: '',
     decisionNameType: '',
+    properties: [],
   });
   const [success, setSuccess] = useState(false);
 
-  const { items, groups, categories } = useSelector(
+  const { items, groups, categories, properties } = useSelector(
     (state: StoreType) => state.data
   );
 
@@ -73,28 +76,42 @@ export const CreateDecision: React.FC<Props> = ({ id }) => {
 
   const onSave = useCallback(() => {
     setLoading(true);
-    const group: Group | undefined = groups.find(
+
+    const itemName: string | undefined = items.find(
+      (x: Item) => x.id === state.item
+    )?.name;
+
+    const groupName: string | undefined = groups.find(
       (x: Group) => x.id === state.group
-    );
-    const category: Category | undefined = categories.find(
+    )?.name;
+
+    const categoryName: string | undefined = categories.find(
       (x: Category) => x.id === state.category
+    )?.name;
+
+    const propertiesName: string[] = properties.flatMap((x: Property) =>
+      state.properties.includes(x.id) ? [x.name] : []
     );
 
+    const newDecision = { ...state };
+    delete newDecision.item;
+    delete newDecision.group;
+    delete newDecision.category;
+    delete newDecision.properties;
+
+    if (itemName) newDecision.item = itemName;
+    if (groupName) newDecision.group = groupName;
+    if (categoryName) newDecision.category = categoryName;
+    newDecision.properties = propertiesName;
+
     dispatch(
-      createDecisionAsync(
-        {
-          ...state,
-          group: group?.name ?? '',
-          category: category?.name ?? '',
-        },
-        () => {
-          setLoading(false);
-          setSuccess(true);
-          getDecisions();
-        }
-      )
+      createDecisionAsync(newDecision, () => {
+        setLoading(false);
+        setSuccess(true);
+        getDecisions();
+      })
     );
-  }, [dispatch, state, categories, groups, getDecisions]);
+  }, [dispatch, state, categories, groups, getDecisions, items, properties]);
 
   return (
     <Grid className="createItem">
@@ -106,6 +123,34 @@ export const CreateDecision: React.FC<Props> = ({ id }) => {
         size="small"
         value={state.name}
         onChange={(e) => handleChange(e, 'name')}
+        disabled={loading || success}
+      ></TextField>
+      <TextField
+        id="outlined-decisionNameType"
+        label="Type"
+        variant="outlined"
+        size="small"
+        value={state.decisionNameType}
+        onChange={(e) => handleChange(e, 'decisionNameType')}
+        disabled={loading || success}
+      ></TextField>
+      <TextField
+        id="outlined-priority"
+        label="Priority"
+        variant="outlined"
+        size="small"
+        value={state.priority}
+        onChange={(e) => handleChange(e, 'priority')}
+        disabled={loading || success}
+      ></TextField>
+      <TextField
+        multiline
+        id="outlined-description"
+        label="Description"
+        variant="outlined"
+        size="small"
+        value={state.description}
+        onChange={(e) => handleChange(e, 'description')}
         disabled={loading || success}
       ></TextField>
       <FormControl variant="outlined">
@@ -159,15 +204,26 @@ export const CreateDecision: React.FC<Props> = ({ id }) => {
           ))}
         </Select>
       </FormControl>
-      <TextField
-        id="outlined-description"
-        label="Description"
-        variant="outlined"
-        size="small"
-        value={state.description}
-        onChange={(e) => handleChange(e, 'description')}
-        disabled={loading || success}
-      ></TextField>
+      <FormControl variant="outlined">
+        <InputLabel id="properties-select-outlined-label">
+          Properties
+        </InputLabel>
+        <Select
+          multiple
+          labelId="properties-select-outlined-label"
+          id="properties-select-outlined"
+          value={state.properties}
+          onChange={(e) => handleChangeSelect(e, 'properties')}
+          label="Properties"
+          disabled={loading || success}
+        >
+          {properties.map((x: Property, i: number) => (
+            <MenuItem value={x.id} key={i}>
+              {x.name}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
       <div className="buttons">
         <Button
           variant="contained"

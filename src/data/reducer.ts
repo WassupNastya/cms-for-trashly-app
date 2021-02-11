@@ -2,11 +2,11 @@ import { ActionType } from './actionType';
 import {
   Action,
   Category,
-  DecisionView,
+  Decision,
   Group,
   Item,
   Property,
-  RuleView,
+  Rule,
 } from './model';
 
 export interface StateType {
@@ -15,8 +15,8 @@ export interface StateType {
   groups: Group[];
   categories: Category[];
   properties: Property[];
-  rules: RuleView[];
-  decisions: DecisionView[];
+  rules: Rule[];
+  decisions: Decision[];
 }
 
 const InitialState: StateType = {

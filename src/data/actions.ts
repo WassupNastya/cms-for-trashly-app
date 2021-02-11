@@ -63,7 +63,7 @@ export const getRulesAsync: (
   return { type: ActionType.GETRULESASYNC, setLoading };
 };
 
-export const setRules: (data: RuleView[]) => Action = (data) => {
+export const setRules: (data: Rule[]) => Action = (data) => {
   return { type: ActionType.SETRULES, data };
 };
 
@@ -73,7 +73,7 @@ export const getDecisionsAsync: (
   return { type: ActionType.GETDECISIONSASYNC, setLoading };
 };
 
-export const setDecisions: (data: DecisionView[]) => Action = (data) => {
+export const setDecisions: (data: Decision[]) => Action = (data) => {
   return { type: ActionType.SETDECISIONS, data };
 };
 
@@ -120,4 +120,18 @@ export const createDecisionAsync: (
   onResponseCallback: () => void
 ) => Action = (data, onResponseCallback) => {
   return { type: ActionType.CREATEDECISIONSASYNC, data, onResponseCallback };
+};
+
+export const createCategoryAsync: (
+  data: Category,
+  onResponseCallback: () => void
+) => Action = (data, onResponseCallback) => {
+  return { type: ActionType.CREATECATEGORYASYNC, data, onResponseCallback };
+};
+
+export const createPropertyAsync: (
+  data: Property,
+  onResponseCallback: () => void
+) => Action = (data, onResponseCallback) => {
+  return { type: ActionType.CREATEPROPERTYASYNC, data, onResponseCallback };
 };
