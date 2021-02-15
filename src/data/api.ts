@@ -1,16 +1,14 @@
 import { db } from 'database';
 
-import { convertDecisionType, convertRuleType } from './helper';
+import { cleanObject, handleObject } from './converters';
 import {
   Group,
   Item,
   Location,
   Property,
-  Rule,
-  RuleView,
-  DecisionView,
   Decision,
   Category,
+  Rule,
 } from './model';
 
 export const getLocations = () => {
@@ -124,12 +122,15 @@ export const getDecisions = () => {
 };
 
 export const createGroup = (group: Group) => {
+  const id = db.collection('groups').doc().id;
   return db
     .collection('groups')
-    .add({
+    .doc(id)
+    .set({
       ...group,
+      id,
     })
-    .then((x) => x.id)
+    .then(() => id)
     .catch((error) => console.log(error));
 };
 
@@ -146,61 +147,87 @@ export const getGroup = (id: string) => {
 };
 
 export const createItem = (item: Item) => {
+  const id = db.collection('items').doc().id;
   return db
     .collection('items')
-    .add({
-      ...item,
-    })
-    .then((x) => x.id)
+    .doc(id)
+    .set(
+      handleObject({
+        ...item,
+        id,
+      })
+    )
+    .then(() => id)
     .catch((error) => console.log(error));
 };
 
 export const createRule = (rule: Rule) => {
+  const id = db.collection('rules').doc().id;
   return db
     .collection('rules')
-    .add({
-      ...rule,
-    })
-    .then((x) => x.id)
+    .doc(id)
+    .set(
+      handleObject<Rule>({
+        ...rule,
+        id,
+      })
+    )
+    .then(() => id)
     .catch((error) => console.log(error));
 };
 
 export const createDecision = (decision: Decision) => {
+  const id = db.collection('decisions').doc().id;
   return db
     .collection('decisions')
-    .add({
-      ...decision,
-    })
-    .then((x) => x.id)
+    .doc(id)
+    .set(
+      handleObject<Decision>({
+        ...decision,
+        id,
+      })
+    )
+    .then(() => id)
     .catch((error) => console.log(error));
 };
 
 export const createCategory = (category: Category) => {
+  const id = db.collection('categories').doc().id;
   return db
     .collection('categories')
-    .add({
+    .doc(id)
+    .set({
       ...category,
+      id,
     })
-    .then((x) => x.id)
+    .then(() => id)
     .catch((error) => console.log(error));
 };
 
 export const createProperty = (property: Property) => {
+  const id = db.collection('properties').doc().id;
   return db
     .collection('properties')
-    .add({
+    .doc(id)
+    .set({
       ...property,
+      id,
     })
-    .then((x) => x.id)
+    .then(() => id)
     .catch((error) => console.log(error));
 };
 
 export const createLocation = (location: Location) => {
+  const id = db.collection('locations').doc().id;
   return db
     .collection('locations')
-    .add({
-      ...location,
-    })
-    .then((x) => x.id)
+    .doc(id)
+    .set(
+      cleanObject<Location>({
+        ...location,
+        id,
+      })
+    )
+    .then(() => id)
     .catch((error) => console.log(error));
 };

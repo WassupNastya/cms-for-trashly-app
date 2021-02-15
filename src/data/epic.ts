@@ -42,6 +42,11 @@ import {
   createProperty,
   createLocation,
 } from './api';
+import {
+  convertDecisionFromFirebase,
+  convertItemFromFirebase,
+  convertRuleFromFirebase,
+} from './converters';
 
 const getLocationsEpic = (
   action$: ActionsObservable<{
@@ -86,7 +91,9 @@ const getItemsEpic = (
     filter(isOfType(ActionType.GETITEMSASYNC)),
     mergeMap(({ setLoading }) =>
       from(getItems()).pipe(
-        map((response: Item[]) => setItems(response)),
+        map((response: Item[]) =>
+          setItems(response.map((x) => convertItemFromFirebase(x)))
+        ),
         tap(() => setLoading?.(false))
       )
     )
@@ -128,7 +135,11 @@ const getRulesEpic = (action$: ActionsObservable<{ type: string }>) =>
   action$.pipe(
     filter(isOfType(ActionType.GETRULESASYNC)),
     mergeMap(() =>
-      from(getRules()).pipe(map((response: Rule[]) => setRules(response)))
+      from(getRules()).pipe(
+        map((response: Rule[]) =>
+          setRules(response.map((x) => convertRuleFromFirebase(x)))
+        )
+      )
     )
   );
 
@@ -137,7 +148,9 @@ const getDecisionsEpic = (action$: ActionsObservable<{ type: string }>) =>
     filter(isOfType(ActionType.GETDECISIONSASYNC)),
     mergeMap(() =>
       from(getDecisions()).pipe(
-        map((response: Decision[]) => setDecisions(response))
+        map((response: Decision[]) =>
+          setDecisions(response.map((x) => convertDecisionFromFirebase(x)))
+        )
       )
     )
   );

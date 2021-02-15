@@ -42,7 +42,7 @@ export const convertDecisionType: (decision: Decision) => DecisionView = (
     description: decision.description,
     priority: decision.priority,
     decisionNameType: decision.decisionNameType,
-    name: decision.name
+    name: decision.name,
   };
   if (decision.item)
     return {
@@ -84,3 +84,5 @@ export const convertType = (type: number) => {
       return '';
   }
 };
+
+export const isEmpty = (value: string | undefined) => value == null || value === '';
