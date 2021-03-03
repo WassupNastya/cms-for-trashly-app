@@ -1,4 +1,10 @@
-import React, { ChangeEvent, useCallback, useMemo, useState } from 'react';
+import React, {
+  ChangeEvent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import {
   Button,
   CircularProgress,
@@ -19,7 +25,7 @@ import {
   useProperties,
 } from 'app/common/useData';
 import { StoreType } from 'core/rootReducer';
-import { createItemAsync } from 'data/actions';
+import { createItemAsync, getItemAsync } from 'data/actions';
 
 import './createItem.scss';
 
@@ -100,6 +106,40 @@ export const CreateItem: React.FC<Props> = ({ id }) => {
     );
   }, [dispatch, state, categories, groups, getItems, properties]);
 
+  const getItem = useCallback(
+    (id: string) => {
+      dispatch(
+        getItemAsync(id, (response) => {
+          const group: Group | undefined = groups.find(
+            (x: Group) => x.name === response.group
+          );
+          const category: Category | undefined = categories.find(
+            (x: Category) => x.name === response.category
+          );
+          const newProperties: string[] = properties.flatMap((x) =>
+            response.properties.find(
+              (y) => y.toLowerCase() === x.name.toLowerCase()
+            )
+              ? [x.id]
+              : []
+          );
+
+          const newResponse = { ...response };
+          newResponse.group = group?.id;
+          newResponse.category = category?.id;
+          newResponse.properties = newProperties;
+
+          setState(newResponse);
+        })
+      );
+    },
+    [dispatch, categories, groups, properties]
+  );
+
+  useEffect(() => {
+    if (id != null) getItem(id);
+  }, [getItem, id]);
+
   return (
     <Grid className="createItem">
       <div className="title">{title}</div>
@@ -113,7 +153,7 @@ export const CreateItem: React.FC<Props> = ({ id }) => {
         disabled={loading || success}
       ></TextField>
       <TextField
-        id="outlined-name"
+        id="outlined-aliases"
         label="Aliases"
         variant="outlined"
         size="small"

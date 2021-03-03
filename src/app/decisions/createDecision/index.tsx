@@ -1,4 +1,10 @@
-import React, { ChangeEvent, useCallback, useMemo, useState } from 'react';
+import React, {
+  ChangeEvent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import {
   Button,
   CircularProgress,
@@ -20,7 +26,7 @@ import {
   useProperties,
 } from 'app/common/useData';
 import { StoreType } from 'core/rootReducer';
-import { createDecisionAsync } from 'data/actions';
+import { createDecisionAsync, getDecisionAsync } from 'data/actions';
 
 import './createDecision.scss';
 
@@ -112,6 +118,40 @@ export const CreateDecision: React.FC<Props> = ({ id }) => {
       })
     );
   }, [dispatch, state, categories, groups, getDecisions, items, properties]);
+
+  const getDecision = useCallback(
+    (id: string) => {
+      dispatch(
+        getDecisionAsync(id, (response) => {
+          const group: Group | undefined = groups.find(
+            (x: Group) => x.name === response.group
+          );
+          const category: Category | undefined = categories.find(
+            (x: Category) => x.name === response.category
+          );
+          const newProperties: string[] = properties.flatMap((x) =>
+            response.properties.find(
+              (y) => y.toLowerCase() === x.name.toLowerCase()
+            )
+              ? [x.id]
+              : []
+          );
+
+          const newResponse = { ...response };
+          newResponse.group = group?.id;
+          newResponse.category = category?.id;
+          newResponse.properties = newProperties;
+
+          setState(newResponse);
+        })
+      );
+    },
+    [dispatch, categories, groups, properties]
+  );
+
+  useEffect(() => {
+    if (id != null) getDecision(id);
+  }, [id, getDecision]);
 
   return (
     <Grid className="createDecision">

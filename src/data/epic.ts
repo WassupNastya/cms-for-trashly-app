@@ -1,16 +1,11 @@
-import { ActionsObservable, combineEpics } from 'redux-observable';
-import { isOfType } from 'typesafe-actions';
-import { filter, ignoreElements, map, mergeMap, tap } from 'rxjs/operators';
-import { from } from 'rxjs';
+import { combineEpics } from 'redux-observable';
 
 import {
   Category,
-  DecisionView,
   Group,
   Item,
   Property,
   Location,
-  RuleView,
   Rule,
   Decision,
 } from './model';
@@ -41,271 +36,119 @@ import {
   createCategory,
   createProperty,
   createLocation,
+  getCategory,
+  getItem,
+  getProperty,
+  getRule,
+  getDecision,
+  deleteGroup,
+  deleteItem,
+  deleteCategory,
+  deleteProperty,
+  deleteRule,
+  deleteDecision,
 } from './api';
 import {
   convertDecisionFromFirebase,
   convertItemFromFirebase,
   convertRuleFromFirebase,
 } from './converters';
+import { get, create, getAll, deleteEpic } from './templatesEpic';
 
-const getLocationsEpic = (
-  action$: ActionsObservable<{
-    type: string;
-    setLoading?: (value: boolean) => void;
-  }>
-) =>
-  action$.pipe(
-    filter(isOfType(ActionType.GETLOCATIONSASYNC)),
-    mergeMap(({ setLoading }) =>
-      from(getLocations()).pipe(
-        map((response: Location[]) => setLocations(response)),
-        tap(() => setLoading?.(false))
-      )
-    )
-  );
+const getItemsEpic = getAll<Item>(
+  ActionType.GETITEMSASYNC,
+  getItems,
+  setItems,
+  convertItemFromFirebase
+);
+const getGroupsEpic = getAll<Group>(
+  ActionType.GETGROUPSASYNC,
+  getGroups,
+  setGroups
+);
+const getCategoriesEpic = getAll<Category>(
+  ActionType.GETCATEGORIESASYNC,
+  getCategories,
+  setCategories
+);
+const getPropertiesEpic = getAll<Property>(
+  ActionType.GETPROPERTIESASYNC,
+  getProperties,
+  setProperties
+);
+const getRulesEpic = getAll<Rule>(
+  ActionType.GETRULESASYNC,
+  getRules,
+  setRules,
+  convertRuleFromFirebase
+);
+const getDecisionsEpic = getAll<Decision>(
+  ActionType.GETDECISIONSASYNC,
+  getDecisions,
+  setDecisions,
+  convertDecisionFromFirebase
+);
+const getLocationsEpic = getAll<Location>(
+  ActionType.GETLOCATIONSASYNC,
+  getLocations,
+  setLocations
+);
 
-const getLocationEpic = (
-  action$: ActionsObservable<{
-    type: string;
-    id: string;
-    onResponseCallback: (response: Location) => void;
-  }>
-) =>
-  action$.pipe(
-    filter(isOfType(ActionType.GETLOCATIONASYNC)),
-    mergeMap(({ id, onResponseCallback }) =>
-      from(getLocation(id)).pipe(
-        tap((response) => onResponseCallback(response)),
-        ignoreElements()
-      )
-    )
-  );
+const createItemEpic = create<Item>(ActionType.CREATEITEMASYNC, createItem);
+const createGroupEpic = create<Group>(ActionType.CREATEGROUPASYNC, createGroup);
+const createCategoryEpic = create<Category>(
+  ActionType.CREATECATEGORYASYNC,
+  createCategory
+);
+const createPropertyEpic = create<Property>(
+  ActionType.CREATEPROPERTYASYNC,
+  createProperty
+);
+const createRuleEpic = create<Rule>(ActionType.CREATERULEASYNC, createRule);
+const createDecisionEpic = create<Decision>(
+  ActionType.CREATEDECISIONSASYNC,
+  createDecision
+);
+const createLocationEpic = create<Location>(
+  ActionType.CREATELOCATIONASYNC,
+  createLocation
+);
 
-const getItemsEpic = (
-  action$: ActionsObservable<{
-    type: string;
-    setLoading?: (value: boolean) => void;
-  }>
-) =>
-  action$.pipe(
-    filter(isOfType(ActionType.GETITEMSASYNC)),
-    mergeMap(({ setLoading }) =>
-      from(getItems()).pipe(
-        map((response: Item[]) =>
-          setItems(response.map((x) => convertItemFromFirebase(x)))
-        ),
-        tap(() => setLoading?.(false))
-      )
-    )
-  );
+const getItemEpic = get<Item>(
+  ActionType.GETITEMASYNC,
+  getItem,
+  convertItemFromFirebase
+);
+const getGroupEpic = get<Group>(ActionType.GETGROUPASYNC, getGroup);
+const getCategoryEpic = get<Category>(ActionType.GETCATEGORYASYNC, getCategory);
+const getPropertyEpic = get<Property>(ActionType.GETPROPERTYASYNC, getProperty);
+const getRuleEpic = get<Rule>(
+  ActionType.GETRULEASYNC,
+  getRule,
+  convertRuleFromFirebase
+);
+const getDecisionEpic = get<Decision>(
+  ActionType.GETDECISIONASYNC,
+  getDecision,
+  convertDecisionFromFirebase
+);
+const getLocationEpic = get<Location>(ActionType.GETLOCATIONASYNC, getLocation);
 
-const getGroupsEpic = (
-  action$: ActionsObservable<{
-    type: string;
-    setLoading?: (value: boolean) => void;
-  }>
-) =>
-  action$.pipe(
-    filter(isOfType(ActionType.GETGROUPSASYNC)),
-    mergeMap(({ setLoading }) =>
-      from(getGroups()).pipe(
-        map((response: Group[]) => setGroups(response)),
-        tap(() => setLoading?.(false))
-      )
-    )
-  );
-
-const getPropertiesEpic = (
-  action$: ActionsObservable<{
-    type: string;
-    setLoading?: (value: boolean) => void;
-  }>
-) =>
-  action$.pipe(
-    filter(isOfType(ActionType.GETPROPERTIESASYNC)),
-    mergeMap(({ setLoading }) =>
-      from(getProperties()).pipe(
-        map((response: Property[]) => setProperties(response)),
-        tap(() => setLoading?.(false))
-      )
-    )
-  );
-
-const getRulesEpic = (action$: ActionsObservable<{ type: string }>) =>
-  action$.pipe(
-    filter(isOfType(ActionType.GETRULESASYNC)),
-    mergeMap(() =>
-      from(getRules()).pipe(
-        map((response: Rule[]) =>
-          setRules(response.map((x) => convertRuleFromFirebase(x)))
-        )
-      )
-    )
-  );
-
-const getDecisionsEpic = (action$: ActionsObservable<{ type: string }>) =>
-  action$.pipe(
-    filter(isOfType(ActionType.GETDECISIONSASYNC)),
-    mergeMap(() =>
-      from(getDecisions()).pipe(
-        map((response: Decision[]) =>
-          setDecisions(response.map((x) => convertDecisionFromFirebase(x)))
-        )
-      )
-    )
-  );
-
-const getCategoriesEpic = (
-  action$: ActionsObservable<{
-    type: string;
-    setLoading?: (value: boolean) => void;
-  }>
-) =>
-  action$.pipe(
-    filter(isOfType(ActionType.GETCATEGORIESASYNC)),
-    mergeMap(({ setLoading }) =>
-      from(getCategories()).pipe(
-        map((response: Category[]) => setCategories(response)),
-        tap(() => setLoading?.(false))
-      )
-    )
-  );
-
-const createGroupEpic = (
-  action$: ActionsObservable<{
-    type: string;
-    data: Group;
-    onResponseCallback: () => void;
-  }>
-) =>
-  action$.pipe(
-    filter(isOfType(ActionType.CREATEGROUPASYNC)),
-    mergeMap(({ data, onResponseCallback }) =>
-      from(createGroup(data)).pipe(
-        tap(() => onResponseCallback()),
-        ignoreElements()
-      )
-    )
-  );
-
-const getGroupEpic = (
-  action$: ActionsObservable<{
-    type: string;
-    id: string;
-    onResponseCallback: (response: Group) => void;
-  }>
-) =>
-  action$.pipe(
-    filter(isOfType(ActionType.GETGROUPASYNC)),
-    mergeMap(({ id, onResponseCallback }) =>
-      from(getGroup(id)).pipe(
-        tap((response) => onResponseCallback(response)),
-        ignoreElements()
-      )
-    )
-  );
-
-const createItemEpic = (
-  action$: ActionsObservable<{
-    type: string;
-    data: Item;
-    onResponseCallback: () => void;
-  }>
-) =>
-  action$.pipe(
-    filter(isOfType(ActionType.CREATEITEMASYNC)),
-    mergeMap(({ data, onResponseCallback }) =>
-      from(createItem(data)).pipe(
-        tap(() => onResponseCallback()),
-        ignoreElements()
-      )
-    )
-  );
-
-const createRuleEpic = (
-  action$: ActionsObservable<{
-    type: string;
-    data: Rule;
-    onResponseCallback: () => void;
-  }>
-) =>
-  action$.pipe(
-    filter(isOfType(ActionType.CREATERULEASYNC)),
-    mergeMap(({ data, onResponseCallback }) =>
-      from(createRule(data)).pipe(
-        tap(() => onResponseCallback()),
-        ignoreElements()
-      )
-    )
-  );
-
-const createDecisionEpic = (
-  action$: ActionsObservable<{
-    type: string;
-    data: Decision;
-    onResponseCallback: () => void;
-  }>
-) =>
-  action$.pipe(
-    filter(isOfType(ActionType.CREATEDECISIONSASYNC)),
-    mergeMap(({ data, onResponseCallback }) =>
-      from(createDecision(data)).pipe(
-        tap(() => onResponseCallback()),
-        ignoreElements()
-      )
-    )
-  );
-
-const createCategoryEpic = (
-  action$: ActionsObservable<{
-    type: string;
-    data: Category;
-    onResponseCallback: () => void;
-  }>
-) =>
-  action$.pipe(
-    filter(isOfType(ActionType.CREATECATEGORYASYNC)),
-    mergeMap(({ data, onResponseCallback }) =>
-      from(createCategory(data)).pipe(
-        tap(() => onResponseCallback()),
-        ignoreElements()
-      )
-    )
-  );
-
-const createPropertyEpic = (
-  action$: ActionsObservable<{
-    type: string;
-    data: Property;
-    onResponseCallback: () => void;
-  }>
-) =>
-  action$.pipe(
-    filter(isOfType(ActionType.CREATEPROPERTYASYNC)),
-    mergeMap(({ data, onResponseCallback }) =>
-      from(createProperty(data)).pipe(
-        tap(() => onResponseCallback()),
-        ignoreElements()
-      )
-    )
-  );
-
-const createLocationEpic = (
-  action$: ActionsObservable<{
-    type: string;
-    data: Location;
-    onResponseCallback: () => void;
-  }>
-) =>
-  action$.pipe(
-    filter(isOfType(ActionType.CREATELOCATIONASYNC)),
-    mergeMap(({ data, onResponseCallback }) =>
-      from(createLocation(data)).pipe(
-        tap(() => onResponseCallback()),
-        ignoreElements()
-      )
-    )
-  );
+const deleteItemEpic = deleteEpic(ActionType.DELETEITEMASYNC, deleteItem);
+const deleteGroupEpic = deleteEpic(ActionType.DELETEGROUPASYNC, deleteGroup);
+const deleteCategoryEpic = deleteEpic(
+  ActionType.DELETECATEGORYASYNC,
+  deleteCategory
+);
+const deletePropertyEpic = deleteEpic(
+  ActionType.DELETEPROPERTYASYNC,
+  deleteProperty
+);
+const deleteRuleEpic = deleteEpic(ActionType.DELETERULEASYNC, deleteRule);
+const deleteDecisionEpic = deleteEpic(
+  ActionType.DELETEDECISIONASYNC,
+  deleteDecision
+);
 
 export const epic = combineEpics(
   getLocationsEpic,
@@ -323,5 +166,16 @@ export const epic = combineEpics(
   createDecisionEpic,
   createCategoryEpic,
   createPropertyEpic,
-  createLocationEpic
+  createLocationEpic,
+  getCategoryEpic,
+  getItemEpic,
+  getPropertyEpic,
+  getRuleEpic,
+  getDecisionEpic,
+  deleteGroupEpic,
+  deleteItemEpic,
+  deleteCategoryEpic,
+  deletePropertyEpic,
+  deleteRuleEpic,
+  deleteDecisionEpic
 );

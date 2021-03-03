@@ -6,13 +6,21 @@ import { Table as TableTemplate } from 'shared/table';
 import { CellParams, ColDef } from '@material-ui/data-grid';
 import { useItems } from 'app/common/useData';
 import { Chip } from '@material-ui/core';
+import { useDeleteUndo } from 'app/common/useDeleteUndo';
+import { Item } from 'data/model';
+import { deleteItemAsync } from 'data/actions';
 
-export const Table: React.FC = () => {
+interface Props {
+  showDrawer: (id: string) => void;
+}
+
+export const Table: React.FC<Props> = ({ showDrawer }) => {
   const [loading, setLoading] = useState(false);
 
-  useItems({ setLoading, needEffect: true });
-
   const items = useSelector((state: StoreType) => state.data.items);
+
+  useItems({ setLoading, needEffect: true });
+  const { rowsToDisplay, onDelete } = useDeleteUndo<Item>(items);
 
   const propertiesCell = useCallback((params: CellParams) => {
     const properties = params.value as string[];
@@ -25,9 +33,19 @@ export const Table: React.FC = () => {
     );
   }, []);
 
-  const actionCell = useCallback((params: CellParams) => {
-    return <MenuButton id={params.value.toString()} />;
-  }, []);
+  const actionCell = useCallback(
+    (params: CellParams) => {
+      const id = params.value.toString();
+      return (
+        <MenuButton
+          id={id}
+          onEdit={() => showDrawer(id)}
+          onDelete={() => onDelete(id, deleteItemAsync, (el) => el.name)}
+        />
+      );
+    },
+    [onDelete, showDrawer]
+  );
 
   const columns: ColDef[] = useMemo(
     () => [
@@ -54,7 +72,7 @@ export const Table: React.FC = () => {
   return (
     <TableTemplate
       columns={columns}
-      rows={items}
+      rows={rowsToDisplay}
       loading={loading}
     ></TableTemplate>
   );

@@ -8,9 +8,10 @@ import './menuButton.scss';
 interface Props {
   id: string;
   onEdit?: () => void;
+  onDelete?: () => void;
 }
 
-export const MenuButton: React.FC<Props> = ({ id, onEdit }) => {
+export const MenuButton: React.FC<Props> = ({ id, onEdit, onDelete }) => {
   const location = useLocation();
 
   const [anchor, setAnchor] = useState<Element>(null);
@@ -45,7 +46,14 @@ export const MenuButton: React.FC<Props> = ({ id, onEdit }) => {
         >
           Edit
         </MenuItem>
-        <MenuItem onClick={onClose}>Delete</MenuItem>
+        <MenuItem
+          onClick={() => {
+            onDelete?.();
+            onClose();
+          }}
+        >
+          Delete
+        </MenuItem>
       </Menu>
     </div>
   );

@@ -16,7 +16,10 @@ ReactDOM.render(
   <Provider store={store}>
     <Router history={history}>
       <React.StrictMode>
-        <SnackbarProvider maxSnack={3}>
+        <SnackbarProvider
+          maxSnack={3}
+          anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+        >
           <App />
         </SnackbarProvider>
       </React.StrictMode>

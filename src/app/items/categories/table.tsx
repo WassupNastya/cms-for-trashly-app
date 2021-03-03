@@ -5,17 +5,35 @@ import { MenuButton } from 'shared/menuButton';
 import { Table as TableTemplate } from 'shared/table';
 import { CellParams, ColDef } from '@material-ui/data-grid';
 import { useCategories } from 'app/common/useData';
+import { useDeleteUndo } from 'app/common/useDeleteUndo';
+import { Category } from 'data/model';
+import { deleteCategoryAsync } from 'data/actions';
 
-export const Table: React.FC = () => {
+interface Props {
+  showDrawer: (id: string) => void;
+}
+
+export const Table: React.FC<Props> = ({ showDrawer }) => {
   const [loading, setLoading] = useState(false);
-
-  useCategories({ setLoading, needEffect: true });
 
   const categories = useSelector((state: StoreType) => state.data.categories);
 
-  const actionCell = useCallback((params: CellParams) => {
-    return <MenuButton id={params.value.toString()} />;
-  }, []);
+  useCategories({ setLoading, needEffect: true });
+  const { rowsToDisplay, onDelete } = useDeleteUndo<Category>(categories);
+
+  const actionCell = useCallback(
+    (params: CellParams) => {
+      const id = params.value.toString();
+      return (
+        <MenuButton
+          id={id}
+          onEdit={() => showDrawer(id)}
+          onDelete={() => onDelete(id, deleteCategoryAsync, (el) => el.name)}
+        />
+      );
+    },
+    [showDrawer, onDelete]
+  );
 
   const columns: ColDef[] = useMemo(
     () => [
@@ -33,7 +51,7 @@ export const Table: React.FC = () => {
   return (
     <TableTemplate
       columns={columns}
-      rows={categories}
+      rows={rowsToDisplay}
       loading={loading}
     ></TableTemplate>
   );

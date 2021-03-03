@@ -5,15 +5,35 @@ import { StoreType } from 'core/rootReducer';
 import { MenuButton } from 'shared/menuButton';
 import { CellParams, ColDef } from '@material-ui/data-grid';
 import { useLocations } from 'app/common/useData';
+import { useDeleteUndo } from 'app/common/useDeleteUndo';
+import { deleteLocationAsync } from 'data/actions';
+import { Location } from 'data/model';
 
-export const LocationsTable: React.FC = () => {
-  useLocations({ needEffect: true });
+interface Props {
+  showDrawer: (id: string) => void;
+}
 
+export const LocationsTable: React.FC<Props> = ({ showDrawer }) => {
   const locations = useSelector((state: StoreType) => state.data.locations);
 
-  const actionCell = useCallback((params: CellParams) => {
-    return <MenuButton id={params.value.toString()} />;
-  }, []);
+  useLocations({ needEffect: true });
+  const { rowsToDisplay, onDelete } = useDeleteUndo<Location>(locations);
+
+  const actionCell = useCallback(
+    (params: CellParams) => {
+      const id = params.value.toString();
+      return (
+        <MenuButton
+          id={id}
+          onEdit={() => showDrawer(id)}
+          onDelete={() =>
+            onDelete(id, deleteLocationAsync, (el) => el.displayName)
+          }
+        />
+      );
+    },
+    [onDelete, showDrawer]
+  );
 
   const columns: ColDef[] = useMemo(
     () => [
@@ -32,5 +52,5 @@ export const LocationsTable: React.FC = () => {
     [actionCell]
   );
 
-  return <Table columns={columns} rows={locations}></Table>;
+  return <Table columns={columns} rows={rowsToDisplay}></Table>;
 };

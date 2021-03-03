@@ -7,8 +7,8 @@ import React, {
 } from 'react';
 import { Button, CircularProgress, Grid, TextField } from '@material-ui/core';
 import { useDispatch } from 'react-redux';
-import { Group } from 'data/model';
-import { createPropertyAsync } from 'data/actions';
+import { Property } from 'data/model';
+import { createPropertyAsync, getPropertyAsync } from 'data/actions';
 import classnames from 'classnames';
 import { useProperties } from 'app/common/useData';
 
@@ -23,7 +23,7 @@ export const CreateProperty: React.FC<Props> = ({ id }) => {
   const getProperties = useProperties({ needEffect: false });
 
   const [loading, setLoading] = useState(false);
-  const [state, setState] = useState<Group>({
+  const [state, setState] = useState<Property>({
     name: '',
     id: '',
   });
@@ -33,9 +33,12 @@ export const CreateProperty: React.FC<Props> = ({ id }) => {
     return id == null ? 'Add property' : 'Edit property';
   }, [id]);
 
-  const getProperty = useCallback((id: string) => {
-    console.log('Edit: ', id);
-  }, []);
+  const getProperty = useCallback(
+    (id: string) => {
+      dispatch(getPropertyAsync(id, (model) => setState(model)));
+    },
+    [dispatch]
+  );
 
   const handleChange = useCallback(
     (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {

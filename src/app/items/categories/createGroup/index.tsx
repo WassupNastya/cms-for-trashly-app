@@ -8,7 +8,7 @@ import React, {
 import { Button, CircularProgress, Grid, TextField } from '@material-ui/core';
 import { useDispatch } from 'react-redux';
 import { Category } from 'data/model';
-import { createCategoryAsync } from 'data/actions';
+import { createCategoryAsync, getCategoryAsync } from 'data/actions';
 import classnames from 'classnames';
 import { useCategories } from 'app/common/useData';
 
@@ -33,9 +33,12 @@ export const CreateCategory: React.FC<Props> = ({ id }) => {
     return id == null ? 'Add category' : 'Edit category';
   }, [id]);
 
-  const getCategory = useCallback((id: string) => {
-    console.log('Edit: ', id);
-  }, []);
+  const getCategory = useCallback(
+    (id: string) => {
+      dispatch(getCategoryAsync(id, (model) => setState(model)));
+    },
+    [dispatch]
+  );
 
   const handleChange = useCallback(
     (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {

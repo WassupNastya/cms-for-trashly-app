@@ -1,4 +1,10 @@
-import React, { ChangeEvent, useCallback, useMemo, useState } from 'react';
+import React, {
+  ChangeEvent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import {
   Button,
   CircularProgress,
@@ -16,10 +22,11 @@ import {
   useCategories,
   useGroups,
   useItems,
+  useProperties,
   useRules,
 } from 'app/common/useData';
 import { StoreType } from 'core/rootReducer';
-import { createRuleAsync } from 'data/actions';
+import { createRuleAsync, getRuleAsync } from 'data/actions';
 
 import './createRule.scss';
 
@@ -34,6 +41,7 @@ export const CreateRule: React.FC<Props> = ({ id }) => {
   useItems({ needEffect: true });
   useGroups({ needEffect: true });
   useCategories({ needEffect: true });
+  useProperties({ needEffect: true });
 
   const [loading, setLoading] = useState(false);
   const [state, setState] = useState<Rule>({
@@ -108,6 +116,40 @@ export const CreateRule: React.FC<Props> = ({ id }) => {
     );
   }, [dispatch, state, categories, groups, getRules, items, properties]);
 
+  const getRule = useCallback(
+    (id: string) => {
+      dispatch(
+        getRuleAsync(id, (response) => {
+          const group: Group | undefined = groups.find(
+            (x: Group) => x.name === response.group
+          );
+          const category: Category | undefined = categories.find(
+            (x: Category) => x.name === response.category
+          );
+          const newProperties: string[] = properties.flatMap((x) =>
+            response.properties.find(
+              (y) => y.toLowerCase() === x.name.toLowerCase()
+            )
+              ? [x.id]
+              : []
+          );
+
+          const newResponse = { ...response };
+          newResponse.group = group?.id;
+          newResponse.category = category?.id;
+          newResponse.properties = newProperties;
+
+          setState(newResponse);
+        })
+      );
+    },
+    [dispatch, groups, categories, properties]
+  );
+
+  useEffect(() => {
+    if (id != null) getRule(id);
+  }, [id, getRule]);
+
   return (
     <Grid className="createRule">
       <div className="title">{title}</div>
@@ -165,7 +207,7 @@ export const CreateRule: React.FC<Props> = ({ id }) => {
           label="Category"
           disabled={loading || success}
         >
-          {categories.map((x: Group, i: number) => (
+          {categories.map((x: Category, i: number) => (
             <MenuItem value={x.id} key={i}>
               {x.name}
             </MenuItem>

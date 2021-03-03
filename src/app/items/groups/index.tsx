@@ -18,7 +18,7 @@ export const Groups: React.FC = () => {
           Create new
         </Button>
       </div>
-      <Table />
+      <Table showDrawer={(id: string) => setDrawer({ show: true, id })} />
       <Drawer
         anchor="right"
         open={drawer.show}

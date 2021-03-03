@@ -18,7 +18,7 @@ export const Properties: React.FC = () => {
           Create new
         </Button>
       </div>
-      <Table />
+      <Table showDrawer={(id) => setDrawer({ show: true, id })} />
       <Drawer
         anchor="right"
         open={drawer.show}

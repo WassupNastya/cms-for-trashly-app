@@ -1,6 +1,5 @@
 import { ActionType } from './actionType';
 import {
-  Action,
   Category,
   Group,
   Item,
@@ -9,134 +8,57 @@ import {
   Rule,
   Decision,
 } from './model';
+import { create, deleteAction, get, getAll, setAll } from './templateAction';
 
-export const getLocationsAsync: (setLoading?: (value: boolean) => void) => Action = (setLoading) => {
-  return { type: ActionType.GETLOCATIONSASYNC, setLoading };
-};
+export const getItemsAsync = getAll(ActionType.GETITEMSASYNC);
+export const setItems = setAll(ActionType.SETITEMS);
 
-export const setLocations: (data: Location[]) => Action = (data) => {
-  return { type: ActionType.SETLOCATIONS, data };
-};
+export const getGroupsAsync = getAll(ActionType.GETGROUPSASYNC);
+export const setGroups = setAll(ActionType.SETGROUPS);
 
-export const getLocationAsync: (
-  id: string,
-  onResponseCallback: (response: Location) => void
-) => Action = (id, onResponseCallback) => {
-  return { type: ActionType.GETLOCATIONASYNC, id, onResponseCallback };
-};
+export const getPropertiesAsync = getAll(ActionType.GETPROPERTIESASYNC);
+export const setProperties = setAll(ActionType.SETPROPERTIES);
 
-export const getItemsAsync: (
-  setLoading?: (value: boolean) => void
-) => Action = (setLoading) => {
-  return { type: ActionType.GETITEMSASYNC, setLoading };
-};
+export const getRulesAsync = getAll(ActionType.GETRULESASYNC);
+export const setRules = setAll(ActionType.SETRULES);
 
-export const setItems: (data: Item[]) => Action = (data) => {
-  return { type: ActionType.SETITEMS, data };
-};
+export const getDecisionsAsync = getAll(ActionType.GETDECISIONSASYNC);
+export const setDecisions = setAll(ActionType.SETDECISIONS);
 
-export const getGroupsAsync: (
-  setLoading?: (value: boolean) => void
-) => Action = (setLoading) => {
-  return { type: ActionType.GETGROUPSASYNC, setLoading };
-};
+export const getCategoriesAsync = getAll(ActionType.GETCATEGORIESASYNC);
+export const setCategories = setAll(ActionType.SETCATEGORIES);
 
-export const setGroups: (data: Group[]) => Action = (data) => {
-  return { type: ActionType.SETGROUPS, data };
-};
+export const getLocationsAsync = getAll(ActionType.GETLOCATIONSASYNC);
+export const setLocations = setAll(ActionType.SETLOCATIONS);
 
-export const getPropertiesAsync: (
-  setLoading?: (value: boolean) => void
-) => Action = (setLoading) => {
-  return { type: ActionType.GETPROPERTIESASYNC, setLoading };
-};
+export const getItemAsync = get<Item>(ActionType.GETITEMASYNC);
+export const getGroupAsync = get<Group>(ActionType.GETGROUPASYNC);
+export const getCategoryAsync = get<Category>(ActionType.GETCATEGORYASYNC);
+export const getPropertyAsync = get<Property>(ActionType.GETPROPERTYASYNC);
+export const getRuleAsync = get<Rule>(ActionType.GETRULEASYNC);
+export const getDecisionAsync = get<Decision>(ActionType.GETDECISIONASYNC);
+export const getLocationAsync = get<Location>(ActionType.GETLOCATIONASYNC);
 
-export const setProperties: (data: Property[]) => Action = (data) => {
-  return { type: ActionType.SETPROPERTIES, data };
-};
+export const createItemAsync = create<Item>(ActionType.CREATEITEMASYNC);
+export const createGroupAsync = create<Group>(ActionType.CREATEGROUPASYNC);
+export const createCategoryAsync = create<Category>(
+  ActionType.CREATECATEGORYASYNC
+);
+export const createPropertyAsync = create<Property>(
+  ActionType.CREATEPROPERTYASYNC
+);
+export const createRuleAsync = create<Rule>(ActionType.CREATERULEASYNC);
+export const createDecisionAsync = create<Decision>(
+  ActionType.CREATEDECISIONSASYNC
+);
+export const createLocationAsync = create<Location>(
+  ActionType.CREATELOCATIONASYNC
+);
 
-export const getRulesAsync: (
-  setLoading?: (value: boolean) => void
-) => Action = (setLoading) => {
-  return { type: ActionType.GETRULESASYNC, setLoading };
-};
-
-export const setRules: (data: Rule[]) => Action = (data) => {
-  return { type: ActionType.SETRULES, data };
-};
-
-export const getDecisionsAsync: (
-  setLoading?: (value: boolean) => void
-) => Action = (setLoading) => {
-  return { type: ActionType.GETDECISIONSASYNC, setLoading };
-};
-
-export const setDecisions: (data: Decision[]) => Action = (data) => {
-  return { type: ActionType.SETDECISIONS, data };
-};
-
-export const getCategoriesAsync: (
-  setLoading?: (value: boolean) => void
-) => Action = (setLoading) => {
-  return { type: ActionType.GETCATEGORIESASYNC, setLoading };
-};
-
-export const setCategories: (data: Category[]) => Action = (data) => {
-  return { type: ActionType.SETCATEGORIES, data };
-};
-
-export const createGroupAsync: (
-  data: Group,
-  onResponseCallback: () => void
-) => Action = (data, onResponseCallback) => {
-  return { type: ActionType.CREATEGROUPASYNC, data, onResponseCallback };
-};
-
-export const getGroupAsync: (
-  id: string,
-  onResponseCallback: (response: Group) => void
-) => Action = (id, onResponseCallback) => {
-  return { type: ActionType.GETGROUPASYNC, id, onResponseCallback };
-};
-
-export const createItemAsync: (
-  data: Item,
-  onResponseCallback: () => void
-) => Action = (data, onResponseCallback) => {
-  return { type: ActionType.CREATEITEMASYNC, data, onResponseCallback };
-};
-
-export const createRuleAsync: (
-  data: Rule,
-  onResponseCallback: () => void
-) => Action = (data, onResponseCallback) => {
-  return { type: ActionType.CREATERULEASYNC, data, onResponseCallback };
-};
-
-export const createDecisionAsync: (
-  data: Decision,
-  onResponseCallback: () => void
-) => Action = (data, onResponseCallback) => {
-  return { type: ActionType.CREATEDECISIONSASYNC, data, onResponseCallback };
-};
-
-export const createCategoryAsync: (
-  data: Category,
-  onResponseCallback: () => void
-) => Action = (data, onResponseCallback) => {
-  return { type: ActionType.CREATECATEGORYASYNC, data, onResponseCallback };
-};
-
-export const createPropertyAsync: (
-  data: Property,
-  onResponseCallback: () => void
-) => Action = (data, onResponseCallback) => {
-  return { type: ActionType.CREATEPROPERTYASYNC, data, onResponseCallback };
-};
-
-export const createLocationAsync: (
-  data: Location,
-  onResponseCallback: () => void
-) => Action = (data, onResponseCallback) => {
-  return { type: ActionType.CREATELOCATIONASYNC, data, onResponseCallback };
-};
+export const deleteItemAsync = deleteAction(ActionType.DELETEITEMASYNC);
+export const deleteGroupAsync = deleteAction(ActionType.DELETEGROUPASYNC);
+export const deleteCategoryAsync = deleteAction(ActionType.DELETECATEGORYASYNC);
+export const deletePropertyAsync = deleteAction(ActionType.DELETEPROPERTYASYNC);
+export const deleteRuleAsync = deleteAction(ActionType.DELETERULEASYNC);
+export const deleteDecisionAsync = deleteAction(ActionType.DELETEDECISIONASYNC);
+export const deleteLocationAsync = deleteAction(ActionType.DELETELOCATIONASYNC);

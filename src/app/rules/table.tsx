@@ -1,25 +1,26 @@
-import React, { useCallback, useEffect, useMemo } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import React, { useCallback, useMemo } from 'react';
+import { useSelector } from 'react-redux';
 import { StoreType } from 'core/rootReducer';
 import { MenuButton } from 'shared/menuButton';
 import { Table as TableTemplate } from 'shared/table';
-import { getRulesAsync } from 'data/actions';
 import { CellParams, ColDef } from '@material-ui/data-grid';
-import { useProperties } from 'app/common/useData';
+import { useProperties, useRules } from 'app/common/useData';
 import { Chip } from '@material-ui/core';
+import { useDeleteUndo } from 'app/common/useDeleteUndo';
+import { deleteRuleAsync } from 'data/actions';
+import { Rule } from 'data/model';
 
-export const Table: React.FC = () => {
-  const dispatch = useDispatch();
+interface Props {
+  showDrawer: (id: string) => void;
+}
 
+export const Table: React.FC<Props> = ({ showDrawer }) => {
+  const rules = useSelector((state: StoreType) => state.data.rules);
+
+  useRules({ needEffect: true });
   useProperties({ needEffect: true });
 
-  const getRules = useCallback(() => {
-    dispatch(getRulesAsync());
-  }, [dispatch]);
-
-  useEffect(() => getRules(), [getRules]);
-
-  const rules = useSelector((state: StoreType) => state.data.rules);
+  const { rowsToDisplay, onDelete } = useDeleteUndo<Rule>(rules);
 
   const propertiesCell = useCallback((params: CellParams) => {
     const properties = params.value as string[];
@@ -32,9 +33,30 @@ export const Table: React.FC = () => {
     );
   }, []);
 
-  const actionCell = useCallback((params: CellParams) => {
-    return <MenuButton id={params.value.toString()} />;
-  }, []);
+  const convertName = (rule: Rule) => {
+    let name = 'properties';
+    if (rule.item) name = rule.item;
+    if (rule.group) name = rule.group;
+    if (rule.category) name = rule.category;
+    // TODO if rule for properties
+    return `Rule for ${name}`;
+  };
+
+  const actionCell = useCallback(
+    (params: CellParams) => {
+      const id = params.value.toString();
+      return (
+        <MenuButton
+          id={id}
+          onEdit={() => showDrawer(id)}
+          onDelete={() =>
+            onDelete(id, deleteRuleAsync, (el) => convertName(el))
+          }
+        />
+      );
+    },
+    [onDelete, showDrawer]
+  );
 
   const columns: ColDef[] = useMemo(
     () => [
@@ -57,5 +79,5 @@ export const Table: React.FC = () => {
     [actionCell, propertiesCell]
   );
 
-  return <TableTemplate columns={columns} rows={rules}></TableTemplate>;
+  return <TableTemplate columns={columns} rows={rowsToDisplay}></TableTemplate>;
 };

@@ -5,18 +5,35 @@ import { Table as TableTemplate } from 'shared/table';
 import { useGroups } from 'app/common/useData';
 import { CellParams, ColDef } from '@material-ui/data-grid';
 import { MenuButton } from 'shared/menuButton';
+import { deleteGroupAsync } from 'data/actions';
+import { useDeleteUndo } from 'app/common/useDeleteUndo';
+import { Group } from 'data/model';
 
-export const Table: React.FC = () => {
+interface Props {
+  showDrawer: (id: string) => void;
+}
+
+export const Table: React.FC<Props> = ({ showDrawer }) => {
   const [loading, setLoading] = useState(false);
-
-  useGroups({ setLoading, needEffect: true });
 
   const groups = useSelector((state: StoreType) => state.data.groups);
 
-  const actionCell = useCallback((params: CellParams) => {
-    const id = params.value.toString();
-    return <MenuButton id={id} />;
-  }, []);
+  useGroups({ setLoading, needEffect: true });
+  const { rowsToDisplay, onDelete } = useDeleteUndo<Group>(groups);
+
+  const actionCell = useCallback(
+    (params: CellParams) => {
+      const id = params.value.toString();
+      return (
+        <MenuButton
+          id={id}
+          onEdit={() => showDrawer(id)}
+          onDelete={() => onDelete(id, deleteGroupAsync, el => el.name)}
+        />
+      );
+    },
+    [showDrawer, onDelete]
+  );
 
   const columns: ColDef[] = useMemo(
     () => [
@@ -34,7 +51,7 @@ export const Table: React.FC = () => {
   return (
     <TableTemplate
       columns={columns}
-      rows={groups}
+      rows={rowsToDisplay}
       loading={loading}
     ></TableTemplate>
   );

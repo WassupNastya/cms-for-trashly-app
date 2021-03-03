@@ -1,15 +1,16 @@
-import React, { ChangeEvent, useCallback, useMemo, useState } from 'react';
-import {
-  Button,
-  CircularProgress,
-  Grid,
-  TextField,
-} from '@material-ui/core';
+import React, {
+  ChangeEvent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
+import { Button, CircularProgress, Grid, TextField } from '@material-ui/core';
 import { useDispatch } from 'react-redux';
 import { Location } from 'data/model';
 import classnames from 'classnames';
 import { useLocations } from 'app/common/useData';
-import { createLocationAsync } from 'data/actions';
+import { createLocationAsync, getLocationAsync } from 'data/actions';
 
 import './createLocation.scss';
 
@@ -39,18 +40,22 @@ export const CreateLocation: React.FC<Props> = ({ id }) => {
     return id == null ? 'Add location' : 'Edit location';
   }, [id]);
 
+  const getLocation = useCallback(
+    (id: string) => {
+      dispatch(
+        getLocationAsync(id, (response) => {
+          setState(response);
+        })
+      );
+    },
+    [dispatch]
+  );
+
   const handleChange = useCallback(
     (
       e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
       field: keyof Location
     ) => {
-      setState({ ...state, [field]: e.target.value });
-    },
-    [state]
-  );
-
-  const handleChangeSelect = useCallback(
-    (e, field: keyof Location) => {
       setState({ ...state, [field]: e.target.value });
     },
     [state]
@@ -66,6 +71,10 @@ export const CreateLocation: React.FC<Props> = ({ id }) => {
       })
     );
   }, [dispatch, state, getLocations]);
+
+  useEffect(() => {
+    if (id != null) getLocation(id);
+  }, [getLocation, id]);
 
   return (
     <Grid className="createLocation">

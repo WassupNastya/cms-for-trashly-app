@@ -1,4 +1,3 @@
-import { RowId } from '@material-ui/data-grid';
 import lodash from 'lodash';
 
 import { isEmpty } from './helper';

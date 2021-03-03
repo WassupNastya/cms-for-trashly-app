@@ -20,13 +20,13 @@ export const Locations: React.FC = () => {
             Create new
           </Button>
         </div>
-        <LocationsTable />
+        <LocationsTable showDrawer={(id) => setDrawer({ show: true, id })} />
         <Drawer
           anchor="right"
           open={drawer.show}
           onClose={() => setDrawer({ show: false })}
         >
-          <CreateLocation />
+          <CreateLocation id={drawer.id} />
         </Drawer>
       </Grid>
     </Page>

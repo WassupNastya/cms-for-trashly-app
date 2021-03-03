@@ -18,3 +18,13 @@ export enum Type {
   ForCategory,
   ForPropertiesOnly
 }
+
+export enum Collection {
+  Items = 'items',
+  Groups = 'groups',
+  Categories = 'categories',
+  Properties = 'properties',
+  Rules = 'rules',
+  Decisions = 'decisions',
+  Locations = 'locations'
+}

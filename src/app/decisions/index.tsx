@@ -18,7 +18,7 @@ export const Decisions: React.FC = () => {
         <div className="AddButton" onClick={() => setDrawer({ show: true })}>
           <Button variant="contained">Create new</Button>
         </div>
-        <Table />
+        <Table showDrawer={(id) => setDrawer({ show: true, id })} />
         <Drawer
           anchor="right"
           open={drawer.show}
