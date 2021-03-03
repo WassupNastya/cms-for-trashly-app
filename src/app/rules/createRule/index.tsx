@@ -18,13 +18,7 @@ import {
 import { useDispatch, useSelector } from 'react-redux';
 import { Category, Group, Rule, Item, Property } from 'data/model';
 import classnames from 'classnames';
-import {
-  useCategories,
-  useGroups,
-  useItems,
-  useProperties,
-  useRules,
-} from 'app/common/useData';
+import { useRules } from 'app/common/useData';
 import { StoreType } from 'core/rootReducer';
 import { createRuleAsync, getRuleAsync } from 'data/actions';
 
@@ -38,17 +32,15 @@ export const CreateRule: React.FC<Props> = ({ id }) => {
   const dispatch = useDispatch();
   const getRules = useRules({ needEffect: false });
 
-  useItems({ needEffect: true });
-  useGroups({ needEffect: true });
-  useCategories({ needEffect: true });
-  useProperties({ needEffect: true });
-
   const [loading, setLoading] = useState(false);
   const [state, setState] = useState<Rule>({
     id: '',
     location: '',
     description: '',
     properties: [],
+    group: '',
+    category: '',
+    item: '',
   });
   const [success, setSuccess] = useState(false);
 
@@ -118,32 +110,9 @@ export const CreateRule: React.FC<Props> = ({ id }) => {
 
   const getRule = useCallback(
     (id: string) => {
-      dispatch(
-        getRuleAsync(id, (response) => {
-          const group: Group | undefined = groups.find(
-            (x: Group) => x.name === response.group
-          );
-          const category: Category | undefined = categories.find(
-            (x: Category) => x.name === response.category
-          );
-          const newProperties: string[] = properties.flatMap((x) =>
-            response.properties.find(
-              (y) => y.toLowerCase() === x.name.toLowerCase()
-            )
-              ? [x.id]
-              : []
-          );
-
-          const newResponse = { ...response };
-          newResponse.group = group?.id;
-          newResponse.category = category?.id;
-          newResponse.properties = newProperties;
-
-          setState(newResponse);
-        })
-      );
+      dispatch(getRuleAsync(id, (response) => setState(response)));
     },
-    [dispatch, groups, categories, properties]
+    [dispatch]
   );
 
   useEffect(() => {
@@ -172,7 +141,11 @@ export const CreateRule: React.FC<Props> = ({ id }) => {
           onChange={(e) => handleChangeSelect(e, 'item')}
           label="Item"
           disabled={loading || success}
+          onReset={() => setState({ ...state, item: '' })}
         >
+          <MenuItem value="" key="-1">
+            None
+          </MenuItem>
           {items.map((x: Item, i: number) => (
             <MenuItem value={x.id} key={i}>
               {x.name}
@@ -190,6 +163,9 @@ export const CreateRule: React.FC<Props> = ({ id }) => {
           label="Group"
           disabled={loading || success}
         >
+          <MenuItem value="" key="-1">
+            None
+          </MenuItem>
           {groups.map((x: Group, i: number) => (
             <MenuItem value={x.id} key={i}>
               {x.name}
@@ -207,6 +183,9 @@ export const CreateRule: React.FC<Props> = ({ id }) => {
           label="Category"
           disabled={loading || success}
         >
+          <MenuItem value="" key="-1">
+            None
+          </MenuItem>
           {categories.map((x: Category, i: number) => (
             <MenuItem value={x.id} key={i}>
               {x.name}

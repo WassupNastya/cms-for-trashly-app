@@ -18,13 +18,7 @@ import {
 import { useDispatch, useSelector } from 'react-redux';
 import { Category, Group, Item, Decision, Property } from 'data/model';
 import classnames from 'classnames';
-import {
-  useCategories,
-  useDecisions,
-  useGroups,
-  useItems,
-  useProperties,
-} from 'app/common/useData';
+import { useDecisions } from 'app/common/useData';
 import { StoreType } from 'core/rootReducer';
 import { createDecisionAsync, getDecisionAsync } from 'data/actions';
 
@@ -38,11 +32,6 @@ export const CreateDecision: React.FC<Props> = ({ id }) => {
   const dispatch = useDispatch();
   const getDecisions = useDecisions({ needEffect: false });
 
-  useItems({ needEffect: true });
-  useGroups({ needEffect: true });
-  useCategories({ needEffect: true });
-  useProperties({ needEffect: true });
-
   const [loading, setLoading] = useState(false);
   const [state, setState] = useState<Decision>({
     id: '',
@@ -52,6 +41,9 @@ export const CreateDecision: React.FC<Props> = ({ id }) => {
     name: '',
     decisionNameType: '',
     properties: [],
+    group: '',
+    category: '',
+    item: '',
   });
   const [success, setSuccess] = useState(false);
 
@@ -121,32 +113,9 @@ export const CreateDecision: React.FC<Props> = ({ id }) => {
 
   const getDecision = useCallback(
     (id: string) => {
-      dispatch(
-        getDecisionAsync(id, (response) => {
-          const group: Group | undefined = groups.find(
-            (x: Group) => x.name === response.group
-          );
-          const category: Category | undefined = categories.find(
-            (x: Category) => x.name === response.category
-          );
-          const newProperties: string[] = properties.flatMap((x) =>
-            response.properties.find(
-              (y) => y.toLowerCase() === x.name.toLowerCase()
-            )
-              ? [x.id]
-              : []
-          );
-
-          const newResponse = { ...response };
-          newResponse.group = group?.id;
-          newResponse.category = category?.id;
-          newResponse.properties = newProperties;
-
-          setState(newResponse);
-        })
-      );
+      dispatch(getDecisionAsync(id, (response) => setState(response)));
     },
-    [dispatch, categories, groups, properties]
+    [dispatch]
   );
 
   useEffect(() => {
@@ -203,6 +172,9 @@ export const CreateDecision: React.FC<Props> = ({ id }) => {
           label="Item"
           disabled={loading || success}
         >
+          <MenuItem value="" key="-1">
+            None
+          </MenuItem>
           {items.map((x: Item, i: number) => (
             <MenuItem value={x.id} key={i}>
               {x.name}
@@ -220,6 +192,9 @@ export const CreateDecision: React.FC<Props> = ({ id }) => {
           label="Group"
           disabled={loading || success}
         >
+          <MenuItem value="" key="-1">
+            None
+          </MenuItem>
           {groups.map((x: Group, i: number) => (
             <MenuItem value={x.id} key={i}>
               {x.name}
@@ -237,6 +212,9 @@ export const CreateDecision: React.FC<Props> = ({ id }) => {
           label="Category"
           disabled={loading || success}
         >
+          <MenuItem value="" key="-1">
+            None
+          </MenuItem>
           {categories.map((x: Group, i: number) => (
             <MenuItem value={x.id} key={i}>
               {x.name}

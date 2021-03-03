@@ -53,7 +53,6 @@ export interface RuleView {
   type: number;
   location: string;
   description: string;
-  // { [key: string]: boolean } TODO: handle properties
 }
 
 export interface Decision {
@@ -78,5 +77,4 @@ export interface DecisionView {
   priority: string;
   name: string;
   decisionNameType: string;
-  // { [key: string]: boolean } TODO: handle properties
 }

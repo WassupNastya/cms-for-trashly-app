@@ -37,6 +37,7 @@ export const CreateItem: React.FC<Props> = ({ id }) => {
   const dispatch = useDispatch();
   const getItems = useItems({ needEffect: false });
 
+  // TODO: make forkJoin
   useGroups({ needEffect: true });
   useCategories({ needEffect: true });
   useProperties({ needEffect: true });
@@ -171,6 +172,9 @@ export const CreateItem: React.FC<Props> = ({ id }) => {
           label="Group"
           disabled={loading || success}
         >
+          <MenuItem value="" key="-1">
+            None
+          </MenuItem>
           {groups.map((x: Group, i: number) => (
             <MenuItem value={x.id} key={i}>
               {x.name}
@@ -188,6 +192,9 @@ export const CreateItem: React.FC<Props> = ({ id }) => {
           label="Category"
           disabled={loading || success}
         >
+          <MenuItem value="" key="-1">
+            None
+          </MenuItem>
           {categories.map((x: Group, i: number) => (
             <MenuItem value={x.id} key={i}>
               {x.name}
