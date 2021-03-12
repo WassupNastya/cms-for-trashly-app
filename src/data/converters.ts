@@ -1,7 +1,7 @@
 import lodash from 'lodash';
 
 import { isEmpty } from './helper';
-import { Decision, Item, Rule } from './model';
+import { Category, Decision, Group, Item, Property, Rule } from './model';
 
 export const cleanObject = <T>(obj: T) => {
   return Object.fromEntries(
@@ -68,4 +68,87 @@ export const convertDecisionFromFirebase = (decision) => {
     properties: [],
   };
   return { ...result, properties: convertPropertiesToArray(decision, result) };
+};
+
+export const convertDecisionFromFirebaseForEdit = (
+  decision: any,
+  items: Item[],
+  groups: Group[],
+  categories: Category[],
+  properties: Property[]
+) => {
+  const item: Item | undefined = items.find(
+    (x: Item) => x.name === decision.item
+  );
+
+  const group: Group | undefined = groups.find(
+    (x: Group) => x.name === decision.group
+  );
+
+  const category: Category | undefined = categories.find(
+    (x: Category) => x.name === decision.category
+  );
+
+  const result: Decision = {
+    id: decision.id,
+    item: item?.id ?? '',
+    group: group?.id ?? '',
+    category: category?.id ?? '',
+    location: decision.location,
+    description: decision.description,
+    priority: decision.priority,
+    name: decision.name,
+    decisionNameType: decision.decisionNameType,
+    properties: [],
+  };
+
+  const newProperties: string[] = properties.flatMap((x) =>
+    convertPropertiesToArray(decision, result).find(
+      (y) => y.toLowerCase() === x.name.toLowerCase()
+    )
+      ? [x.id]
+      : []
+  );
+
+  return { ...result, properties: newProperties };
+};
+
+export const convertRuleFromFirebaseForEdit = (
+  rule: any,
+  items: Item[],
+  groups: Group[],
+  categories: Category[],
+  properties: Property[]
+) => {
+  const item: Item | undefined = items.find(
+    (x: Item) => x.name === rule.item
+  );
+
+  const group: Group | undefined = groups.find(
+    (x: Group) => x.name === rule.group
+  );
+
+  const category: Category | undefined = categories.find(
+    (x: Category) => x.name === rule.category
+  );
+
+  const result: Rule = {
+    id: rule.id,
+    item: item?.id ?? '',
+    group: group?.id ?? '',
+    category: category?.id ?? '',
+    location: rule.location,
+    description: rule.description,
+    properties: [],
+  };
+
+  const newProperties: string[] = properties.flatMap((x) =>
+    convertPropertiesToArray(rule, result).find(
+      (y) => y.toLowerCase() === x.name.toLowerCase()
+    )
+      ? [x.id]
+      : []
+  );
+
+  return { ...result, properties: newProperties };
 };

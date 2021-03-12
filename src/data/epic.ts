@@ -1,4 +1,14 @@
-import { combineEpics } from 'redux-observable';
+import { ActionsObservable, combineEpics } from 'redux-observable';
+import {
+  concatMap,
+  concatMapTo,
+  filter,
+  ignoreElements,
+  mergeMap,
+  tap,
+} from 'rxjs/operators';
+import { isOfType } from 'typesafe-actions';
+import { forkJoin, of } from 'rxjs';
 
 import {
   Category,
@@ -53,6 +63,8 @@ import {
   convertDecisionFromFirebase,
   convertItemFromFirebase,
   convertRuleFromFirebase,
+  convertDecisionFromFirebaseForEdit,
+  convertRuleFromFirebaseForEdit,
 } from './converters';
 import { get, create, getAll, deleteEpic } from './templatesEpic';
 
@@ -123,16 +135,6 @@ const getItemEpic = get<Item>(
 const getGroupEpic = get<Group>(ActionType.GETGROUPASYNC, getGroup);
 const getCategoryEpic = get<Category>(ActionType.GETCATEGORYASYNC, getCategory);
 const getPropertyEpic = get<Property>(ActionType.GETPROPERTYASYNC, getProperty);
-const getRuleEpic = get<Rule>(
-  ActionType.GETRULEASYNC,
-  getRule,
-  convertRuleFromFirebase
-);
-const getDecisionEpic = get<Decision>(
-  ActionType.GETDECISIONASYNC,
-  getDecision,
-  convertDecisionFromFirebase
-);
 const getLocationEpic = get<Location>(ActionType.GETLOCATIONASYNC, getLocation);
 
 const deleteItemEpic = deleteEpic(ActionType.DELETEITEMASYNC, deleteItem);
@@ -151,6 +153,104 @@ const deleteDecisionEpic = deleteEpic(
   deleteDecision
 );
 const deleteLocationEpic = deleteEpic(ActionType.DELETELOCATIONASYNC, deleteLocation);
+
+const parseComplexResponse = (response) => {
+  const model = response[0];
+  const items = response[1] as Item[];
+  const groups = response[2] as Group[];
+  const categories = response[3] as Category[];
+  const properties = response[4] as Property[];
+
+  return { model, items, groups, categories, properties };
+};
+export const getDecisionEpic = (
+  action$: ActionsObservable<{
+    type: string;
+    id: string;
+    onResponseCallback: (response: Decision) => void;
+  }>
+) =>
+  action$.pipe(
+    filter(isOfType(ActionType.GETDECISIONASYNC)),
+    mergeMap(({ id, onResponseCallback }) =>
+      forkJoin([
+        getDecision(id),
+        getItems(),
+        getGroups(),
+        getCategories(),
+        getProperties(),
+      ]).pipe(
+        tap((response) => {
+          const { model, items, groups, categories, properties } = parseComplexResponse(response);
+          onResponseCallback(
+            convertDecisionFromFirebaseForEdit(
+              model,
+              items,
+              groups,
+              categories,
+              properties
+            )
+          );
+        }),
+        concatMap((response) => {
+          const { items, groups, categories, properties } = parseComplexResponse(response);
+          return of(
+            ...[
+              setItems(items),
+              setGroups(groups),
+              setCategories(categories),
+              setProperties(properties),
+            ]
+          );
+        })
+      )
+    )
+  );
+
+
+  export const getRuleEpic = (
+    action$: ActionsObservable<{
+      type: string;
+      id: string;
+      onResponseCallback: (response: Rule) => void;
+    }>
+  ) =>
+    action$.pipe(
+      filter(isOfType(ActionType.GETRULEASYNC)),
+      mergeMap(({ id, onResponseCallback }) =>
+        forkJoin([
+          getRule(id),
+          getItems(),
+          getGroups(),
+          getCategories(),
+          getProperties(),
+        ]).pipe(
+          tap((response) => {
+            const { model, items, groups, categories, properties } = parseComplexResponse(response);
+            onResponseCallback(
+              convertRuleFromFirebaseForEdit(
+                model,
+                items,
+                groups,
+                categories,
+                properties
+              )
+            );
+          }),
+          concatMap((response) => {
+            const { items, groups, categories, properties } = parseComplexResponse(response);
+            return of(
+              ...[
+                setItems(items),
+                setGroups(groups),
+                setCategories(categories),
+                setProperties(properties),
+              ]
+            );
+          })
+        )
+      )
+    );
 
 export const epic = combineEpics(
   getLocationsEpic,
@@ -173,7 +273,6 @@ export const epic = combineEpics(
   getItemEpic,
   getPropertyEpic,
   getRuleEpic,
-  getDecisionEpic,
   deleteGroupEpic,
   deleteItemEpic,
   deleteCategoryEpic,
