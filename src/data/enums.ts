@@ -6,10 +6,10 @@ export enum Root {
 }
 
 export enum Tab {
-  Items = 0,
-  Groups,
-  Categories,
-  Properties,
+  Items = 'Item',
+  Groups = "Group",
+  Categories = "Category",
+  Properties = "Property",
 }
 
 export enum Type {

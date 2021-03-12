@@ -47,6 +47,7 @@ import {
   deleteProperty,
   deleteRule,
   deleteDecision,
+  deleteLocation,
 } from './api';
 import {
   convertDecisionFromFirebase,
@@ -149,6 +150,7 @@ const deleteDecisionEpic = deleteEpic(
   ActionType.DELETEDECISIONASYNC,
   deleteDecision
 );
+const deleteLocationEpic = deleteEpic(ActionType.DELETELOCATIONASYNC, deleteLocation);
 
 export const epic = combineEpics(
   getLocationsEpic,
@@ -177,5 +179,6 @@ export const epic = combineEpics(
   deleteCategoryEpic,
   deletePropertyEpic,
   deleteRuleEpic,
-  deleteDecisionEpic
+  deleteDecisionEpic,
+  deleteLocationEpic
 );

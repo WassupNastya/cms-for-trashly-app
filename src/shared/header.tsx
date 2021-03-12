@@ -1,15 +1,14 @@
 import React from 'react';
 import classnames from 'classnames';
 import { Button, Grid } from '@material-ui/core';
-import { Tab } from 'data/enums';
 
 import './header.scss';
 
 const allTabs: { key: number; title: string }[] = [
-  { key: Tab.Items, title: 'items' },
-  { key: Tab.Groups, title: 'groups' },
-  { key: Tab.Categories, title: 'categories' },
-  { key: Tab.Properties, title: 'properties' },
+  { key: 0, title: 'items' },
+  { key: 1, title: 'groups' },
+  { key: 2, title: 'categories' },
+  { key: 3, title: 'properties' },
 ];
 interface Props {
   title: string;
@@ -39,24 +38,7 @@ export const Header: React.FC<Props> = ({
 }) => {
   return (
     <Grid className="Header" style={{ height: needPanel ? '12em' : '6em' }}>
-      <div className="TitlePanel">
-        <div className="Title">{title}</div>
-        {needPanel && (
-          <div className="Links">
-            {allTabs.flatMap((x) =>
-              tabsToExclude?.includes(x.key)
-                ? []
-                : [
-                    <LinkLayout
-                      key={x.key}
-                      title={x.title}
-                      onClick={() => onClick(x.key)}
-                    />,
-                  ]
-            )}
-          </div>
-        )}
-      </div>
+      
     </Grid>
   );
 };

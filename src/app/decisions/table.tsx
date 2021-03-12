@@ -7,18 +7,19 @@ import { CellParams, ColDef } from '@material-ui/data-grid';
 import { Chip } from '@material-ui/core';
 import { useDecisions } from 'app/common/useData';
 import { useDeleteUndo } from 'app/common/useDeleteUndo';
-import { deletePropertyAsync } from 'data/actions';
+import { deleteDecisionAsync } from 'data/actions';
 import { Decision } from 'data/model';
+import { useDialog } from 'app/common/useDialog';
+import { useSearch } from 'app/common/searchProvider';
 
-interface Props {
-  showDrawer: (id: string) => void;
-}
+import { DecisionModal } from './decisionModal';
 
-export const Table: React.FC<Props> = ({ showDrawer }) => {
+export const Table: React.FC = () => {
   const decisions = useSelector((state: StoreType) => state.data.decisions);
 
   useDecisions({ needEffect: true });
   const { rowsToDisplay, onDelete } = useDeleteUndo<Decision>(decisions);
+  const { dialog, show, hide } = useDialog();
 
   const propertiesCell = useCallback((params: CellParams) => {
     const properties = params.value as string[];
@@ -37,12 +38,12 @@ export const Table: React.FC<Props> = ({ showDrawer }) => {
       return (
         <MenuButton
           id={id}
-          onEdit={() => showDrawer(id)}
-          onDelete={() => onDelete(id, deletePropertyAsync, (el) => el.name)}
+          onEdit={() => show(id)}
+          onDelete={() => onDelete(id, deleteDecisionAsync, (el) => el.name)}
         />
       );
     },
-    [onDelete, showDrawer]
+    [onDelete, show]
   );
 
   const columns: ColDef[] = useMemo(
@@ -52,17 +53,17 @@ export const Table: React.FC<Props> = ({ showDrawer }) => {
       { field: 'group', headerName: 'Group', flex: 1 },
       { field: 'category', headerName: 'Category', flex: 1 },
       { field: 'priority', headerName: 'Priority', flex: 1 },
-      { field: 'type', headerName: 'Type', flex: 1 },
+      { field: 'decisionNameType', headerName: 'Type', flex: 1 },
       { field: 'location', headerName: 'Location', flex: 1 },
       {
         field: 'properties',
         headerName: 'Properties',
-        flex: 2,
+        flex: 3,
         renderCell: propertiesCell,
       },
       {
         field: 'id',
-        headerName: 'Actions',
+        headerName: ' ',
         renderCell: actionCell,
         flex: 1,
       },
@@ -70,5 +71,18 @@ export const Table: React.FC<Props> = ({ showDrawer }) => {
     [actionCell, propertiesCell]
   );
 
-  return <TableTemplate columns={columns} rows={rowsToDisplay}></TableTemplate>;
+  const { filterItem } = useSearch();
+  const filteredRows = useMemo(
+    () => rowsToDisplay.filter((x) => filterItem(x.name)),
+    [filterItem, rowsToDisplay]
+  );
+
+  return (
+    <>
+      <TableTemplate columns={columns} rows={filteredRows}></TableTemplate>
+      {dialog((id) => (
+        <DecisionModal hide={hide} id={id} />
+      ))}
+    </>
+  );
 };

@@ -19,7 +19,7 @@ export interface Item {
   id: string;
   name: string;
   group: string;
-  category: string;
+  categories: string[];
   properties: string[];
   aliases: string;
 }

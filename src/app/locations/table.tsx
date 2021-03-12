@@ -8,16 +8,17 @@ import { useLocations } from 'app/common/useData';
 import { useDeleteUndo } from 'app/common/useDeleteUndo';
 import { deleteLocationAsync } from 'data/actions';
 import { Location } from 'data/model';
+import { useDialog } from 'app/common/useDialog';
+import { useSearch } from 'app/common/searchProvider';
 
-interface Props {
-  showDrawer: (id: string) => void;
-}
+import { LocationModal } from './locationModal';
 
-export const LocationsTable: React.FC<Props> = ({ showDrawer }) => {
+export const LocationsTable: React.FC = () => {
   const locations = useSelector((state: StoreType) => state.data.locations);
 
   useLocations({ needEffect: true });
   const { rowsToDisplay, onDelete } = useDeleteUndo<Location>(locations);
+  const { dialog, show, hide } = useDialog();
 
   const actionCell = useCallback(
     (params: CellParams) => {
@@ -25,14 +26,14 @@ export const LocationsTable: React.FC<Props> = ({ showDrawer }) => {
       return (
         <MenuButton
           id={id}
-          onEdit={() => showDrawer(id)}
+          onEdit={() => show(id)}
           onDelete={() =>
             onDelete(id, deleteLocationAsync, (el) => el.displayName)
           }
         />
       );
     },
-    [onDelete, showDrawer]
+    [onDelete, show]
   );
 
   const columns: ColDef[] = useMemo(
@@ -44,7 +45,7 @@ export const LocationsTable: React.FC<Props> = ({ showDrawer }) => {
       { field: 'country', headerName: 'Country', flex: 1 },
       {
         field: 'id',
-        headerName: 'Actions',
+        headerName: ' ',
         renderCell: actionCell,
         flex: 1,
       },
@@ -52,5 +53,18 @@ export const LocationsTable: React.FC<Props> = ({ showDrawer }) => {
     [actionCell]
   );
 
-  return <Table columns={columns} rows={rowsToDisplay}></Table>;
+  const { filterItem } = useSearch();
+  const filteredRows = useMemo(
+    () => rowsToDisplay.filter((x) => filterItem(x.displayName)),
+    [filterItem, rowsToDisplay]
+  );
+
+  return (
+    <>
+      <Table columns={columns} rows={filteredRows}></Table>
+      {dialog((id) => (
+        <LocationModal hide={hide} id={id} />
+      ))}
+    </>
+  );
 };

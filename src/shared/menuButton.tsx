@@ -9,9 +9,10 @@ interface Props {
   id: string;
   onEdit?: () => void;
   onDelete?: () => void;
+  isRename?: boolean;
 }
 
-export const MenuButton: React.FC<Props> = ({ id, onEdit, onDelete }) => {
+export const MenuButton: React.FC<Props> = ({ id, onEdit, onDelete, isRename }) => {
   const location = useLocation();
 
   const [anchor, setAnchor] = useState<Element>(null);
@@ -44,7 +45,7 @@ export const MenuButton: React.FC<Props> = ({ id, onEdit, onDelete }) => {
             onClose();
           }}
         >
-          Edit
+          {isRename ? 'Rename' : 'Edit'}
         </MenuItem>
         <MenuItem
           onClick={() => {

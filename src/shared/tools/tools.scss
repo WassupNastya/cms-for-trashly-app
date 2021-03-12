@@ -1,0 +1,27 @@
+.tools {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  height: 2.4rem;
+  .search {
+    display: flex;
+    .buttonTitle {
+      margin-left: 0.4rem;
+    }
+    .MuiButton-root {
+      margin-left: 1rem;
+      color: white;
+    }
+    form {
+      .MuiSvgIcon-root {
+        color: #A9A9A9;
+        padding-right: 0.4rem;
+      }
+    }
+  }
+
+  .search.rightAlignment {
+    margin-left: auto;
+  }
+}

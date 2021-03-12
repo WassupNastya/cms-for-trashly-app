@@ -1,26 +1,13 @@
-@import url('https://fonts.googleapis.com/css2?family=Heebo:wght@200;400;500&display=swap');
-
-.App {
-  background-color: #f5f8fa;
-  height: 100%;
-  display: flex;
-  font-family: 'Heebo', sans-serif;
+.app {
+  width: 100vw;
+  height: 100vh;
   position: fixed;
-  .Content {
-    width: calc(100vw - 6em);
-    height: 100%;
-  }
-  .Content.Mobile {
-    width: 100%;
-  }
-  .Content.Fixed {
-    position: fixed;
-  }
-  .Content.ShowInfo {
-    width: calc(100vw - 20em);
-  }
-}
+  background-color: #f5f8fa;
 
-.App.MuiGrid-container {
-  flex-wrap: nowrap;
+  .page {
+    width: calc(100% - 3.2rem);
+    height: calc(100% - 6.6rem);
+    margin: 1.6rem;
+    background-color: white;
+  }
 }

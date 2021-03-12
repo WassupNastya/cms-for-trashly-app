@@ -4,6 +4,8 @@ import { Provider } from 'react-redux';
 import { Router } from 'react-router-dom';
 import { createBrowserHistory } from 'history';
 import { SnackbarProvider } from 'notistack';
+import { Notistack } from 'shared/notistack/notistack';
+import { SearchProvider } from 'app/common/searchProvider';
 
 import { store } from './core/store';
 import { App } from './app';
@@ -18,9 +20,12 @@ ReactDOM.render(
       <React.StrictMode>
         <SnackbarProvider
           maxSnack={3}
-          anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+          anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+          content={(key, message) => <Notistack key={key} message={message} />}
         >
-          <App />
+          <SearchProvider>
+            <App />
+          </SearchProvider>
         </SnackbarProvider>
       </React.StrictMode>
     </Router>

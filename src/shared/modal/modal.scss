@@ -1,0 +1,31 @@
+.MuiDialogTitle-root {
+  h2 {
+    font-weight: 500;
+    color: #263238;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    .MuiSvgIcon-root {
+      cursor: pointer;
+    }
+  }
+}
+
+.MuiDialog-paper {
+  .MuiButton-root {
+    color: white;
+    background-color: #00BCCA;
+    margin: 1rem auto;
+  }
+  .MuiButton-root:hover {
+    background-color: #00BCCA;
+  }
+}
+
+.formHelperText {
+  font-size: 0.8rem;
+  color: #00BCCA;
+  align-self: flex-end;
+  margin-top: 0.2rem;
+  cursor: pointer;
+}

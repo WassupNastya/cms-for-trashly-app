@@ -1,11 +1,40 @@
 .table {
-  height: 36em;
+  height: calc(100% - 4.4rem);
   .MuiDataGrid-root {
+    border-radius: 0;
     .MuiDataGrid-window {
       overflow-x: hidden;
     }
     .MuiDataGrid-cellWithRenderer {
       justify-content: flex-end;
+    }
+    .MuiDataGrid-columnSeparator {
+      display: none;
+    }
+    .MuiDataGrid-colCell {
+      background-color: #eeeeee;
+      height: 56px;
+    }
+    .MuiDataGrid-colCellTitle {
+      font-weight: 500;
+      color: #263238;
+    }
+    .MuiDataGrid-row:nth-child(2n) {
+      background-color: #f9f9f9;
+    }
+    .MuiDataGrid-row:hover {
+      background-color: #e6f8fa;
+    }
+
+    .MuiDataGrid-row:not(:hover) {
+      .MuiIconButton-root {
+        display: none;
+      }
+    }
+
+    .MuiChip-root {
+      background-color: white;
+      border: 1px solid #D8D8D8;
     }
   }
 }

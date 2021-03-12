@@ -1,61 +1,60 @@
-import React, { useCallback, useState } from 'react';
-import { Sidebar } from 'app/sidebar/sidebar';
+import React, { useMemo, useState } from 'react';
 import { Route } from 'react-router';
-import { Root } from 'data/enums';
-import { Rules } from 'app/rules';
-import { Decisions } from 'app/decisions';
-import { Items } from 'app/items';
-import { Locations } from 'app/locations';
-import { Hidden, Grid, useMediaQuery, useTheme } from '@material-ui/core';
-import { AppBar } from 'app/common';
-import classnames from 'classnames';
-import { Onboarding } from 'app/onboarding/onboarding';
-import { CreateLocation } from 'app/locations/createLocation';
+import { Bar } from 'app/bar/bar';
+import { Tools } from 'shared/tools/tools';
+import { createMuiTheme, MuiThemeProvider } from '@material-ui/core';
+import { Root, Tab } from 'data/enums';
+import { Table as Items } from 'app/items/table';
+import { Table as Groups } from 'app/groups/table';
+import { Table as Categories } from 'app/categories/table';
+import { Table as Properties } from 'app/properties/table';
+import { Table as Rules } from 'app/rules/table';
+import { Table as Decisions } from 'app/decisions/table';
+import { LocationsTable as Locations } from 'app/locations/table';
+import { useSearch } from 'app/common/searchProvider';
 
 import './app.scss';
 
+const tablesMap = new Map([
+  [Tab.Items, <Items key="items" />],
+  [Tab.Groups, <Groups key="groups" />],
+  [Tab.Categories, <Categories key="categories" />],
+  [Tab.Properties, <Properties key="properties" />],
+]);
+
 export const App = () => {
-  const theme = useTheme();
-  const matches = useMediaQuery(theme.breakpoints.down('sm'));
+  const theme = createMuiTheme({
+    palette: {
+      secondary: {
+        main: '#00bcca',
+      },
+    },
+  });
 
-  const [openSidebar, setOpenSidebar] = useState(false);
-  const [showOnboarding, setShowOnboarding] = useState(false);
+  const [currentTab, setCurrentTab] = useState(Tab.Items);
 
-  const onClick = useCallback(() => {
-    setOpenSidebar(!openSidebar);
-  }, [openSidebar]);
+  const component = useMemo(() => tablesMap.get(currentTab), [currentTab]);
+
+  const { setSearchValue } = useSearch();
+
+  const onChange = (tab: Tab) => {
+    setSearchValue('');
+    setCurrentTab(tab);
+  };
 
   return (
-    <Grid container className="App">
-      <Hidden smDown>
-        <Sidebar
-          showOnboarding={showOnboarding}
-          setShowOnboarding={setShowOnboarding}
-        />
-      </Hidden>
-      {showOnboarding && (
-        <Hidden smDown>
-          <Onboarding />
-        </Hidden>
-      )}
-      <Grid
-        className={classnames('Content', {
-          Mobile: matches,
-          Fixed: openSidebar,
-          ShowInfo: !matches && showOnboarding,
-        })}
-      >
-        <Hidden mdUp>
-          <AppBar isOpen={openSidebar} onClick={onClick} />
-        </Hidden>
-        <Route path={Root.Locations + '/add'} component={CreateLocation} />
-        <Route path={Root.Locations + '/edit/:id'} component={CreateLocation} />
-        <Route exact path={Root.Rules} component={Rules} />
-        <Route exact path={Root.Decisions} component={Decisions} />
-        <Route exact path={Root.Locations} component={Locations} />
-        <Route exact path={Root.Items} component={Items} />
-        <Route exact path="/" component={Items} />
-      </Grid>
-    </Grid>
+    <MuiThemeProvider theme={theme}>
+      <div className="app">
+        <Bar />
+        <div className="page">
+          <Tools currentTab={currentTab} setCurrentTab={onChange} />
+          <Route exact path={Root.Rules} component={Rules} />
+          <Route exact path={Root.Decisions} component={Decisions} />
+          <Route exact path={Root.Locations} component={Locations} />
+          <Route exact path={Root.Items} component={() => component} />
+          <Route exact path="/" component={() => component} />
+        </div>
+      </div>
+    </MuiThemeProvider>
   );
 };

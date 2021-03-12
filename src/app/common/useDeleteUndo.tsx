@@ -11,6 +11,7 @@ import {
 import { useSnackbar } from 'notistack';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch } from 'react-redux';
+import deleteLogo from 'assets/delete.svg';
 
 export const useDeleteUndo = <
   T extends Item | Group | Category | Property | Rule | Decision | Location
@@ -39,7 +40,7 @@ export const useDeleteUndo = <
           closeSnackbar();
         }}
       >
-        Undo
+        UNDO
       </Button>
     ),
     [rows, closeSnackbar]
@@ -60,14 +61,34 @@ export const useDeleteUndo = <
         setRows(newRows);
         // show snack
         enqueueSnackbar(
-          <span>
-            <b>{getName(el)}</b> was deleted
-          </span>,
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+            }}
+          >
+            <img
+              src={deleteLogo}
+              alt="Delete."
+              style={{ paddingBottom: '0.2rem' }}
+            ></img>
+            <span style={{ paddingLeft: '0.6rem', paddingRight: '1rem' }}>
+              <b>{getName(el)}</b> was deleted
+            </span>
+            <div
+              style={{
+                borderLeft: '1px solid white',
+                marginLeft: 'auto',
+                paddingLeft: '0.4rem',
+              }}
+            >
+              {action(key)}
+            </div>
+          </div>,
           {
             variant: 'info',
             autoHideDuration: 5000,
             key,
-            action,
             onClose: () => {
               dispatch(onClose(key));
             },

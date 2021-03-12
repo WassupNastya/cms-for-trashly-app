@@ -4,22 +4,21 @@ import { StoreType } from 'core/rootReducer';
 import { MenuButton } from 'shared/menuButton';
 import { Table as TableTemplate } from 'shared/table';
 import { CellParams, ColDef } from '@material-ui/data-grid';
-import { useProperties, useRules } from 'app/common/useData';
+import { useItems } from 'app/common/useData';
 import { Chip } from '@material-ui/core';
 import { useDeleteUndo } from 'app/common/useDeleteUndo';
-import { deleteRuleAsync } from 'data/actions';
-import { Rule } from 'data/model';
+import { Item } from 'data/model';
+import { deleteItemAsync } from 'data/actions';
 import { useDialog } from 'app/common/useDialog';
 import { useSearch } from 'app/common/searchProvider';
 
-import { RuleModal } from './ruleModal';
+import { ItemModal } from './itemModal';
 
 export const Table: React.FC = () => {
-  const rules = useSelector((state: StoreType) => state.data.rules);
+  const items = useSelector((state: StoreType) => state.data.items);
 
-  useRules({ needEffect: true });
-  useProperties({ needEffect: true });
-  const { rowsToDisplay, onDelete } = useDeleteUndo<Rule>(rules);
+  useItems({ needEffect: true });
+  const { rowsToDisplay, onDelete } = useDeleteUndo<Item>(items);
   const { dialog, show, hide } = useDialog();
 
   const propertiesCell = useCallback((params: CellParams) => {
@@ -33,15 +32,6 @@ export const Table: React.FC = () => {
     );
   }, []);
 
-  const convertName = (rule: Rule) => {
-    let name = 'properties';
-    if (rule.item) name = rule.item;
-    if (rule.group) name = rule.group;
-    if (rule.category) name = rule.category;
-    // TODO if rule for properties
-    return `Rule for ${name}`;
-  };
-
   const actionCell = useCallback(
     (params: CellParams) => {
       const id = params.value.toString();
@@ -49,9 +39,7 @@ export const Table: React.FC = () => {
         <MenuButton
           id={id}
           onEdit={() => show(id)}
-          onDelete={() =>
-            onDelete(id, deleteRuleAsync, (el) => convertName(el))
-          }
+          onDelete={() => onDelete(id, deleteItemAsync, (el) => el.name)}
         />
       );
     },
@@ -60,20 +48,21 @@ export const Table: React.FC = () => {
 
   const columns: ColDef[] = useMemo(
     () => [
-      { field: 'item', headerName: 'Item', flex: 1 },
-      { field: 'group', headerName: 'Group', flex: 1 },
-      { field: 'category', headerName: 'Category', flex: 1 },
+      { field: 'name', headerName: 'Name', flex: 2 },
+      { field: 'aliases', headerName: 'Aliases', flex: 2 },
+      { field: 'group', headerName: 'Group', flex: 2 },
       {
         field: 'properties',
         headerName: 'Properties',
-        flex: 2,
+        flex: 3,
         renderCell: propertiesCell,
+        align: 'left',
       },
       {
         field: 'id',
         headerName: ' ',
-        renderCell: actionCell,
         flex: 1,
+        renderCell: actionCell,
       },
     ],
     [actionCell, propertiesCell]
@@ -81,7 +70,7 @@ export const Table: React.FC = () => {
 
   const { filterItem } = useSearch();
   const filteredRows = useMemo(
-    () => rowsToDisplay.filter((x) => filterItem(x.description ?? '')),
+    () => rowsToDisplay.filter((x) => filterItem(x.name)),
     [filterItem, rowsToDisplay]
   );
 
@@ -89,7 +78,7 @@ export const Table: React.FC = () => {
     <>
       <TableTemplate columns={columns} rows={filteredRows}></TableTemplate>
       {dialog((id) => (
-        <RuleModal hide={hide} id={id} />
+        <ItemModal hide={hide} id={id} />
       ))}
     </>
   );

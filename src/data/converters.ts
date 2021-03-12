@@ -34,7 +34,7 @@ export const convertItemFromFirebase = (item) => {
     id: item.id,
     name: item.name,
     group: item.group,
-    category: item.category,
+    categories: item.categories ?? [],
     aliases: item.aliases,
     properties: [],
   };
