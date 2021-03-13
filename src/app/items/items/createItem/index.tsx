@@ -16,7 +16,7 @@ import {
   TextField,
 } from '@material-ui/core';
 import { useDispatch, useSelector } from 'react-redux';
-import { Category, Group, Item, Property } from 'data/model';
+import { Group, Item, Property } from 'data/model';
 import classnames from 'classnames';
 import {
   useCategories,
@@ -47,7 +47,7 @@ export const CreateItem: React.FC<Props> = ({ id }) => {
     name: '',
     id: '',
     group: '',
-    category: '',
+    categories: [],
     properties: [],
     aliases: '',
   });
@@ -83,8 +83,8 @@ export const CreateItem: React.FC<Props> = ({ id }) => {
     const group: Group | undefined = groups.find(
       (x: Group) => x.id === state.group
     );
-    const category: Category | undefined = categories.find(
-      (x: Category) => x.id === state.category
+    const newCategories: string[] = categories.flatMap((x) =>
+      state.categories.includes(x.id) ? [x.name] : []
     );
     const newProperties: string[] = properties.flatMap((x) =>
       state.properties.includes(x.id) ? [x.name] : []
@@ -95,7 +95,7 @@ export const CreateItem: React.FC<Props> = ({ id }) => {
         {
           ...state,
           group: group?.name ?? '',
-          category: category?.name ?? '',
+          categories: newCategories,
           properties: newProperties,
         },
         () => {
@@ -111,30 +111,30 @@ export const CreateItem: React.FC<Props> = ({ id }) => {
     (id: string) => {
       dispatch(
         getItemAsync(id, (response) => {
-          const group: Group | undefined = groups.find(
-            (x: Group) => x.name === response.group
-          );
-          const category: Category | undefined = categories.find(
-            (x: Category) => x.name === response.category
+          const newCategories: string[] = categories.flatMap((x) =>
+            response.categories.find(
+              (y) => y.toLowerCase() === x.name.toLowerCase()
+            )
+              ? [x.name]
+              : []
           );
           const newProperties: string[] = properties.flatMap((x) =>
             response.properties.find(
               (y) => y.toLowerCase() === x.name.toLowerCase()
             )
-              ? [x.id]
+              ? [x.name]
               : []
           );
 
           const newResponse = { ...response };
-          newResponse.group = group?.id;
-          newResponse.category = category?.id;
+          newResponse.categories = newCategories;
           newResponse.properties = newProperties;
 
           setState(newResponse);
         })
       );
     },
-    [dispatch, categories, groups, properties]
+    [dispatch, properties, categories]
   );
 
   useEffect(() => {
@@ -187,8 +187,8 @@ export const CreateItem: React.FC<Props> = ({ id }) => {
         <Select
           labelId="category-select-outlined-label"
           id="category-select-outlined"
-          value={state.category}
-          onChange={(e) => handleChangeSelect(e, 'category')}
+          value={state.categories}
+          onChange={(e) => handleChangeSelect(e, 'categories')}
           label="Category"
           disabled={loading || success}
         >

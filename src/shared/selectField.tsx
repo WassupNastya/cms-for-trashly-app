@@ -2,11 +2,18 @@ import React from 'react';
 import { Autocomplete } from '@material-ui/lab';
 import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
 import CheckBoxIcon from '@material-ui/icons/CheckBox';
-import { Checkbox, Chip, TextField } from '@material-ui/core';
+import { Checkbox, Chip, Radio, TextField } from '@material-ui/core';
 import { useCreateDialog } from 'app/common/useCreateDialog';
+import {
+  RadioButtonCheckedOutlined,
+  RadioButtonUncheckedOutlined,
+} from '@material-ui/icons';
 
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
+
+const radio = <RadioButtonUncheckedOutlined fontSize="small" />;
+const radioChecked = <RadioButtonCheckedOutlined fontSize="small" />;
 
 interface Props<T> {
   label: string;
@@ -60,12 +67,21 @@ export const SelectField: <T>(props: Props<T>) => JSX.Element = <T,>({
         onChange={(_, value) => onChange(value as string)}
         renderOption={(option, { selected }) => (
           <React.Fragment>
-            <Checkbox
-              icon={icon}
-              checkedIcon={checkedIcon}
-              style={{ marginRight: 4 }}
-              checked={selected}
-            />
+            {!multiple ? (
+              <Radio
+                icon={radio}
+                checkedIcon={radioChecked}
+                style={{ marginRight: 4 }}
+                checked={selected}
+              />
+            ) : (
+              <Checkbox
+                icon={icon}
+                checkedIcon={checkedIcon}
+                style={{ marginRight: 4 }}
+                checked={selected}
+              />
+            )}
             {getOptionLabel(option)}
           </React.Fragment>
         )}
