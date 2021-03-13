@@ -73,13 +73,6 @@ export const RuleModal: React.FC<Props> = ({ id, hide }) => {
     [state]
   );
 
-  const handleChangeSelect = useCallback(
-    (e, field: keyof Rule) => {
-      setState({ ...state, [field]: e.target.value });
-    },
-    [state]
-  );
-
   const onSave = useCallback(() => {
     setLoading(true);
     dispatch(
@@ -95,28 +88,12 @@ export const RuleModal: React.FC<Props> = ({ id, hide }) => {
 
   const getRule = useCallback(
     (id: string) => {
-      dispatch(
-        getRuleAsync(id, (response) => {
-          const newProperties: string[] = properties.flatMap((x) =>
-            response.properties.find(
-              (y) => y.toLowerCase() === x.name.toLowerCase()
-            )
-              ? [x.name]
-              : []
-          );
-
-          const newResponse = { ...response };
-          newResponse.item = response.item ?? '';
-          newResponse.group = response.group ?? '';
-          newResponse.category = response.category ?? '';
-          newResponse.properties = newProperties;
-
-          setState(newResponse);
-        })
-      );
+      dispatch(getRuleAsync(id, (response) => setState(response)));
     },
-    [dispatch, properties]
+    [dispatch]
   );
+
+  console.log(state);
 
   useEffect(() => {
     if (id != null) getRule(id);

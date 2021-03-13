@@ -72,28 +72,13 @@ export const convertDecisionFromFirebase = (decision) => {
 
 export const convertDecisionFromFirebaseForEdit = (
   decision: any,
-  items: Item[],
-  groups: Group[],
-  categories: Category[],
   properties: Property[]
 ) => {
-  const item: Item | undefined = items.find(
-    (x: Item) => x.name === decision.item
-  );
-
-  const group: Group | undefined = groups.find(
-    (x: Group) => x.name === decision.group
-  );
-
-  const category: Category | undefined = categories.find(
-    (x: Category) => x.name === decision.category
-  );
-
   const result: Decision = {
     id: decision.id,
-    item: item?.id ?? '',
-    group: group?.id ?? '',
-    category: category?.id ?? '',
+    item: decision.item ?? '',
+    group: decision.group ?? '',
+    category: decision.category ?? '',
     location: decision.location,
     description: decision.description,
     priority: decision.priority,
@@ -106,7 +91,7 @@ export const convertDecisionFromFirebaseForEdit = (
     convertPropertiesToArray(decision, result).find(
       (y) => y.toLowerCase() === x.name.toLowerCase()
     )
-      ? [x.id]
+      ? [x.name]
       : []
   );
 
@@ -115,28 +100,13 @@ export const convertDecisionFromFirebaseForEdit = (
 
 export const convertRuleFromFirebaseForEdit = (
   rule: any,
-  items: Item[],
-  groups: Group[],
-  categories: Category[],
   properties: Property[]
 ) => {
-  const item: Item | undefined = items.find(
-    (x: Item) => x.name === rule.item
-  );
-
-  const group: Group | undefined = groups.find(
-    (x: Group) => x.name === rule.group
-  );
-
-  const category: Category | undefined = categories.find(
-    (x: Category) => x.name === rule.category
-  );
-
   const result: Rule = {
     id: rule.id,
-    item: item?.id ?? '',
-    group: group?.id ?? '',
-    category: category?.id ?? '',
+    item: rule.item ?? '',
+    group: rule.group ?? '',
+    category: rule.category ?? '',
     location: rule.location,
     description: rule.description,
     properties: [],
@@ -146,7 +116,7 @@ export const convertRuleFromFirebaseForEdit = (
     convertPropertiesToArray(rule, result).find(
       (y) => y.toLowerCase() === x.name.toLowerCase()
     )
-      ? [x.id]
+      ? [x.name]
       : []
   );
 

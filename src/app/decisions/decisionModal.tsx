@@ -92,27 +92,9 @@ export const DecisionModal: React.FC<Props> = ({ id, hide }) => {
 
   const getDecision = useCallback(
     (id: string) => {
-      dispatch(
-        getDecisionAsync(id, (response) => {
-          const newProperties: string[] = properties.flatMap((x) =>
-            response.properties.find(
-              (y) => y.toLowerCase() === x.name.toLowerCase()
-            )
-              ? [x.name]
-              : []
-          );
-
-          const newResponse = { ...response };
-          newResponse.item = response.item ?? '';
-          newResponse.group = response.group ?? '';
-          newResponse.category = response.category ?? '';
-          newResponse.properties = newProperties;
-
-          setState(newResponse);
-        })
-      );
+      dispatch(getDecisionAsync(id, (response) => setState(response)));
     },
-    [dispatch, properties]
+    [dispatch]
   );
 
   useEffect(() => {

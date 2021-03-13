@@ -1,9 +1,7 @@
 import { ActionsObservable, combineEpics } from 'redux-observable';
 import {
   concatMap,
-  concatMapTo,
   filter,
-  ignoreElements,
   mergeMap,
   tap,
 } from 'rxjs/operators';
@@ -152,7 +150,10 @@ const deleteDecisionEpic = deleteEpic(
   ActionType.DELETEDECISIONASYNC,
   deleteDecision
 );
-const deleteLocationEpic = deleteEpic(ActionType.DELETELOCATIONASYNC, deleteLocation);
+const deleteLocationEpic = deleteEpic(
+  ActionType.DELETELOCATIONASYNC,
+  deleteLocation
+);
 
 const parseComplexResponse = (response) => {
   const model = response[0];
@@ -181,19 +182,18 @@ export const getDecisionEpic = (
         getProperties(),
       ]).pipe(
         tap((response) => {
-          const { model, items, groups, categories, properties } = parseComplexResponse(response);
+          const { model, properties } = parseComplexResponse(response);
           onResponseCallback(
-            convertDecisionFromFirebaseForEdit(
-              model,
-              items,
-              groups,
-              categories,
-              properties
-            )
+            convertDecisionFromFirebaseForEdit(model, properties)
           );
         }),
         concatMap((response) => {
-          const { items, groups, categories, properties } = parseComplexResponse(response);
+          const {
+            items,
+            groups,
+            categories,
+            properties,
+          } = parseComplexResponse(response);
           return of(
             ...[
               setItems(items),
@@ -207,50 +207,46 @@ export const getDecisionEpic = (
     )
   );
 
-
-  export const getRuleEpic = (
-    action$: ActionsObservable<{
-      type: string;
-      id: string;
-      onResponseCallback: (response: Rule) => void;
-    }>
-  ) =>
-    action$.pipe(
-      filter(isOfType(ActionType.GETRULEASYNC)),
-      mergeMap(({ id, onResponseCallback }) =>
-        forkJoin([
-          getRule(id),
-          getItems(),
-          getGroups(),
-          getCategories(),
-          getProperties(),
-        ]).pipe(
-          tap((response) => {
-            const { model, items, groups, categories, properties } = parseComplexResponse(response);
-            onResponseCallback(
-              convertRuleFromFirebaseForEdit(
-                model,
-                items,
-                groups,
-                categories,
-                properties
-              )
-            );
-          }),
-          concatMap((response) => {
-            const { items, groups, categories, properties } = parseComplexResponse(response);
-            return of(
-              ...[
-                setItems(items),
-                setGroups(groups),
-                setCategories(categories),
-                setProperties(properties),
-              ]
-            );
-          })
-        )
+export const getRuleEpic = (
+  action$: ActionsObservable<{
+    type: string;
+    id: string;
+    onResponseCallback: (response: Rule) => void;
+  }>
+) =>
+  action$.pipe(
+    filter(isOfType(ActionType.GETRULEASYNC)),
+    mergeMap(({ id, onResponseCallback }) =>
+      forkJoin([
+        getRule(id),
+        getItems(),
+        getGroups(),
+        getCategories(),
+        getProperties(),
+      ]).pipe(
+        tap((response) => {
+          const { model, properties } = parseComplexResponse(response);
+          onResponseCallback(convertRuleFromFirebaseForEdit(model, properties));
+        }),
+        concatMap((response) => {
+          const {
+            items,
+            groups,
+            categories,
+            properties,
+          } = parseComplexResponse(response);
+          return of(
+            ...[
+              setItems(items),
+              setGroups(groups),
+              setCategories(categories),
+              setProperties(properties),
+            ]
+          );
+        })
       )
-    );
+    )
+  );
 
 export const epic = combineEpics(
   getLocationsEpic,
@@ -273,6 +269,7 @@ export const epic = combineEpics(
   getItemEpic,
   getPropertyEpic,
   getRuleEpic,
+  getDecisionEpic,
   deleteGroupEpic,
   deleteItemEpic,
   deleteCategoryEpic,
