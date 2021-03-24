@@ -40,6 +40,7 @@ export interface Property {
 }
 export interface Rule {
   id: string;
+  name: string;
   item?: string;
   group?: string;
   category?: string;

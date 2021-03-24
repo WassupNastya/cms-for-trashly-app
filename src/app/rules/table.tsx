@@ -33,15 +33,6 @@ export const Table: React.FC = () => {
     );
   }, []);
 
-  const convertName = (rule: Rule) => {
-    let name = 'properties';
-    if (rule.item) name = rule.item;
-    if (rule.group) name = rule.group;
-    if (rule.category) name = rule.category;
-    // TODO if rule for properties
-    return `Rule for ${name}`;
-  };
-
   const actionCell = useCallback(
     (params: CellParams) => {
       const id = params.value.toString();
@@ -49,9 +40,7 @@ export const Table: React.FC = () => {
         <MenuButton
           id={id}
           onEdit={() => show(id)}
-          onDelete={() =>
-            onDelete(id, deleteRuleAsync, (el) => convertName(el))
-          }
+          onDelete={() => onDelete(id, deleteRuleAsync, (el) => el.name)}
         />
       );
     },
@@ -60,6 +49,7 @@ export const Table: React.FC = () => {
 
   const columns: ColDef[] = useMemo(
     () => [
+      { field: 'name', headerName: 'Name', flex: 1 },
       { field: 'item', headerName: 'Item', flex: 1 },
       { field: 'group', headerName: 'Group', flex: 1 },
       { field: 'category', headerName: 'Category', flex: 1 },

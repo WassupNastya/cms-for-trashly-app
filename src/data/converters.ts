@@ -1,7 +1,7 @@
 import lodash from 'lodash';
 
 import { isEmpty } from './helper';
-import { Category, Decision, Group, Item, Property, Rule } from './model';
+import { Decision, Item, Property, Rule } from './model';
 
 export const cleanObject = <T>(obj: T) => {
   return Object.fromEntries(
@@ -44,6 +44,7 @@ export const convertItemFromFirebase = (item) => {
 export const convertRuleFromFirebase = (rule) => {
   const result: Rule = {
     id: rule.id,
+    name: rule.name,
     item: rule.item,
     group: rule.group,
     category: rule.category,
@@ -104,6 +105,7 @@ export const convertRuleFromFirebaseForEdit = (
 ) => {
   const result: Rule = {
     id: rule.id,
+    name: rule.name ?? '',
     item: rule.item ?? '',
     group: rule.group ?? '',
     category: rule.category ?? '',

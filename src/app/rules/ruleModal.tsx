@@ -11,9 +11,10 @@ import {
   DialogContent,
   DialogTitle,
   TextField,
+  Tooltip,
 } from '@material-ui/core';
 import { useDispatch, useSelector } from 'react-redux';
-import { Category, Group, Rule, Item } from 'data/model';
+import { Rule } from 'data/model';
 import {
   useCategories,
   useGroups,
@@ -23,7 +24,7 @@ import {
 } from 'app/common/useData';
 import { StoreType } from 'core/rootReducer';
 import { createRuleAsync, getRuleAsync } from 'data/actions';
-import { Close } from '@material-ui/icons';
+import { Close, InfoOutlined } from '@material-ui/icons';
 import { useSaveSnack } from 'app/common/useSaveSnack';
 import { SelectField } from 'shared/selectField';
 import { Tab } from 'data/enums';
@@ -46,6 +47,7 @@ export const RuleModal: React.FC<Props> = ({ id, hide }) => {
   const [loading, setLoading] = useState(false);
   const [state, setState] = useState<Rule>({
     id: '',
+    name: '',
     location: '',
     description: '',
     properties: [],
@@ -93,8 +95,6 @@ export const RuleModal: React.FC<Props> = ({ id, hide }) => {
     [dispatch]
   );
 
-  console.log(state);
-
   useEffect(() => {
     if (id != null) getRule(id);
   }, [id, getRule]);
@@ -106,6 +106,26 @@ export const RuleModal: React.FC<Props> = ({ id, hide }) => {
         <Close onClick={hide} />
       </DialogTitle>
       <DialogContent>
+        <TextField
+          multiline
+          id="outlined-name"
+          label="Name"
+          variant="outlined"
+          size="small"
+          value={state.name}
+          onChange={(e) => handleChange(e, 'name')}
+          disabled={loading || success}
+          color="secondary"
+          fullWidth
+          margin="dense"
+          InputProps={{
+            endAdornment: (
+              <Tooltip title="e.g. Recycle or Landfill Bin" arrow placement="top">
+                <InfoOutlined style={{ color: '#A9A9A9' }} fontSize="small" />
+              </Tooltip>
+            ),
+          }}
+        ></TextField>
         <TextField
           multiline
           id="outlined-description"
