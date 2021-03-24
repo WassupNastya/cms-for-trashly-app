@@ -64,6 +64,7 @@ export const Table: React.FC = () => {
         headerName: ' ',
         renderCell: actionCell,
         flex: 1,
+        sortable: false,
       },
     ],
     [actionCell, propertiesCell]

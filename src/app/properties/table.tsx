@@ -43,6 +43,7 @@ export const Table: React.FC = () => {
         headerName: ' ',
         flex: 1,
         renderCell: actionCell,
+        sortable: false,
       },
     ],
     [actionCell]

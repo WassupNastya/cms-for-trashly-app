@@ -12,10 +12,21 @@ interface Props {
   loading?: boolean;
 }
 
-export const Table: React.FC<Props> = ({ columns, rows, className, loading }) => {
+export const Table: React.FC<Props> = ({
+  columns,
+  rows,
+  className,
+  loading,
+}) => {
   return (
     <Grid className={classnames('table', className)}>
-      <DataGrid rows={rows} columns={columns} disableSelectionOnClick loading={loading} />
+      <DataGrid
+        rows={rows}
+        columns={columns}
+        disableSelectionOnClick
+        loading={loading}
+        disableColumnMenu
+      />
     </Grid>
   );
 };

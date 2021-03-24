@@ -30,6 +30,8 @@ import { Tab } from 'data/enums';
 import { SelectField } from 'shared/selectField';
 import { CustomSlider } from 'shared/slider/slider';
 
+import { TypeSelect } from './components/typeSelect';
+
 interface Props {
   hide: () => void;
   id?: string;
@@ -121,19 +123,20 @@ export const DecisionModal: React.FC<Props> = ({ id, hide }) => {
           color="secondary"
           margin="dense"
         ></TextField>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <TextField
-            id="outlined-decisionNameType"
-            label="Type"
-            variant="outlined"
-            size="small"
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+          }}
+        >
+          <TypeSelect
             value={state.decisionNameType}
-            onChange={(e) => handleChange(e, 'decisionNameType')}
+            onChange={(decisionNameType) =>
+              setState({ ...state, decisionNameType })
+            }
             disabled={loading || success}
-            color="secondary"
-            margin="dense"
-            style={{ width: '48%' }}
-          ></TextField>
+          />
           <CustomSlider
             value={state.priority}
             onChange={(priority) => setState({ ...state, priority })}

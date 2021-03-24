@@ -27,6 +27,7 @@ interface Props<T> {
   onClose?: () => void;
   helperTextLabel?: string;
   onChangeSubItem?: (name: string) => void;
+  style?: React.CSSProperties;
 }
 
 export const SelectField: <T>(props: Props<T>) => JSX.Element = <T,>({
@@ -40,6 +41,7 @@ export const SelectField: <T>(props: Props<T>) => JSX.Element = <T,>({
   helperText,
   helperTextLabel,
   onChangeSubItem,
+  style,
 }: Props<T>): JSX.Element => {
   const { show, dialog } = useCreateDialog();
 
@@ -95,6 +97,7 @@ export const SelectField: <T>(props: Props<T>) => JSX.Element = <T,>({
             />
           ))
         }
+        style={style}
       />
       {helperText && (
         <div
