@@ -28,6 +28,7 @@ import { Close } from '@material-ui/icons';
 import { useSaveSnack } from 'app/common/useSaveSnack';
 import { Tab } from 'data/enums';
 import { SelectField } from 'shared/selectField';
+import { CustomSlider } from 'shared/slider/slider';
 
 interface Props {
   hide: () => void;
@@ -49,7 +50,7 @@ export const DecisionModal: React.FC<Props> = ({ id, hide }) => {
     id: '',
     location: '',
     description: '',
-    priority: '',
+    priority: 'Low',
     name: '',
     decisionNameType: '',
     properties: [],
@@ -120,7 +121,7 @@ export const DecisionModal: React.FC<Props> = ({ id, hide }) => {
           color="secondary"
           margin="dense"
         ></TextField>
-        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <TextField
             id="outlined-decisionNameType"
             label="Type"
@@ -131,20 +132,13 @@ export const DecisionModal: React.FC<Props> = ({ id, hide }) => {
             disabled={loading || success}
             color="secondary"
             margin="dense"
-            style={{ width: '49%' }}
+            style={{ width: '48%' }}
           ></TextField>
-          <TextField
-            id="outlined-priority"
-            label="Priority"
-            variant="outlined"
-            size="small"
+          <CustomSlider
             value={state.priority}
-            onChange={(e) => handleChange(e, 'priority')}
+            onChange={(priority) => setState({ ...state, priority })}
             disabled={loading || success}
-            color="secondary"
-            margin="dense"
-            style={{ width: '49%' }}
-          ></TextField>
+          />
         </div>
         <TextField
           multiline
