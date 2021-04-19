@@ -1,4 +1,5 @@
 import { convertPropertiesToField } from 'data/converters';
+import { isEmpty } from 'data/helper';
 import { Category, Group, Item, Property, Rule } from 'data/model';
 
 import { convertRuleFromFirebase } from './converter';
@@ -30,9 +31,19 @@ export const prepareRuleForDownload = (
   const ruleProperties = convertPropertiesToField(rule.properties);
   delete rule.properties;
   rule = { ...rule, ...ruleProperties };
+  if (isEmpty(rule.category)) delete rule['category'];
 
   const results: RuleForDownload[] = [];
-  if (rule.item != null && rule.group == null) {
+  if (isEmpty(rule.item) && isEmpty(rule.group)) {
+    // rule for properties
+    const result: RuleForDownload = {
+      ...rule,
+      id: 0,
+    };
+    delete result['item'];
+    delete result['group'];
+    results.push(result);
+  } else if (!isEmpty(rule.item) && isEmpty(rule.group)) {
     // rule for item
     const result: RuleForDownload = {
       ...rule,
@@ -40,7 +51,7 @@ export const prepareRuleForDownload = (
     };
     delete result['group'];
     results.push(result);
-  } else if (rule.group != null && rule.item == null) {
+  } else if (!isEmpty(rule.group) && isEmpty(rule.item)) {
     // rule for group
     const result: RuleForDownload = {
       ...rule,

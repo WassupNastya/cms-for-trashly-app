@@ -53,7 +53,7 @@ export const DecisionModal: React.FC<Props> = ({ id, hide }) => {
   const [loading, setLoading] = useState(false);
   const [state, setState] = useState<Decision>({
     id: '',
-    location: '',
+    location: 'All',
     description: '',
     priority: 'Low',
     name: '',

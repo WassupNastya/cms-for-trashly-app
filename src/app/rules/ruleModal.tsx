@@ -40,7 +40,7 @@ export const RuleModal: React.FC<Props> = ({ id, hide }) => {
   const [state, setState] = useState<Rule>({
     id: '',
     name: '',
-    location: '',
+    location: 'All',
     description: '',
     properties: [],
     category: '',
