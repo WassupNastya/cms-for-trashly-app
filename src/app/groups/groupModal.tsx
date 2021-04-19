@@ -71,7 +71,7 @@ export const GroupModal: React.FC<Props> = ({ id, hide, onChangeSubItem }) => {
         hide();
       })
     );
-  }, [dispatch, state, getGroups, showSaveSnack, hide, onChangeSubItem]);
+  }, [dispatch, state, showSaveSnack, hide, onChangeSubItem, getGroups]);
 
   useEffect(() => {
     if (id != null) getGroup(id);

@@ -14,18 +14,16 @@ import {
 } from '@material-ui/core';
 import { useDispatch, useSelector } from 'react-redux';
 import { Item } from 'data/model';
-import {
-  useCategories,
-  useGroups,
-  useItems,
-  useProperties,
-} from 'app/common/useData';
-import { StoreType } from 'core/rootReducer';
+import { useItems } from 'app/common/useData';
 import { createItemAsync, getItemAsync } from 'data/actions';
 import { Close } from '@material-ui/icons';
 import { useSaveSnack } from 'app/common/useSaveSnack';
-import { SelectField } from 'shared/selectField';
-import { Tab } from 'data/enums';
+import { GroupSelect } from 'app/common/select/groupSelect';
+import { CategoriesSelect } from 'app/common/select/categoriesSelect';
+import { PropertiesSelect } from 'app/common/select/propertiesSelect';
+import { emptyItem } from 'app/common/emptyStates';
+import { StoreType } from 'core/rootReducer';
+import { convertItemToFirebase } from 'data/item/converter';
 
 interface Props {
   hide: () => void;
@@ -38,19 +36,9 @@ export const ItemModal: React.FC<Props> = ({ id, hide, onChangeSubItem }) => {
   const getItems = useItems({ needEffect: false });
   const showSaveSnack = useSaveSnack();
 
-  const getGroups = useGroups({ needEffect: true });
-  const getCategories = useCategories({ needEffect: true });
-  const getProperties = useProperties({ needEffect: true });
+  const [state, setState] = useState<Item>(emptyItem);
 
   const [loading, setLoading] = useState(false);
-  const [state, setState] = useState<Item>({
-    name: '',
-    id: '',
-    group: '',
-    categories: [],
-    properties: [],
-    aliases: '',
-  });
   const [success, setSuccess] = useState(false);
 
   const { groups, categories, properties } = useSelector(
@@ -75,9 +63,7 @@ export const ItemModal: React.FC<Props> = ({ id, hide, onChangeSubItem }) => {
     setLoading(true);
     dispatch(
       createItemAsync(
-        {
-          ...state,
-        },
+        convertItemToFirebase(state, groups, categories, properties),
         () => {
           setLoading(false);
           setSuccess(true);
@@ -88,43 +74,32 @@ export const ItemModal: React.FC<Props> = ({ id, hide, onChangeSubItem }) => {
         }
       )
     );
-  }, [dispatch, state, getItems, showSaveSnack, hide, onChangeSubItem]);
+  }, [
+    dispatch,
+    state,
+    getItems,
+    showSaveSnack,
+    hide,
+    onChangeSubItem,
+    groups,
+    categories,
+    properties,
+  ]);
 
   const getItem = useCallback(
     (id: string) => {
       dispatch(
-        getItemAsync(id, (response) => {
-          const newCategories: string[] = categories.flatMap((x) =>
-            response.categories.find(
-              (y) => y.toLowerCase() === x.name.toLowerCase()
-            )
-              ? [x.name]
-              : []
-          );
-
-          const newProperties: string[] = properties.flatMap((x) =>
-            response.properties.find(
-              (y) => y.toLowerCase() === x.name.toLowerCase()
-            )
-              ? [x.name]
-              : []
-          );
-
-          const newResponse = { ...response };
-          newResponse.group = response.group ?? '';
-          newResponse.categories = newCategories;
-          newResponse.properties = newProperties;
-
-          setState(newResponse);
-        })
+        getItemAsync(id, (response) => setState(response))
       );
     },
-    [dispatch, properties, categories]
+    [dispatch]
   );
 
   useEffect(() => {
     if (id != null) getItem(id);
   }, [getItem, id]);
+
+  const disabled = loading || success;
 
   return (
     <div style={{ width: '20rem' }}>
@@ -140,7 +115,7 @@ export const ItemModal: React.FC<Props> = ({ id, hide, onChangeSubItem }) => {
           size="small"
           value={state.name}
           onChange={(e) => handleChange(e, 'name')}
-          disabled={loading || success}
+          disabled={disabled}
           color="secondary"
           margin="dense"
           fullWidth
@@ -152,58 +127,35 @@ export const ItemModal: React.FC<Props> = ({ id, hide, onChangeSubItem }) => {
           size="small"
           value={state.aliases}
           onChange={(e) => handleChange(e, 'aliases')}
-          disabled={loading || success}
+          disabled={disabled}
           margin="dense"
           fullWidth
           color="secondary"
         ></TextField>
-        <SelectField<string>
-          label="Group"
-          options={groups.map((x) => x.name)}
-          getOptionLabel={(option: string) => option}
+        <GroupSelect
           value={state.group}
-          onChange={(group) => setState({ ...state, group: group as string })}
-          disabled={loading || success}
-          helperText={Tab.Groups}
-          onClose={getGroups}
-          helperTextLabel="Create group"
-          onChangeSubItem={(group) =>
-            setState({ ...state, group: group as string })
-          }
+          onChange={(group) => setState({ ...state, group })}
+          disabled={disabled}
         />
-        <SelectField<string>
-          multiple
-          label="Categories"
-          options={categories.map((x) => x.name)}
-          getOptionLabel={(option: string) => option}
+        <CategoriesSelect
           value={state.categories}
-          onChange={(categories) =>
-            setState({ ...state, categories: categories as string[] })
+          onChange={(categories: string[]) =>
+            setState(state => ({ ...state, categories }))
           }
-          disabled={loading || success}
-          helperText={Tab.Categories}
-          onClose={getCategories}
-          helperTextLabel="Create category"
           onChangeSubItem={(category) =>
-            setState({ ...state, categories: [...state.categories, category] })
+            setState(state => ({ ...state, categories: [...state.categories, category] }))
           }
+          disabled={disabled}
         />
-        <SelectField<string>
-          multiple
-          label="Properties"
-          options={properties.map((x) => x.name)}
-          getOptionLabel={(option: string) => option}
+        <PropertiesSelect
           value={state.properties}
-          onChange={(properties) =>
-            setState({ ...state, properties: properties as string[] })
+          onChange={(properties: string[]) =>
+            setState(state => ({ ...state, properties }))
           }
-          disabled={loading || success}
-          helperText={Tab.Properties}
-          onClose={getProperties}
-          helperTextLabel="Create property"
           onChangeSubItem={(property) =>
-            setState({ ...state, properties: [...state.properties, property] })
+            setState(state => ({ ...state, properties: [...state.properties, property] }))
           }
+          disabled={disabled}
         />
         <Button fullWidth onClick={onSave} disabled={loading || success}>
           {loading && (

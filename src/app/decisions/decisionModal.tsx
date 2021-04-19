@@ -26,9 +26,12 @@ import { StoreType } from 'core/rootReducer';
 import { createDecisionAsync, getDecisionAsync } from 'data/actions';
 import { Close } from '@material-ui/icons';
 import { useSaveSnack } from 'app/common/useSaveSnack';
-import { Tab } from 'data/enums';
-import { SelectField } from 'shared/selectField';
 import { CustomSlider } from 'shared/slider/slider';
+import { convertDecisionToFirebase } from 'data/decision/converter';
+import { ItemSelect } from 'app/common/select/itemSelect';
+import { GroupSelect } from 'app/common/select/groupSelect';
+import { CategorySelect } from 'app/common/select/categorySelect';
+import { PropertiesSelect } from 'app/common/select/propertiesSelect';
 
 import { TypeSelect } from './components/typeSelect';
 
@@ -83,15 +86,28 @@ export const DecisionModal: React.FC<Props> = ({ id, hide }) => {
   const onSave = useCallback(() => {
     setLoading(true);
     dispatch(
-      createDecisionAsync({ ...state }, () => {
-        setLoading(false);
-        setSuccess(true);
-        getDecisions();
-        showSaveSnack();
-        hide();
-      })
+      createDecisionAsync(
+        convertDecisionToFirebase(state, items, groups, categories, properties),
+        () => {
+          setLoading(false);
+          setSuccess(true);
+          getDecisions();
+          showSaveSnack();
+          hide();
+        }
+      )
     );
-  }, [dispatch, state, getDecisions, showSaveSnack, hide]);
+  }, [
+    dispatch,
+    state,
+    getDecisions,
+    showSaveSnack,
+    hide,
+    items,
+    groups,
+    categories,
+    properties,
+  ]);
 
   const getDecision = useCallback(
     (id: string) => {
@@ -103,6 +119,8 @@ export const DecisionModal: React.FC<Props> = ({ id, hide }) => {
   useEffect(() => {
     if (id != null) getDecision(id);
   }, [id, getDecision]);
+
+  const disabled = loading || success;
 
   return (
     <div style={{ width: '40rem' }}>
@@ -162,66 +180,33 @@ export const DecisionModal: React.FC<Props> = ({ id, hide }) => {
             You can add something now or do it later
           </Typography>
         )}
-        <SelectField<string>
-          label="Item"
-          options={items.map((x) => x.name)}
-          getOptionLabel={(option: string) => option}
+        <ItemSelect
           value={state.item}
-          onChange={(item) => setState({ ...state, item: item as string })}
-          disabled={loading || success}
-          helperText={Tab.Items}
-          onClose={getItems}
-          helperTextLabel="Create item"
-          onChangeSubItem={(item) =>
-            setState({ ...state, item: item as string })
-          }
+          onChange={(item) => setState({ ...state, item })}
+          disabled={disabled}
         />
-        <SelectField<string>
-          label="Group"
-          options={groups.map((x) => x.name)}
-          getOptionLabel={(option: string) => option}
+        <GroupSelect
           value={state.group}
-          onChange={(group) => setState({ ...state, group: group as string })}
-          disabled={loading || success}
-          helperText={Tab.Groups}
-          onClose={getGroups}
-          helperTextLabel="Create group"
-          onChangeSubItem={(group) =>
-            setState({ ...state, group: group as string })
-          }
+          onChange={(group) => setState({ ...state, group })}
+          disabled={disabled}
         />
-        <SelectField<string>
-          label="Category"
-          options={categories.map((x) => x.name)}
-          getOptionLabel={(option: string) => option}
+        <CategorySelect
           value={state.category}
-          onChange={(category) =>
-            setState({ ...state, category: category as string })
-          }
-          disabled={loading || success}
-          helperText={Tab.Categories}
-          onClose={getCategories}
-          helperTextLabel="Create category"
-          onChangeSubItem={(category) =>
-            setState({ ...state, category: category as string })
-          }
+          onChange={(category) => setState({ ...state, category })}
+          disabled={disabled}
         />
-        <SelectField<string>
-          multiple
-          label="Properties"
-          options={properties.map((x) => x.name)}
-          getOptionLabel={(option: string) => option}
+        <PropertiesSelect
           value={state.properties}
-          onChange={(properties) =>
-            setState({ ...state, properties: properties as string[] })
+          onChange={(properties: string[]) =>
+            setState((state) => ({ ...state, properties }))
           }
-          disabled={loading || success}
-          helperText={Tab.Properties}
-          onClose={getProperties}
-          helperTextLabel="Create property"
           onChangeSubItem={(property) =>
-            setState({ ...state, properties: [...state.properties, property] })
+            setState((state) => ({
+              ...state,
+              properties: [...state.properties, property],
+            }))
           }
+          disabled={disabled}
         />
         <div
           style={{ display: 'flex', width: '100%', justifyContent: 'flex-end' }}

@@ -7,6 +7,8 @@ import {
   Location,
   Rule,
   Decision,
+  Action,
+  DataForDownload,
 } from './model';
 import { create, deleteAction, get, getAll, setAll } from './templateAction';
 
@@ -62,3 +64,9 @@ export const deletePropertyAsync = deleteAction(ActionType.DELETEPROPERTYASYNC);
 export const deleteRuleAsync = deleteAction(ActionType.DELETERULEASYNC);
 export const deleteDecisionAsync = deleteAction(ActionType.DELETEDECISIONASYNC);
 export const deleteLocationAsync = deleteAction(ActionType.DELETELOCATIONASYNC);
+
+export const downloadAsync: (
+  onResponseCallback: (data: DataForDownload) => void
+) => Action = (onResponseCallback) => {
+  return { type: ActionType.DOWNLOADASYNC, onResponseCallback };
+};

@@ -1,3 +1,8 @@
+import { LocationForDownload } from './location/download';
+import { ItemForDownload } from './item/download';
+import { RuleForDownload } from './rule/download';
+import { DecisionForDownload } from './decision/download';
+
 export interface Action {
   type: string;
   data?: any;
@@ -48,14 +53,6 @@ export interface Rule {
   description: string;
   properties: string[];
 }
-export interface RuleView {
-  id: string;
-  ruleFor: string;
-  type: number;
-  location: string;
-  description: string;
-}
-
 export interface Decision {
   id: string;
   item?: string;
@@ -68,14 +65,9 @@ export interface Decision {
   decisionNameType: string;
   properties: string[];
 }
-
-export interface DecisionView {
-  id: string;
-  decisionFor: string;
-  type: number;
-  location: string;
-  description: string;
-  priority: string;
-  name: string;
-  decisionNameType: string;
+export interface DataForDownload {
+  locations: LocationForDownload[];
+  items: ItemForDownload[];
+  rules: RuleForDownload[];
+  decisions: DecisionForDownload[];
 }

@@ -1,12 +1,7 @@
 import { ActionsObservable, combineEpics } from 'redux-observable';
-import {
-  concatMap,
-  filter,
-  mergeMap,
-  tap,
-} from 'rxjs/operators';
+import { filter, ignoreElements, mergeMap, tap } from 'rxjs/operators';
 import { isOfType } from 'typesafe-actions';
-import { forkJoin, of } from 'rxjs';
+import { forkJoin } from 'rxjs';
 
 import {
   Category,
@@ -16,15 +11,13 @@ import {
   Location,
   Rule,
   Decision,
+  DataForDownload,
 } from './model';
 import {
   setCategories,
-  setDecisions,
   setGroups,
-  setItems,
   setProperties,
   setLocations,
-  setRules,
 } from './actions';
 import { ActionType } from './actionType';
 import {
@@ -33,8 +26,6 @@ import {
   getItems,
   getGroups,
   getProperties,
-  getRules,
-  getDecisions,
   getCategories,
   createGroup,
   getGroup,
@@ -45,10 +36,7 @@ import {
   createProperty,
   createLocation,
   getCategory,
-  getItem,
   getProperty,
-  getRule,
-  getDecision,
   deleteGroup,
   deleteItem,
   deleteCategory,
@@ -56,22 +44,18 @@ import {
   deleteRule,
   deleteDecision,
   deleteLocation,
+  getRules,
+  getDecisions,
 } from './api';
-import {
-  convertDecisionFromFirebase,
-  convertItemFromFirebase,
-  convertRuleFromFirebase,
-  convertDecisionFromFirebaseForEdit,
-  convertRuleFromFirebaseForEdit,
-} from './converters';
 import { get, create, getAll, deleteEpic } from './templatesEpic';
+import { prepareItemForDownload } from './item/download';
+import { getItemEpic, getItemsEpic } from './item/request';
+import { prepareLocationForDownload } from './location/download';
+import { getRuleEpic, getRulesEpic } from './rule/request';
+import { prepareRuleForDownload } from './rule/download';
+import { getDecisionEpic, getDecisionsEpic } from './decision/request';
+import { prepareDecisionForDownload } from './decision/download';
 
-const getItemsEpic = getAll<Item>(
-  ActionType.GETITEMSASYNC,
-  getItems,
-  setItems,
-  convertItemFromFirebase
-);
 const getGroupsEpic = getAll<Group>(
   ActionType.GETGROUPSASYNC,
   getGroups,
@@ -86,18 +70,6 @@ const getPropertiesEpic = getAll<Property>(
   ActionType.GETPROPERTIESASYNC,
   getProperties,
   setProperties
-);
-const getRulesEpic = getAll<Rule>(
-  ActionType.GETRULESASYNC,
-  getRules,
-  setRules,
-  convertRuleFromFirebase
-);
-const getDecisionsEpic = getAll<Decision>(
-  ActionType.GETDECISIONSASYNC,
-  getDecisions,
-  setDecisions,
-  convertDecisionFromFirebase
 );
 const getLocationsEpic = getAll<Location>(
   ActionType.GETLOCATIONSASYNC,
@@ -125,11 +97,6 @@ const createLocationEpic = create<Location>(
   createLocation
 );
 
-const getItemEpic = get<Item>(
-  ActionType.GETITEMASYNC,
-  getItem,
-  convertItemFromFirebase
-);
 const getGroupEpic = get<Group>(ActionType.GETGROUPASYNC, getGroup);
 const getCategoryEpic = get<Category>(ActionType.GETCATEGORYASYNC, getCategory);
 const getPropertyEpic = get<Property>(ActionType.GETPROPERTYASYNC, getProperty);
@@ -155,97 +122,87 @@ const deleteLocationEpic = deleteEpic(
   deleteLocation
 );
 
-const parseComplexResponse = (response) => {
-  const model = response[0];
-  const items = response[1] as Item[];
+const parseDownloadResponse = (response: any) => {
+  const locations = response[0] as Location[];
+  const handledLocations = locations.map((x, i) =>
+    prepareLocationForDownload(x, i)
+  );
+
   const groups = response[2] as Group[];
   const categories = response[3] as Category[];
   const properties = response[4] as Property[];
 
-  return { model, items, groups, categories, properties };
-};
-export const getDecisionEpic = (
-  action$: ActionsObservable<{
-    type: string;
-    id: string;
-    onResponseCallback: (response: Decision) => void;
-  }>
-) =>
-  action$.pipe(
-    filter(isOfType(ActionType.GETDECISIONASYNC)),
-    mergeMap(({ id, onResponseCallback }) =>
-      forkJoin([
-        getDecision(id),
-        getItems(),
-        getGroups(),
-        getCategories(),
-        getProperties(),
-      ]).pipe(
-        tap((response) => {
-          const { model, properties } = parseComplexResponse(response);
-          onResponseCallback(
-            convertDecisionFromFirebaseForEdit(model, properties)
-          );
-        }),
-        concatMap((response) => {
-          const {
-            items,
-            groups,
-            categories,
-            properties,
-          } = parseComplexResponse(response);
-          return of(
-            ...[
-              setItems(items),
-              setGroups(groups),
-              setCategories(categories),
-              setProperties(properties),
-            ]
-          );
-        })
-      )
-    )
+  const items = response[1] as Item[];
+  let handledItems = [];
+  items.forEach(
+    (item) =>
+      (handledItems = [
+        ...handledItems,
+        ...prepareItemForDownload(item, groups, categories, properties),
+      ])
   );
 
-export const getRuleEpic = (
+  const rules = response[5] as Rule[];
+  let handledRules = [];
+  rules.forEach(
+    (rule) =>
+      (handledRules = [
+        ...handledRules,
+        ...prepareRuleForDownload(rule, items, groups, categories, properties),
+      ])
+  );
+
+  const decisions = response[6] as Decision[];
+  let handledDecisions = [];
+  decisions.forEach(
+    (decision) =>
+      (handledDecisions = [
+        ...handledDecisions,
+        ...prepareDecisionForDownload(
+          decision,
+          items,
+          groups,
+          categories,
+          properties
+        ),
+      ])
+  );
+
+  return {
+    locations: handledLocations,
+    items: handledItems.map((x, id) => ({ ...x, id })),
+    rules: handledRules.map((x, id) => ({ ...x, id })),
+    decisions: handledDecisions.map((x, id) => ({ ...x, id })),
+  };
+};
+
+export const downloadEpic = (
   action$: ActionsObservable<{
     type: string;
-    id: string;
-    onResponseCallback: (response: Rule) => void;
+    onResponseCallback: (response: DataForDownload) => void;
   }>
 ) =>
   action$.pipe(
-    filter(isOfType(ActionType.GETRULEASYNC)),
-    mergeMap(({ id, onResponseCallback }) =>
-      forkJoin([
-        getRule(id),
+    filter(isOfType(ActionType.DOWNLOADASYNC)),
+    mergeMap(({ onResponseCallback }) => {
+      return forkJoin([
+        getLocations(),
         getItems(),
         getGroups(),
         getCategories(),
         getProperties(),
+        getRules(),
+        getDecisions(),
       ]).pipe(
         tap((response) => {
-          const { model, properties } = parseComplexResponse(response);
-          onResponseCallback(convertRuleFromFirebaseForEdit(model, properties));
-        }),
-        concatMap((response) => {
-          const {
-            items,
-            groups,
-            categories,
-            properties,
-          } = parseComplexResponse(response);
-          return of(
-            ...[
-              setItems(items),
-              setGroups(groups),
-              setCategories(categories),
-              setProperties(properties),
-            ]
+          const { locations, items, rules, decisions } = parseDownloadResponse(
+            response
           );
-        })
-      )
-    )
+          onResponseCallback({ locations, items, rules, decisions });
+        }),
+        ignoreElements()
+      );
+    })
   );
 
 export const epic = combineEpics(
@@ -276,5 +233,6 @@ export const epic = combineEpics(
   deletePropertyEpic,
   deleteRuleEpic,
   deleteDecisionEpic,
-  deleteLocationEpic
+  deleteLocationEpic,
+  downloadEpic
 );

@@ -11,6 +11,9 @@ import { RuleModal } from 'app/rules/ruleModal';
 import { DecisionModal } from 'app/decisions/decisionModal';
 import { LocationModal } from 'app/locations/locationModal';
 import { useSearch } from 'app/common/searchProvider';
+import { GroupModal } from 'app/groups/groupModal';
+import { CategoryModal } from 'app/categories/categoryModal';
+import { PropertyModal } from 'app/properties/propertyModal';
 
 import './tools.scss';
 
@@ -25,17 +28,14 @@ export const Tools: React.FC<Props> = ({ currentTab, setCurrentTab }) => {
   const { searchValue, setSearchValue } = useSearch();
 
   const whereI = useMemo(() => {
-    if (location.pathname === '/' || location.pathname === Root.Items) return Root.Items;
+    if (location.pathname === '/' || location.pathname === Root.Items)
+      return Root.Items;
     else if (location.pathname === Root.Rules) return Root.Rules;
     else if (location.pathname === Root.Decisions) return Root.Decisions;
     return Root.Locations;
   }, [location.pathname]);
 
   const isItems = useMemo(() => whereI === Root.Items, [whereI]);
-
-  const hideButton = useMemo(() => {
-    return isItems && currentTab !== Tab.Items;
-  }, [currentTab, isItems]);
 
   const buttonTitle = useMemo(() => {
     if (isItems) return currentTab;
@@ -45,13 +45,21 @@ export const Tools: React.FC<Props> = ({ currentTab, setCurrentTab }) => {
   }, [currentTab, isItems, location]);
 
   const modal = useMemo(() => {
-    switch(whereI) {
-      case Root.Items: return <ItemModal hide={hide} />;
-      case Root.Rules: return <RuleModal hide={hide} />;
-      case Root.Decisions: return <DecisionModal hide={hide} />;
-      default: return <LocationModal hide={hide} />;
+    switch (whereI) {
+      case Root.Items: {
+        if (currentTab === Tab.Items) return <ItemModal hide={hide} />;
+        if (currentTab === Tab.Groups) return <GroupModal hide={hide} />;
+        if (currentTab === Tab.Categories) return <CategoryModal hide={hide} />;
+        if (currentTab === Tab.Properties) return <PropertyModal hide={hide} />;
+      }
+      case Root.Rules:
+        return <RuleModal hide={hide} />;
+      case Root.Decisions:
+        return <DecisionModal hide={hide} />;
+      default:
+        return <LocationModal hide={hide} />;
     }
-  }, [hide, whereI]);
+  }, [hide, whereI, currentTab]);
 
   return (
     <div className="tools">
@@ -72,21 +80,14 @@ export const Tools: React.FC<Props> = ({ currentTab, setCurrentTab }) => {
               startAdornment: <Search />,
             }}
             value={searchValue}
-            onChange={e => setSearchValue(e.target.value)}
+            onChange={(e) => setSearchValue(e.target.value)}
           />
         </form>
-        {!hideButton && (
-          <>
-            <Button
-              style={{ backgroundColor: '#00BCCA' }}
-              onClick={() => show()}
-            >
-              <Add />
-              <div className="buttonTitle">{buttonTitle}</div>
-            </Button>
-            {dialog(() => modal)}
-          </>
-        )}
+        <Button style={{ backgroundColor: '#00BCCA' }} onClick={() => show()}>
+          <Add />
+          <div className="buttonTitle">{buttonTitle}</div>
+        </Button>
+        {dialog(() => modal)}
       </div>
     </div>
   );

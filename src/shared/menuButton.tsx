@@ -1,7 +1,6 @@
 import React, { useCallback, useState } from 'react';
 import { IconButton, Menu, MenuItem } from '@material-ui/core';
 import { MoreVert } from '@material-ui/icons';
-import { useLocation } from 'react-router-dom';
 
 import './menuButton.scss';
 
@@ -13,8 +12,6 @@ interface Props {
 }
 
 export const MenuButton: React.FC<Props> = ({ id, onEdit, onDelete, isRename }) => {
-  const location = useLocation();
-
   const [anchor, setAnchor] = useState<Element>(null);
   const [showMenu, setShowMenu] = useState(false);
 

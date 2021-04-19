@@ -33,7 +33,7 @@ export const getAll = <T>(collectionName: string) => {
   };
 };
 
-export const create = <T>(collectionName: string, needHandling?: boolean) => {
+export const create = (collectionName: string) => {
   return (data) => {
     const id = !isEmpty(data.id)
       ? data.id
@@ -41,14 +41,10 @@ export const create = <T>(collectionName: string, needHandling?: boolean) => {
     return db
       .collection(collectionName)
       .doc(id)
-      .set(
-        needHandling
-          ? handleObject<T>({ ...data, id })
-          : {
-              ...data,
-              id,
-            }
-      )
+      .set({
+        ...data,
+        id,
+      })
       .then(() => id)
       .catch((error) => console.log(error));
   };

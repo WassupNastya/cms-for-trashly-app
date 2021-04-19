@@ -4,6 +4,7 @@ import { HelpOutline } from '@material-ui/icons';
 import { CustomPopover } from 'shared/customPopover/customPopover';
 import { Root } from 'data/enums';
 import { Link, useLocation } from 'react-router-dom';
+import { UserButton } from 'shared/userButton/userButton';
 
 import './bar.scss';
 
@@ -58,6 +59,7 @@ export const Bar: React.FC = () => {
               anchorEl={anchorEl}
             />
           </div>
+          <UserButton />
         </Toolbar>
       </AppBar>
     </div>

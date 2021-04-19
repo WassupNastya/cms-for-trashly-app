@@ -18,12 +18,12 @@ export const getRules = getAll<Rule>(Collection.Rules);
 export const getDecisions = getAll<Decision>(Collection.Decisions);
 export const getLocations = getAll<Location>(Collection.Locations);
 
-export const createItem = create<Item>(Collection.Items, true);
+export const createItem = create(Collection.Items);
 export const createCategory = create(Collection.Categories);
 export const createProperty = create(Collection.Properties);
 export const createGroup = create(Collection.Groups);
-export const createRule = create<Rule>(Collection.Rules, true);
-export const createDecision = create<Decision>(Collection.Decisions, true);
+export const createRule = create(Collection.Rules);
+export const createDecision = create(Collection.Decisions);
 export const createLocation = create(Collection.Locations);
 
 export const getItem = get<Item>(Collection.Items);

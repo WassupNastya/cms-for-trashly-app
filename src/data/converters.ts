@@ -1,7 +1,6 @@
 import lodash from 'lodash';
 
 import { isEmpty } from './helper';
-import { Decision, Item, Property, Rule } from './model';
 
 export const cleanObject = <T>(obj: T) => {
   return Object.fromEntries(
@@ -27,100 +26,4 @@ export const handleObject = <T>(obj: T) => {
   const propertiesFields = convertPropertiesToField(result.properties);
   delete result.properties;
   return { ...result, ...propertiesFields };
-};
-
-export const convertItemFromFirebase = (item) => {
-  const result: Item = {
-    id: item.id,
-    name: item.name,
-    group: item.group,
-    categories: item.categories ?? [],
-    aliases: item.aliases,
-    properties: [],
-  };
-  return { ...result, properties: convertPropertiesToArray(item, result) };
-};
-
-export const convertRuleFromFirebase = (rule) => {
-  const result: Rule = {
-    id: rule.id,
-    name: rule.name,
-    item: rule.item,
-    group: rule.group,
-    category: rule.category,
-    location: rule.location,
-    description: rule.description,
-    properties: [],
-  };
-  return { ...result, properties: convertPropertiesToArray(rule, result) };
-};
-
-export const convertDecisionFromFirebase = (decision) => {
-  const result: Decision = {
-    id: decision.id,
-    item: decision.item,
-    group: decision.group,
-    category: decision.category,
-    location: decision.location,
-    description: decision.description,
-    priority: decision.priority,
-    name: decision.name,
-    decisionNameType: decision.decisionNameType,
-    properties: [],
-  };
-  return { ...result, properties: convertPropertiesToArray(decision, result) };
-};
-
-export const convertDecisionFromFirebaseForEdit = (
-  decision: any,
-  properties: Property[]
-) => {
-  const result: Decision = {
-    id: decision.id,
-    item: decision.item ?? '',
-    group: decision.group ?? '',
-    category: decision.category ?? '',
-    location: decision.location,
-    description: decision.description,
-    priority: decision.priority,
-    name: decision.name,
-    decisionNameType: decision.decisionNameType,
-    properties: [],
-  };
-
-  const newProperties: string[] = properties.flatMap((x) =>
-    convertPropertiesToArray(decision, result).find(
-      (y) => y.toLowerCase() === x.name.toLowerCase()
-    )
-      ? [x.name]
-      : []
-  );
-
-  return { ...result, properties: newProperties };
-};
-
-export const convertRuleFromFirebaseForEdit = (
-  rule: any,
-  properties: Property[]
-) => {
-  const result: Rule = {
-    id: rule.id,
-    name: rule.name ?? '',
-    item: rule.item ?? '',
-    group: rule.group ?? '',
-    category: rule.category ?? '',
-    location: rule.location,
-    description: rule.description,
-    properties: [],
-  };
-
-  const newProperties: string[] = properties.flatMap((x) =>
-    convertPropertiesToArray(rule, result).find(
-      (y) => y.toLowerCase() === x.name.toLowerCase()
-    )
-      ? [x.name]
-      : []
-  );
-
-  return { ...result, properties: newProperties };
 };
