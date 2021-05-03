@@ -65,9 +65,22 @@ export interface Decision {
   decisionNameType: string;
   properties: string[];
 }
+
+export interface TrashHunterItem {
+  item: string;
+  name: string;
+  id: string;
+}
+
+export interface TrashHunterGroup {
+  group: string;
+  name: string;
+  id: string;
+}
 export interface DataForDownload {
   locations: LocationForDownload[];
   items: ItemForDownload[];
   rules: RuleForDownload[];
   decisions: DecisionForDownload[];
+  trashHunter: (TrashHunterItem | TrashHunterGroup)[];
 }

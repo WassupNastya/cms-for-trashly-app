@@ -1,5 +1,11 @@
 import { ActionsObservable, combineEpics } from 'redux-observable';
-import { filter, ignoreElements, mergeMap, tap } from 'rxjs/operators';
+import {
+  concatMap,
+  filter,
+  ignoreElements,
+  mergeMap,
+  tap,
+} from 'rxjs/operators';
 import { isOfType } from 'typesafe-actions';
 import { forkJoin } from 'rxjs';
 
@@ -46,6 +52,7 @@ import {
   deleteLocation,
   getRules,
   getDecisions,
+  uploadFile,
 } from './api';
 import { get, create, getAll, deleteEpic } from './templatesEpic';
 import { prepareItemForDownload } from './item/download';
@@ -55,6 +62,7 @@ import { getRuleEpic, getRulesEpic } from './rule/request';
 import { prepareRuleForDownload } from './rule/download';
 import { getDecisionEpic, getDecisionsEpic } from './decision/request';
 import { prepareDecisionForDownload } from './decision/download';
+import { isEmpty } from './helper';
 
 const getGroupsEpic = getAll<Group>(
   ActionType.GETGROUPSASYNC,
@@ -168,11 +176,29 @@ const parseDownloadResponse = (response: any) => {
       ])
   );
 
+  const trashHunter = [];
+  handledItems.forEach((item) => {
+    if (!isEmpty(item.group)) {
+      trashHunter.push({
+        group: item.group,
+        name: item.name,
+        id: item.id,
+      });
+    } else {
+      trashHunter.push({
+        item: item.name,
+        name: isEmpty(item.aliases) ? item.aliases : 'alises',
+        id: item.id,
+      });
+    }
+  });
+
   return {
     locations: handledLocations,
     items: handledItems.map((x, id) => ({ ...x, id })),
     rules: handledRules.map((x, id) => ({ ...x, id })),
     decisions: handledDecisions.map((x, id) => ({ ...x, id })),
+    trashHunter: trashHunter.map((x, id) => ({ ...x, id: id.toString() })),
   };
 };
 
@@ -195,11 +221,66 @@ export const downloadEpic = (
         getDecisions(),
       ]).pipe(
         tap((response) => {
-          const { locations, items, rules, decisions } = parseDownloadResponse(
-            response
-          );
-          onResponseCallback({ locations, items, rules, decisions });
+          const {
+            locations,
+            items,
+            rules,
+            decisions,
+            trashHunter,
+          } = parseDownloadResponse(response);
+          onResponseCallback({
+            locations,
+            items,
+            rules,
+            decisions,
+            trashHunter,
+          });
         }),
+        ignoreElements()
+      );
+    })
+  );
+
+export const uploadFilesEpic = (
+  action$: ActionsObservable<{ type: string; onResponseCallback: () => void }>
+) =>
+  action$.pipe(
+    filter(isOfType(ActionType.UPLOADFILESASYNC)),
+    mergeMap(({ onResponseCallback }) => {
+      return forkJoin([
+        getLocations(),
+        getItems(),
+        getGroups(),
+        getCategories(),
+        getProperties(),
+        getRules(),
+        getDecisions(),
+      ]).pipe(
+        concatMap((response) => {
+          const {
+            locations,
+            items,
+            rules,
+            decisions,
+            trashHunter,
+          } = parseDownloadResponse(response);
+
+          const upload = (filename: string, data: any) => {
+            return uploadFile(
+              filename,
+              new Blob([JSON.stringify(data)], { type: 'json' })
+            );
+          };
+
+          return [
+            upload('decision_regions.json', locations),
+            upload('items.json', items),
+            upload('rules.json', rules),
+            upload('decisions.json', decisions),
+            upload('trashHunter.json', trashHunter),
+          ];
+        }),
+        tap(() => onResponseCallback()),
         ignoreElements()
       );
     })
@@ -234,5 +315,6 @@ export const epic = combineEpics(
   deleteRuleEpic,
   deleteDecisionEpic,
   deleteLocationEpic,
-  downloadEpic
+  downloadEpic,
+  uploadFilesEpic
 );

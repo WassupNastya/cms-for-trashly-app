@@ -1,6 +1,5 @@
 import { db } from 'database';
 
-import { handleObject } from './converters';
 import { isEmpty } from './helper';
 
 export const get = <T>(collectionName: string) => {

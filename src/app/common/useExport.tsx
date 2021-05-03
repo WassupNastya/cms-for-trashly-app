@@ -1,11 +1,12 @@
-import { LinearProgress, Link } from '@material-ui/core';
-import { downloadAsync } from 'data/actions';
+import { Button, LinearProgress, Link } from '@material-ui/core';
+import { downloadAsync, uploadAsync } from 'data/actions';
 import JSZip from 'jszip';
 import React, { useCallback, useState } from 'react';
 import { useDispatch } from 'react-redux';
 
 export const useExport = () => {
   const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingStorage, setIsLoadingStorage] = useState(false);
 
   const dispatch = useDispatch();
 
@@ -38,7 +39,7 @@ export const useExport = () => {
   const getDownloadButton = () => {
     return (
       <div style={{ marginBottom: '1rem' }}>
-        <div>
+        <div style={{ display: 'flex', alignItems: 'flex-end' }}>
           You can download all files&nbsp;
           <Link
             component="button"
@@ -57,5 +58,26 @@ export const useExport = () => {
     );
   };
 
-  return getDownloadButton;
+  const uploadFiles = () => {
+    setIsLoadingStorage(true);
+    dispatch(uploadAsync(() => setIsLoadingStorage(false)));
+  };
+
+  const getUploadButton = () => {
+    return (
+      <div>
+        <Button
+          onClick={uploadFiles}
+          color="secondary"
+          style={{ marginTop: '0.5rem' }}
+          disabled={isLoadingStorage}
+        >
+          Update storage files
+        </Button>
+        {isLoadingStorage && <LinearProgress color="secondary" />}
+      </div>
+    );
+  };
+
+  return { getDownloadButton, getUploadButton };
 };

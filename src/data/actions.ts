@@ -70,3 +70,9 @@ export const downloadAsync: (
 ) => Action = (onResponseCallback) => {
   return { type: ActionType.DOWNLOADASYNC, onResponseCallback };
 };
+
+export const uploadAsync: (onResponseCallback: () => void) => Action = (
+  onResponseCallback
+) => {
+  return { type: ActionType.UPLOADFILESASYNC, onResponseCallback };
+};

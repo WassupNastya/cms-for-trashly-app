@@ -1,3 +1,5 @@
+import { storage } from 'database';
+
 import { Collection } from './enums';
 import {
   Group,
@@ -35,9 +37,17 @@ export const getDecision = get<Decision>(Collection.Decisions);
 export const getLocation = get<Location>(Collection.Locations);
 
 export const deleteItem = deleteRequest(Collection.Items);
-export const deleteGroup = deleteRequest(Collection.Groups); 
+export const deleteGroup = deleteRequest(Collection.Groups);
 export const deleteCategory = deleteRequest(Collection.Categories);
 export const deleteProperty = deleteRequest(Collection.Properties);
 export const deleteRule = deleteRequest(Collection.Rules);
 export const deleteDecision = deleteRequest(Collection.Decisions);
 export const deleteLocation = deleteRequest(Collection.Locations);
+
+export const uploadFile = (filename: string, blob: Blob) =>
+  storage
+    .ref()
+    .child(filename)
+    .put(blob)
+    .then(() => console.log(`${filename} is uploaded`))
+    .catch((e) => console.log('Error: ', e));

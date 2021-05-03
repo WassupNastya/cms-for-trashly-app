@@ -10,7 +10,7 @@ interface Props {
 }
 
 export const ExportDialog: React.FC<Props> = ({ isOpen, hide }) => {
-  const getDownloadButton = useExport();
+  const { getDownloadButton, getUploadButton } = useExport();
 
   return (
     <Modal open={isOpen} handleClose={hide}>
@@ -24,9 +24,16 @@ export const ExportDialog: React.FC<Props> = ({ isOpen, hide }) => {
             variant="button"
             style={{ color: '#b0b0b0', fontWeight: 'lighter' }}
           >
-            Manual
+            Locally
           </Typography>
           {getDownloadButton()}
+          <Typography
+            variant="button"
+            style={{ color: '#b0b0b0', fontWeight: 'lighter' }}
+          >
+            Firebase Storage
+          </Typography>
+          {getUploadButton()}
         </DialogContent>
       </div>
     </Modal>
