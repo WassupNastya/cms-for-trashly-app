@@ -25,6 +25,8 @@ import { GroupSelect } from 'app/common/select/groupSelect';
 import { PropertiesSelect } from 'app/common/select/propertiesSelect';
 import { convertRuleToFirebase } from 'data/rule/converter';
 import { CategorySelect } from 'app/common/select/categorySelect';
+import { useForm } from 'react-hook-form';
+import { ErrorString } from 'app/common/errorString/errorString';
 
 interface Props {
   hide: () => void;
@@ -35,6 +37,12 @@ export const RuleModal: React.FC<Props> = ({ id, hide }) => {
   const dispatch = useDispatch();
   const getRules = useRules({ needEffect: false });
   const showSaveSnack = useSaveSnack();
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({ reValidateMode: 'onBlur' });
 
   const [loading, setLoading] = useState(false);
   const [state, setState] = useState<Rule>({
@@ -114,6 +122,7 @@ export const RuleModal: React.FC<Props> = ({ id, hide }) => {
       </DialogTitle>
       <DialogContent>
         <TextField
+          {...register('name', { required: true })}
           multiline
           id="outlined-name"
           label="Name"
@@ -136,7 +145,12 @@ export const RuleModal: React.FC<Props> = ({ id, hide }) => {
               </Tooltip>
             ),
           }}
+          error={errors.name != null}
         ></TextField>
+        <ErrorString
+          isError={errors.name != null}
+          errorMessage="Name is empty"
+        />
         <TextField
           multiline
           id="outlined-description"
@@ -178,7 +192,11 @@ export const RuleModal: React.FC<Props> = ({ id, hide }) => {
           }
           disabled={disabled}
         />
-        <Button fullWidth onClick={onSave} disabled={loading || success}>
+        <Button
+          fullWidth
+          onClick={handleSubmit(() => onSave())}
+          disabled={loading || success}
+        >
           {loading && (
             <CircularProgress
               style={{ position: 'absolute', color: 'white' }}

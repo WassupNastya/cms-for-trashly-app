@@ -32,6 +32,8 @@ import { ItemSelect } from 'app/common/select/itemSelect';
 import { GroupSelect } from 'app/common/select/groupSelect';
 import { CategorySelect } from 'app/common/select/categorySelect';
 import { PropertiesSelect } from 'app/common/select/propertiesSelect';
+import { useForm } from 'react-hook-form';
+import { ErrorString } from 'app/common/errorString/errorString';
 
 import { TypeSelect } from './components/typeSelect';
 
@@ -45,10 +47,16 @@ export const DecisionModal: React.FC<Props> = ({ id, hide }) => {
   const getDecisions = useDecisions({ needEffect: false });
   const showSaveSnack = useSaveSnack();
 
-  const getItems = useItems({ needEffect: true });
-  const getGroups = useGroups({ needEffect: true });
-  const getCategories = useCategories({ needEffect: true });
-  const getProperties = useProperties({ needEffect: true });
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({ reValidateMode: 'onBlur' });
+
+  useItems({ needEffect: true });
+  useGroups({ needEffect: true });
+  useCategories({ needEffect: true });
+  useProperties({ needEffect: true });
 
   const [loading, setLoading] = useState(false);
   const [state, setState] = useState<Decision>({
@@ -130,7 +138,8 @@ export const DecisionModal: React.FC<Props> = ({ id, hide }) => {
       </DialogTitle>
       <DialogContent>
         <TextField
-          id="outlined-name"
+          {...register('name', { required: true })}
+          id="name"
           label="Name"
           variant="outlined"
           size="small"
@@ -140,7 +149,12 @@ export const DecisionModal: React.FC<Props> = ({ id, hide }) => {
           fullWidth
           color="secondary"
           margin="dense"
+          error={errors.name != null}
         ></TextField>
+        <ErrorString
+          isError={errors.name != null}
+          errorMessage="Name is empty"
+        />
         <div
           style={{
             display: 'flex',
@@ -209,10 +223,14 @@ export const DecisionModal: React.FC<Props> = ({ id, hide }) => {
           disabled={disabled}
         />
         <div
-          style={{ display: 'flex', width: '100%', justifyContent: 'flex-end' }}
+          style={{
+            display: 'flex',
+            width: '100%',
+            justifyContent: 'flex-end',
+          }}
         >
           <Button
-            onClick={onSave}
+            onClick={handleSubmit(() => onSave())}
             disabled={loading || success}
             style={{
               margin: 'unset',

@@ -11,6 +11,7 @@ import {
   DialogContent,
   DialogTitle,
   TextField,
+  Tooltip,
 } from '@material-ui/core';
 import { useDispatch } from 'react-redux';
 import { Group } from 'data/model';
@@ -20,6 +21,7 @@ import { Close } from '@material-ui/icons';
 import { useSaveSnack } from 'app/common/useSaveSnack';
 import { useForm } from 'react-hook-form';
 import { ErrorString } from 'app/common/errorString/errorString';
+import { useResponse } from 'app/common/useResponse';
 
 interface Props {
   hide: () => void;
@@ -31,8 +33,13 @@ export const GroupModal: React.FC<Props> = ({ id, hide, onChangeSubItem }) => {
   const dispatch = useDispatch();
   const getGroups = useGroups({ needEffect: false });
   const showSaveSnack = useSaveSnack();
+  const handleResponse = useResponse();
 
-  const { register, handleSubmit, formState: { errors } } = useForm({ reValidateMode: 'onBlur' });
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({ reValidateMode: 'onBlur' });
 
   const [loading, setLoading] = useState(false);
   const [state, setState] = useState<Group>({
@@ -40,6 +47,7 @@ export const GroupModal: React.FC<Props> = ({ id, hide, onChangeSubItem }) => {
     id: '',
   });
   const [success, setSuccess] = useState(false);
+  const [showDuplicateTooltip, setShowDuplicateTooltip] = useState(false);
 
   const title = useMemo(() => {
     return id == null ? 'Create' : 'Rename';
@@ -58,6 +66,7 @@ export const GroupModal: React.FC<Props> = ({ id, hide, onChangeSubItem }) => {
 
   const handleChange = useCallback(
     (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+      setShowDuplicateTooltip(false);
       setState({ ...state, name: e.target.value });
     },
     [state]
@@ -66,16 +75,35 @@ export const GroupModal: React.FC<Props> = ({ id, hide, onChangeSubItem }) => {
   const onSave = useCallback(() => {
     setLoading(true);
     dispatch(
-      createGroupAsync(state, () => {
+      createGroupAsync(state, (response) => {
         setLoading(false);
-        setSuccess(true);
-        getGroups();
-        showSaveSnack();
-        onChangeSubItem?.(state.name);
-        hide();
+        handleResponse(
+          {
+            onOk: () => {
+              setSuccess(true);
+              getGroups();
+              showSaveSnack();
+              onChangeSubItem?.(state.name);
+              hide();
+            },
+            onDuplicate: () => setShowDuplicateTooltip(true),
+            onServerError: () => {
+              console.log('Server error!');
+            },
+          },
+          response
+        );
       })
     );
-  }, [dispatch, state, showSaveSnack, hide, onChangeSubItem, getGroups]);
+  }, [
+    dispatch,
+    state,
+    showSaveSnack,
+    hide,
+    onChangeSubItem,
+    getGroups,
+    handleResponse,
+  ]);
 
   useEffect(() => {
     if (id != null) getGroup(id);
@@ -88,7 +116,18 @@ export const GroupModal: React.FC<Props> = ({ id, hide, onChangeSubItem }) => {
         <Close onClick={hide} />
       </DialogTitle>
       <DialogContent>
-        <form onSubmit={handleSubmit(onSave)}>
+        <Tooltip
+          title={
+            <span style={{ fontSize: '0.8rem' }}>
+              Sorry, group with the same name
+              <br />
+              already exists 😞
+            </span>
+          }
+          placement="right"
+          arrow
+          open={showDuplicateTooltip}
+        >
           <TextField
             {...register('name', { required: true })}
             fullWidth
@@ -102,17 +141,24 @@ export const GroupModal: React.FC<Props> = ({ id, hide, onChangeSubItem }) => {
             color="secondary"
             error={errors.name != null}
           />
-          <ErrorString isError={errors.name != null} errorMessage="Name is empty" />
-          <Button fullWidth type="submit" disabled={loading || success}>
-            {loading && (
-              <CircularProgress
-                style={{ position: 'absolute', color: 'white' }}
-                size={24}
-              />
-            )}
-            {title}
-          </Button>
-        </form>
+        </Tooltip>
+        <ErrorString
+          isError={errors.name != null}
+          errorMessage="Name is empty"
+        />
+        <Button
+          fullWidth
+          onClick={handleSubmit(() => onSave())}
+          disabled={loading || success}
+        >
+          {loading && (
+            <CircularProgress
+              style={{ position: 'absolute', color: 'white' }}
+              size={24}
+            />
+          )}
+          {title}
+        </Button>
       </DialogContent>
     </div>
   );

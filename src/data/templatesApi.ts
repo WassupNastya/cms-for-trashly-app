@@ -1,5 +1,6 @@
 import { db } from 'database';
 
+import { Response } from './enums';
 import { isEmpty } from './helper';
 
 export const get = <T>(collectionName: string) => {
@@ -37,15 +38,19 @@ export const create = (collectionName: string) => {
     const id = !isEmpty(data.id)
       ? data.id
       : db.collection(collectionName).doc().id;
-    return db
+
+    return db.collection(collectionName).where("name", '==', data.name).get().then(response => {
+      if (response.size > 0) throw 'Duplicate!';
+      else db
       .collection(collectionName)
       .doc(id)
       .set({
         ...data,
         id,
       })
-      .then(() => id)
-      .catch((error) => console.log(error));
+      .catch(() => Response.ServerError);
+      return Response.Ok;
+    }).catch((error) => error === 'Duplicate!' ? Response.Duplicate : Response.ServerError);
   };
 };
 

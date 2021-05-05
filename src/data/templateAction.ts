@@ -26,7 +26,7 @@ export const get: <T>(
 
 export const create: <T>(
   type: string
-) => (data: T, onResponseCallback: () => void) => Action = (type) => {
+) => (data: T, onResponseCallback: (response: string) => void) => Action = (type) => {
   return (data, onResponseCallback) => {
     return { type, data, onResponseCallback };
   };

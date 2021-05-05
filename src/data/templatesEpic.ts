@@ -19,7 +19,9 @@ export const get = <T>(
       filter(isOfType(actionType)),
       mergeMap(({ id, onResponseCallback }) =>
         from(request(id)).pipe(
-          tap((response) => onResponseCallback(convert?.(response) ?? response)),
+          tap((response) =>
+            onResponseCallback(convert?.(response) ?? response)
+          ),
           ignoreElements()
         )
       )
@@ -34,14 +36,14 @@ export const create = <T>(
     action$: ActionsObservable<{
       type: string;
       data: T;
-      onResponseCallback: () => void;
+      onResponseCallback: (response: string) => void;
     }>
   ) =>
     action$.pipe(
       filter(isOfType(actionType)),
       mergeMap(({ data, onResponseCallback }) =>
         from(request(data)).pipe(
-          tap(() => onResponseCallback()),
+          tap((response) => onResponseCallback(response)),
           ignoreElements()
         )
       )

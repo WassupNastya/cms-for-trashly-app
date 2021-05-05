@@ -11,6 +11,7 @@ import {
   DialogContent,
   DialogTitle,
   TextField,
+  Tooltip,
 } from '@material-ui/core';
 import { useDispatch, useSelector } from 'react-redux';
 import { Item } from 'data/model';
@@ -24,6 +25,9 @@ import { PropertiesSelect } from 'app/common/select/propertiesSelect';
 import { emptyItem } from 'app/common/emptyStates';
 import { StoreType } from 'core/rootReducer';
 import { convertItemToFirebase } from 'data/item/converter';
+import { useForm } from 'react-hook-form';
+import { ErrorString } from 'app/common/errorString/errorString';
+import { useResponse } from 'app/common/useResponse';
 
 interface Props {
   hide: () => void;
@@ -35,11 +39,19 @@ export const ItemModal: React.FC<Props> = ({ id, hide, onChangeSubItem }) => {
   const dispatch = useDispatch();
   const getItems = useItems({ needEffect: false });
   const showSaveSnack = useSaveSnack();
+  const handleResponse = useResponse();
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({ reValidateMode: 'onBlur' });
 
   const [state, setState] = useState<Item>(emptyItem);
 
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [showDuplicateTooltip, setShowDuplicateTooltip] = useState(false);
 
   const { groups, categories, properties } = useSelector(
     (state: StoreType) => state.data
@@ -64,33 +76,43 @@ export const ItemModal: React.FC<Props> = ({ id, hide, onChangeSubItem }) => {
     dispatch(
       createItemAsync(
         convertItemToFirebase(state, groups, categories, properties),
-        () => {
+        (response) => {
           setLoading(false);
-          setSuccess(true);
-          getItems();
-          showSaveSnack();
-          onChangeSubItem?.(state.name);
-          hide();
+          handleResponse(
+            {
+              onOk: () => {
+                setSuccess(true);
+                getItems();
+                showSaveSnack();
+                onChangeSubItem?.(state.name);
+                hide();
+              },
+              onDuplicate: () => setShowDuplicateTooltip(true),
+              onServerError: () => {
+                console.log('Server error!');
+              },
+            },
+            response
+          );
         }
       )
     );
   }, [
     dispatch,
     state,
-    getItems,
     showSaveSnack,
     hide,
     onChangeSubItem,
-    groups,
+    getItems,
+    handleResponse,
     categories,
+    groups,
     properties,
   ]);
 
   const getItem = useCallback(
     (id: string) => {
-      dispatch(
-        getItemAsync(id, (response) => setState(response))
-      );
+      dispatch(getItemAsync(id, (response) => setState(response)));
     },
     [dispatch]
   );
@@ -108,18 +130,37 @@ export const ItemModal: React.FC<Props> = ({ id, hide, onChangeSubItem }) => {
         <Close onClick={hide} />
       </DialogTitle>
       <DialogContent>
-        <TextField
-          id="outlined-name"
-          label="Name"
-          variant="outlined"
-          size="small"
-          value={state.name}
-          onChange={(e) => handleChange(e, 'name')}
-          disabled={disabled}
-          color="secondary"
-          margin="dense"
-          fullWidth
-        ></TextField>
+        <Tooltip
+          title={
+            <span style={{ fontSize: '0.8rem' }}>
+              Sorry, group with the same name
+              <br />
+              already exists 😞
+            </span>
+          }
+          placement="right"
+          arrow
+          open={showDuplicateTooltip}
+        >
+          <TextField
+            {...register('name', { required: true })}
+            id="name"
+            label="Name"
+            variant="outlined"
+            size="small"
+            value={state.name}
+            onChange={(e) => handleChange(e, 'name')}
+            disabled={disabled}
+            color="secondary"
+            margin="dense"
+            fullWidth
+            error={errors.name != null}
+          ></TextField>
+        </Tooltip>
+        <ErrorString
+          isError={errors.name != null}
+          errorMessage="Name is empty"
+        />
         <TextField
           id="outlined-aliases"
           label="Aliases"
@@ -140,24 +181,34 @@ export const ItemModal: React.FC<Props> = ({ id, hide, onChangeSubItem }) => {
         <CategoriesSelect
           value={state.categories}
           onChange={(categories: string[]) =>
-            setState(state => ({ ...state, categories }))
+            setState((state) => ({ ...state, categories }))
           }
           onChangeSubItem={(category) =>
-            setState(state => ({ ...state, categories: [...state.categories, category] }))
+            setState((state) => ({
+              ...state,
+              categories: [...state.categories, category],
+            }))
           }
           disabled={disabled}
         />
         <PropertiesSelect
           value={state.properties}
           onChange={(properties: string[]) =>
-            setState(state => ({ ...state, properties }))
+            setState((state) => ({ ...state, properties }))
           }
           onChangeSubItem={(property) =>
-            setState(state => ({ ...state, properties: [...state.properties, property] }))
+            setState((state) => ({
+              ...state,
+              properties: [...state.properties, property],
+            }))
           }
           disabled={disabled}
         />
-        <Button fullWidth onClick={onSave} disabled={loading || success}>
+        <Button
+          fullWidth
+          onClick={handleSubmit(() => onSave())}
+          disabled={loading || success}
+        >
           {loading && (
             <CircularProgress
               style={{ position: 'absolute', color: 'white' }}

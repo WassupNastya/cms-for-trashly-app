@@ -18,6 +18,8 @@ import { useLocations } from 'app/common/useData';
 import { createLocationAsync, getLocationAsync } from 'data/actions';
 import { Close } from '@material-ui/icons';
 import { useSaveSnack } from 'app/common/useSaveSnack';
+import { useForm } from 'react-hook-form';
+import { ErrorString } from 'app/common/errorString/errorString';
 
 interface Props {
   hide: () => void;
@@ -28,6 +30,12 @@ export const LocationModal: React.FC<Props> = ({ id, hide }) => {
   const dispatch = useDispatch();
   const getLocations = useLocations({ needEffect: false });
   const showSaveSnack = useSaveSnack();
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({ reValidateMode: 'onBlur' });
 
   const [loading, setLoading] = useState(false);
   const [state, setState] = useState<Location>({
@@ -93,7 +101,8 @@ export const LocationModal: React.FC<Props> = ({ id, hide }) => {
       </DialogTitle>
       <DialogContent>
         <TextField
-          id="outlined-name"
+          {...register('name', { required: true })}
+          id="name"
           label="Name"
           variant="outlined"
           size="small"
@@ -103,7 +112,12 @@ export const LocationModal: React.FC<Props> = ({ id, hide }) => {
           color="secondary"
           fullWidth
           margin="dense"
+          error={errors.name != null}
         ></TextField>
+        <ErrorString
+          isError={errors.name != null}
+          errorMessage="Name is empty"
+        />
         <TextField
           id="outlined-county"
           label="County"
@@ -152,7 +166,11 @@ export const LocationModal: React.FC<Props> = ({ id, hide }) => {
           fullWidth
           margin="dense"
         ></TextField>
-        <Button fullWidth onClick={onSave} disabled={loading || success}>
+        <Button
+          fullWidth
+          onClick={handleSubmit(() => onSave())}
+          disabled={loading || success}
+        >
           {loading && (
             <CircularProgress
               style={{ position: 'absolute', color: 'white' }}

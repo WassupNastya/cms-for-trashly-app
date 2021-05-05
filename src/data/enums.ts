@@ -28,3 +28,9 @@ export enum Collection {
   Decisions = 'decisions',
   Locations = 'locations'
 }
+
+export enum Response {
+  Ok = '0',
+  Duplicate = '1',
+  ServerError = '2'
+}
