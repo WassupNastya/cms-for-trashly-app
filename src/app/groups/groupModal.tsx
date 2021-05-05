@@ -18,6 +18,8 @@ import { createGroupAsync, getGroupAsync } from 'data/actions';
 import { useGroups } from 'app/common/useData';
 import { Close } from '@material-ui/icons';
 import { useSaveSnack } from 'app/common/useSaveSnack';
+import { useForm } from 'react-hook-form';
+import { ErrorString } from 'app/common/errorString/errorString';
 
 interface Props {
   hide: () => void;
@@ -29,6 +31,8 @@ export const GroupModal: React.FC<Props> = ({ id, hide, onChangeSubItem }) => {
   const dispatch = useDispatch();
   const getGroups = useGroups({ needEffect: false });
   const showSaveSnack = useSaveSnack();
+
+  const { register, handleSubmit, formState: { errors } } = useForm({ reValidateMode: 'onBlur' });
 
   const [loading, setLoading] = useState(false);
   const [state, setState] = useState<Group>({
@@ -80,30 +84,35 @@ export const GroupModal: React.FC<Props> = ({ id, hide, onChangeSubItem }) => {
   return (
     <div style={{ width: '20rem' }}>
       <DialogTitle>
-      <div>{id == null ? 'New Group' : 'Group'}</div>
+        <div>{id == null ? 'New Group' : 'Group'}</div>
         <Close onClick={hide} />
       </DialogTitle>
       <DialogContent>
-        <TextField
-          fullWidth
-          id="outlined-name"
-          label="Name"
-          variant="outlined"
-          value={state.name}
-          onChange={handleChange}
-          disabled={loading || success}
-          size="small"
-          color="secondary"
-        />
-        <Button fullWidth onClick={onSave} disabled={loading || success}>
-          {loading && (
-            <CircularProgress
-              style={{ position: 'absolute', color: 'white' }}
-              size={24}
-            />
-          )}
-          {title}
-        </Button>
+        <form onSubmit={handleSubmit(onSave)}>
+          <TextField
+            {...register('name', { required: true })}
+            fullWidth
+            id="oname"
+            label="Name"
+            variant="outlined"
+            value={state.name}
+            onChange={handleChange}
+            disabled={loading || success}
+            size="small"
+            color="secondary"
+            error={errors.name != null}
+          />
+          <ErrorString isError={errors.name != null} errorMessage="Name is empty" />
+          <Button fullWidth type="submit" disabled={loading || success}>
+            {loading && (
+              <CircularProgress
+                style={{ position: 'absolute', color: 'white' }}
+                size={24}
+              />
+            )}
+            {title}
+          </Button>
+        </form>
       </DialogContent>
     </div>
   );
