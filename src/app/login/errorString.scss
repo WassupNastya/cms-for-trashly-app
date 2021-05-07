@@ -1,0 +1,20 @@
+.login-error-string {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.4rem;
+
+  img {
+    margin-right: 0.4rem;
+  }
+
+  animation: slideUp 0.5s;
+}
+
+@keyframes slideUp {
+  0% {
+    transform: translateY(100%);
+  }
+  100% {
+    transform: translateY(0%);
+  }
+}

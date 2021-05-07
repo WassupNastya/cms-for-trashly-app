@@ -1,6 +1,7 @@
 import React, { useCallback, useState } from 'react';
 import { IconButton, Menu, MenuItem } from '@material-ui/core';
 import { AccountCircleOutlined } from '@material-ui/icons';
+import { useAuth } from 'app/common/authProvider';
 
 import { ExportDialog } from './exportDialog';
 
@@ -8,8 +9,9 @@ import 'shared/menuButton.scss';
 
 export const UserButton: React.FC = () => {
   const [anchor, setAnchor] = useState<Element>(null);
-
   const [showExport, setShowExport] = useState(false);
+
+  const { signOut } = useAuth();
 
   const onOpen = useCallback((event) => {
     setAnchor(event.currentTarget);
@@ -49,6 +51,7 @@ export const UserButton: React.FC = () => {
           >
             Export
           </MenuItem>
+          <MenuItem onClick={signOut}>Log out</MenuItem>
         </Menu>
       </div>
       <ExportDialog isOpen={showExport} hide={hideExport} />

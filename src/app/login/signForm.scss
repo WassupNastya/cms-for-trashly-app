@@ -1,0 +1,25 @@
+.sign-form-wrapper {
+  display: flex;
+  flex-direction: column;
+
+  .divider {
+    width: 100%;
+    text-align: center;
+    border-bottom: 1px solid #A9A9A9;
+    line-height: 0.1em;
+    margin: 2rem 0;
+    color: #909090;
+    span {
+      background: #fff;
+      padding: 0 10px;
+    }
+  }
+
+  .google-button {
+    img {
+      width: 1.6rem;
+      height: 1.6rem;
+      margin-right: 1rem;
+    }
+  }
+}

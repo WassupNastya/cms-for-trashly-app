@@ -11,6 +11,7 @@ import {
   DialogContent,
   DialogTitle,
   TextField,
+  Tooltip,
 } from '@material-ui/core';
 import { useDispatch } from 'react-redux';
 import { Location } from 'data/model';
@@ -20,6 +21,7 @@ import { Close } from '@material-ui/icons';
 import { useSaveSnack } from 'app/common/useSaveSnack';
 import { useForm } from 'react-hook-form';
 import { ErrorString } from 'app/common/errorString/errorString';
+import { useResponse } from 'app/common/useResponse';
 
 interface Props {
   hide: () => void;
@@ -30,6 +32,7 @@ export const LocationModal: React.FC<Props> = ({ id, hide }) => {
   const dispatch = useDispatch();
   const getLocations = useLocations({ needEffect: false });
   const showSaveSnack = useSaveSnack();
+  const handleResponse = useResponse();
 
   const {
     register,
@@ -40,7 +43,7 @@ export const LocationModal: React.FC<Props> = ({ id, hide }) => {
   const [loading, setLoading] = useState(false);
   const [state, setState] = useState<Location>({
     id: '',
-    displayName: '',
+    name: '',
     latitude: 0,
     longitude: 0,
     state: '',
@@ -50,6 +53,7 @@ export const LocationModal: React.FC<Props> = ({ id, hide }) => {
     locationCode: '',
   });
   const [success, setSuccess] = useState(false);
+  const [showDuplicateTooltip, setShowDuplicateTooltip] = useState(false);
 
   const title = useMemo(() => {
     return id == null ? 'Create' : 'Edit';
@@ -71,23 +75,35 @@ export const LocationModal: React.FC<Props> = ({ id, hide }) => {
       e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
       field: keyof Location
     ) => {
+      if (showDuplicateTooltip) setShowDuplicateTooltip(false);
       setState({ ...state, [field]: e.target.value });
     },
-    [state]
+    [state, showDuplicateTooltip]
   );
 
   const onSave = useCallback(() => {
     setLoading(true);
     dispatch(
-      createLocationAsync(state, () => {
+      createLocationAsync(state, (response) => {
         setLoading(false);
-        setSuccess(true);
-        getLocations();
-        showSaveSnack();
-        hide();
+        handleResponse(
+          {
+            onOk: () => {
+              setSuccess(true);
+              getLocations();
+              showSaveSnack();
+              hide();
+            },
+            onDuplicate: () => setShowDuplicateTooltip(true),
+            onServerError: () => {
+              console.log('Server error!');
+            },
+          },
+          response
+        );
       })
     );
-  }, [dispatch, state, getLocations, hide, showSaveSnack]);
+  }, [dispatch, state, showSaveSnack, hide, getLocations, handleResponse]);
 
   useEffect(() => {
     if (id != null) getLocation(id);
@@ -100,20 +116,33 @@ export const LocationModal: React.FC<Props> = ({ id, hide }) => {
         <Close onClick={hide} />
       </DialogTitle>
       <DialogContent>
-        <TextField
-          {...register('name', { required: true })}
-          id="name"
-          label="Name"
-          variant="outlined"
-          size="small"
-          value={state.displayName}
-          onChange={(e) => handleChange(e, 'displayName')}
-          disabled={loading || success}
-          color="secondary"
-          fullWidth
-          margin="dense"
-          error={errors.name != null}
-        ></TextField>
+        <Tooltip
+          title={
+            <span style={{ fontSize: '0.8rem' }}>
+              Sorry, group with the same name
+              <br />
+              already exists 😞
+            </span>
+          }
+          placement="right"
+          arrow
+          open={showDuplicateTooltip}
+        >
+          <TextField
+            {...register('name', { required: true })}
+            id="name"
+            label="Name"
+            variant="outlined"
+            size="small"
+            value={state.name}
+            onChange={(e) => handleChange(e, 'name')}
+            disabled={loading || success}
+            color="secondary"
+            fullWidth
+            margin="dense"
+            error={errors.name != null}
+          ></TextField>
+        </Tooltip>
         <ErrorString
           isError={errors.name != null}
           errorMessage="Name is empty"

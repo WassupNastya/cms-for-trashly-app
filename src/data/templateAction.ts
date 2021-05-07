@@ -32,10 +32,10 @@ export const create: <T>(
   };
 };
 
-export const deleteAction: (type: string) => (id: string) => Action = (
+export const deleteAction: (type: string) => (id: string, onResponseCallback?: (response: string) => void) => Action = (
   type
 ) => {
-  return (id) => {
-    return { type, id };
+  return (id, onResponseCallback) => {
+    return { type, id, onResponseCallback };
   };
 };

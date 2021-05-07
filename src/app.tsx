@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { Route } from 'react-router';
+import { Route, Switch, useLocation, Redirect } from 'react-router-dom';
 import { Bar } from 'app/bar/bar';
 import { Tools } from 'shared/tools/tools';
 import { createMuiTheme, MuiThemeProvider } from '@material-ui/core';
@@ -12,6 +12,11 @@ import { Table as Rules } from 'app/rules/table';
 import { Table as Decisions } from 'app/decisions/table';
 import { LocationsTable as Locations } from 'app/locations/table';
 import { useSearch } from 'app/common/searchProvider';
+import withFirebaseAuth from 'react-with-firebase-auth';
+import { providers, firebaseAppAuth } from 'database';
+import { Login } from 'app/login/login';
+import { ProtectedRoute } from 'shared/protectedRoute';
+import { AuthProvider } from 'app/common/authProvider';
 
 import './app.scss';
 
@@ -22,7 +27,9 @@ const tablesMap = new Map([
   [Tab.Properties, <Properties key="properties" />],
 ]);
 
-export const App = () => {
+export const App = withFirebaseAuth({ providers, firebaseAppAuth })((props) => {
+  const location = useLocation();
+
   const theme = createMuiTheme({
     palette: {
       secondary: {
@@ -42,19 +49,65 @@ export const App = () => {
     setCurrentTab(tab);
   };
 
+  const {
+    user,
+    signOut,
+    signInWithGoogle,
+    signInWithEmailAndPassword,
+    createUserWithEmailAndPassword,
+    error,
+    loading,
+    setError,
+  } = props;
+
+  console.log('error: ', error);
+
   return (
     <MuiThemeProvider theme={theme}>
-      <div className="app">
-        <Bar />
-        <div className="page">
-          <Tools currentTab={currentTab} setCurrentTab={onChange} />
-          <Route exact path={Root.Rules} component={Rules} />
-          <Route exact path={Root.Decisions} component={Decisions} />
-          <Route exact path={Root.Locations} component={Locations} />
-          <Route exact path={Root.Items} component={() => component} />
-          <Route exact path="/" component={() => component} />
-        </div>
-      </div>
+      <AuthProvider
+        user={user}
+        signInWithGoogle={signInWithGoogle}
+        signOut={signOut}
+        signInWithEmailAndPassword={signInWithEmailAndPassword}
+        createUserWithEmailAndPassword={createUserWithEmailAndPassword}
+        error={error}
+        loading={loading}
+        setError={setError}
+      >
+        <Switch location={location}>
+          <Route
+            path="/login"
+            component={() => (!user ? <Login /> : <Redirect to="/" />)}
+          />
+          <div className="app">
+            <Bar />
+            <div className="page">
+              <Tools currentTab={currentTab} setCurrentTab={onChange} />
+              <ProtectedRoute
+                path={Root.Rules}
+                user={user}
+                component={<Rules />}
+              />
+              <ProtectedRoute
+                path={Root.Decisions}
+                user={user}
+                component={<Decisions />}
+              />
+              <ProtectedRoute
+                path={Root.Locations}
+                user={user}
+                component={<Locations />}
+              />
+              <ProtectedRoute
+                path={Root.Items}
+                user={user}
+                component={component}
+              />
+              <ProtectedRoute path="/" user={user} component={component} />
+            </div>
+          </div>
+        </Switch>
+      </AuthProvider>
     </MuiThemeProvider>
   );
-};
+});

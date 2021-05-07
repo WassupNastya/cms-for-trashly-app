@@ -28,7 +28,7 @@ export const LocationsTable: React.FC = () => {
           id={id}
           onEdit={() => show(id)}
           onDelete={() =>
-            onDelete(id, deleteLocationAsync, (el) => el.displayName)
+            onDelete(id, deleteLocationAsync, (el) => el.name)
           }
         />
       );
@@ -38,7 +38,7 @@ export const LocationsTable: React.FC = () => {
 
   const columns: ColDef[] = useMemo(
     () => [
-      { field: 'displayName', headerName: 'Name', flex: 1 },
+      { field: 'name', headerName: 'Name', flex: 1 },
       { field: 'locationCode', headerName: 'Location Code', flex: 1 },
       { field: 'county', headerName: 'County', flex: 1 },
       { field: 'state', headerName: 'State', flex: 1 },
@@ -56,7 +56,7 @@ export const LocationsTable: React.FC = () => {
 
   const { filterItem } = useSearch();
   const filteredRows = useMemo(
-    () => rowsToDisplay.filter((x) => filterItem(x.displayName)),
+    () => rowsToDisplay.filter((x) => filterItem(x.name)),
     [filterItem, rowsToDisplay]
   );
 

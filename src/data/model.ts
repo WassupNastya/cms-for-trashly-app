@@ -10,7 +10,7 @@ export interface Action {
 
 export interface Location {
   id: string;
-  displayName: string;
+  name: string;
   latitude: number;
   longitude: number;
   state: string;
@@ -83,4 +83,9 @@ export interface DataForDownload {
   rules: RuleForDownload[];
   decisions: DecisionForDownload[];
   trashHunter: (TrashHunterItem | TrashHunterGroup)[];
+}
+
+export interface UserData {
+  email: string;
+  password: string;
 }

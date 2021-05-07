@@ -14,11 +14,15 @@ export interface LocationForDownload {
 
 export const prepareLocationForDownload = (location: Location, id: number) => {
   const result: LocationForDownload = {
-    ...location,
     id,
     latitude: location.latitude.toString(),
     longitude: location.longitude.toString(),
     defaultZoomLevel: location.defaultZoomLevel.toString(),
+    displayName: location.name,
+    state: location.state, 
+    county: location.county,
+    country: location.country,
+    locationCode: location.locationCode,
   };
   return result;
 };

@@ -66,10 +66,10 @@ export const GroupModal: React.FC<Props> = ({ id, hide, onChangeSubItem }) => {
 
   const handleChange = useCallback(
     (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-      setShowDuplicateTooltip(false);
+      if (showDuplicateTooltip) setShowDuplicateTooltip(false);
       setState({ ...state, name: e.target.value });
     },
-    [state]
+    [state, showDuplicateTooltip]
   );
 
   const onSave = useCallback(() => {
@@ -131,7 +131,7 @@ export const GroupModal: React.FC<Props> = ({ id, hide, onChangeSubItem }) => {
           <TextField
             {...register('name', { required: true })}
             fullWidth
-            id="oname"
+            id="name"
             label="Name"
             variant="outlined"
             value={state.name}

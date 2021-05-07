@@ -66,9 +66,10 @@ export const CategoryModal: React.FC<Props> = ({
 
   const handleChange = useCallback(
     (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+      if (showDuplicateTooltip) setShowDuplicateTooltip(false);
       setState({ ...state, name: e.target.value });
     },
-    [state]
+    [state, showDuplicateTooltip]
   );
 
   const onSave = useCallback(() => {

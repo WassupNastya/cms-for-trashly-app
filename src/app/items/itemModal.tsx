@@ -66,9 +66,10 @@ export const ItemModal: React.FC<Props> = ({ id, hide, onChangeSubItem }) => {
       e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
       field: keyof Item
     ) => {
+      if (showDuplicateTooltip) setShowDuplicateTooltip(false);
       setState({ ...state, [field]: e.target.value });
     },
-    [state]
+    [state, showDuplicateTooltip]
   );
 
   const onSave = useCallback(() => {

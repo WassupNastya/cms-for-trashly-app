@@ -8,7 +8,7 @@ import { UserButton } from 'shared/userButton/userButton';
 
 import './bar.scss';
 
-export const Bar: React.FC = () => {
+export const Bar: React.FC= () => {
   const location = useLocation();
 
   const initialState = useMemo(() => {

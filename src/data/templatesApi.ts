@@ -1,6 +1,6 @@
 import { db } from 'database';
 
-import { Response } from './enums';
+import { Collection, Exception, Response } from './enums';
 import { isEmpty } from './helper';
 
 export const get = <T>(collectionName: string) => {
@@ -39,18 +39,27 @@ export const create = (collectionName: string) => {
       ? data.id
       : db.collection(collectionName).doc().id;
 
-    return db.collection(collectionName).where("name", '==', data.name).get().then(response => {
-      if (response.size > 0) throw 'Duplicate!';
-      else db
+    return db
       .collection(collectionName)
-      .doc(id)
-      .set({
-        ...data,
-        id,
+      .where('name', '==', data.name)
+      .get()
+      .then((response) => {
+        if (response.size > 0) throw Exception.Duplicate;
+        else
+          db.collection(collectionName)
+            .doc(id)
+            .set({
+              ...data,
+              id,
+            })
+            .catch(() => Response.ServerError);
+        return Response.Ok;
       })
-      .catch(() => Response.ServerError);
-      return Response.Ok;
-    }).catch((error) => error === 'Duplicate!' ? Response.Duplicate : Response.ServerError);
+      .catch((error) =>
+        error === Exception.Duplicate
+          ? Response.Duplicate
+          : Response.ServerError
+      );
   };
 };
 
@@ -60,6 +69,114 @@ export const deleteRequest = (collectionName: string) => {
       .collection(collectionName)
       .doc(id)
       .delete()
-      .then(() => id)
-      .catch((error) => console.log(error));
+      .then(() => Response.Ok)
+      .catch(() => Response.ServerError);
+};
+
+const checkDependencyError = (error) =>
+  error === Exception.Dependency ? Response.Dependency : Response.ServerError;
+
+export const deleteGroupRequest = () => {
+  return (id: string) =>
+    db
+      .collection(Collection.Items)
+      .where('group', '==', id)
+      .get()
+      .then((response) => {
+        if (response.size > 0) throw Exception.Dependency;
+        else
+          db.collection(Collection.Rules)
+            .where('group', '==', id)
+            .get()
+            .then((response) => {
+              if (response.size > 0) throw Exception.Dependency;
+              else
+                db.collection(Collection.Decisions)
+                  .where('group', '==', id)
+                  .get()
+                  .then((response) => {
+                    if (response.size > 0) throw Exception.Dependency;
+                    else
+                      db.collection(Collection.Groups)
+                        .doc(id)
+                        .delete()
+                        .then(() => Response.Ok)
+                        .catch(() => Response.ServerError);
+                  });
+              return Response.Ok;
+            })
+            .catch(checkDependencyError);
+        return Response.Ok;
+      })
+      .catch(checkDependencyError);
+};
+
+export const deleteCategoryRequest = () => {
+  return (id: string) =>
+    db
+      .collection(Collection.Items)
+      .where('categories', 'array-contains', id)
+      .get()
+      .then((response) => {
+        if (response.size > 0) throw Exception.Dependency;
+        else
+          db.collection(Collection.Rules)
+            .where('category', '==', id)
+            .get()
+            .then((response) => {
+              if (response.size > 0) throw Exception.Dependency;
+              else
+                db.collection(Collection.Decisions)
+                  .where('category', '==', id)
+                  .get()
+                  .then((response) => {
+                    if (response.size > 0) throw Exception.Dependency;
+                    else
+                      db.collection(Collection.Categories)
+                        .doc(id)
+                        .delete()
+                        .then(() => Response.Ok)
+                        .catch(() => Response.ServerError);
+                  });
+              return Response.Ok;
+            })
+            .catch(checkDependencyError);
+        return Response.Ok;
+      })
+      .catch(checkDependencyError);
+};
+
+export const deletePropertyRequest = () => {
+  return (id: string) =>
+    db
+      .collection(Collection.Items)
+      .where('properties', 'array-contains', id)
+      .get()
+      .then((response) => {
+        if (response.size > 0) throw Exception.Dependency;
+        else
+          db.collection(Collection.Rules)
+            .where('properties', 'array-contains', id)
+            .get()
+            .then((response) => {
+              if (response.size > 0) throw Exception.Dependency;
+              else
+                db.collection(Collection.Decisions)
+                  .where('properties', 'array-contains', id)
+                  .get()
+                  .then((response) => {
+                    if (response.size > 0) throw Exception.Dependency;
+                    else
+                      db.collection(Collection.Properties)
+                        .doc(id)
+                        .delete()
+                        .then(() => Response.Ok)
+                        .catch(() => Response.ServerError);
+                  });
+              return Response.Ok;
+            })
+            .catch(checkDependencyError);
+        return Response.Ok;
+      })
+      .catch(checkDependencyError);
 };

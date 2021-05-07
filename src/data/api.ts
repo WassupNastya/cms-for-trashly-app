@@ -10,7 +10,7 @@ import {
   Category,
   Rule,
 } from './model';
-import { create, deleteRequest, get, getAll } from './templatesApi';
+import { create, deleteCategoryRequest, deleteGroupRequest, deletePropertyRequest, deleteRequest, get, getAll } from './templatesApi';
 
 export const getItems = getAll<Item>(Collection.Items);
 export const getGroups = getAll<Group>(Collection.Groups);
@@ -37,9 +37,9 @@ export const getDecision = get<Decision>(Collection.Decisions);
 export const getLocation = get<Location>(Collection.Locations);
 
 export const deleteItem = deleteRequest(Collection.Items);
-export const deleteGroup = deleteRequest(Collection.Groups);
-export const deleteCategory = deleteRequest(Collection.Categories);
-export const deleteProperty = deleteRequest(Collection.Properties);
+export const deleteGroup = deleteGroupRequest();
+export const deleteCategory = deleteCategoryRequest();
+export const deleteProperty = deletePropertyRequest();
 export const deleteRule = deleteRequest(Collection.Rules);
 export const deleteDecision = deleteRequest(Collection.Decisions);
 export const deleteLocation = deleteRequest(Collection.Locations);
