@@ -45,7 +45,7 @@ export const create = (collectionName: string) => {
       .get()
       .then((response) => {
         const createDuplicate = isEmpty(data.id) && response.docs.length > 0;
-        const editDuplicate = !isEmpty(data.id) && response.docs.length > 1;
+        const editDuplicate = !isEmpty(data.id) && response.docs.length === 1 && response.docs[0].id !== data.id;
 
         if (createDuplicate || editDuplicate) throw Exception.Duplicate;
         else
