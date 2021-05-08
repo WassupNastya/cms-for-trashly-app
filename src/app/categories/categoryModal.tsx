@@ -43,6 +43,7 @@ export const CategoryModal: React.FC<Props> = ({
     register,
     handleSubmit,
     formState: { errors },
+    reset,
   } = useForm({ reValidateMode: 'onBlur' });
 
   const [loading, setLoading] = useState(false);
@@ -59,17 +60,21 @@ export const CategoryModal: React.FC<Props> = ({
 
   const getCategory = useCallback(
     (id: string) => {
-      dispatch(getCategoryAsync(id, (model) => setState(model)));
+      dispatch(getCategoryAsync(id, (model) => {
+        setState(model);
+        reset({ name: model.name });
+      }));
     },
-    [dispatch]
+    [dispatch, reset]
   );
 
   const handleChange = useCallback(
     (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
       if (showDuplicateTooltip) setShowDuplicateTooltip(false);
       setState({ ...state, name: e.target.value });
+      reset({ name: e.target.value });
     },
-    [state, showDuplicateTooltip]
+    [state, reset, showDuplicateTooltip]
   );
 
   const onSave = useCallback(() => {

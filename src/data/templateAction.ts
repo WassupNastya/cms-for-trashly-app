@@ -39,3 +39,11 @@ export const deleteAction: (type: string) => (id: string, onResponseCallback?: (
     return { type, id, onResponseCallback };
   };
 };
+
+export const checkAction: (type: string) => (id: string, onResponseCallback: (response: string) => void) => Action = (
+  type
+) => {
+  return (id, onResponseCallback) => {
+    return { type, id, onResponseCallback };
+  };
+};

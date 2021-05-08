@@ -10,7 +10,7 @@ import {
   Action,
   DataForDownload,
 } from './model';
-import { create, deleteAction, get, getAll, setAll } from './templateAction';
+import { checkAction, create, deleteAction, get, getAll, setAll } from './templateAction';
 
 export const getItemsAsync = getAll(ActionType.GETITEMSASYNC);
 export const setItems = setAll(ActionType.SETITEMS);
@@ -76,3 +76,8 @@ export const uploadAsync: (onResponseCallback: () => void) => Action = (
 ) => {
   return { type: ActionType.UPLOADFILESASYNC, onResponseCallback };
 };
+
+export const checkGroupAsync = checkAction(ActionType.CHECKGROUPASYNC);
+export const checkCategoryAsync = checkAction(ActionType.CHECKCATEGORYASYNC);
+export const checkPropertyAsync = checkAction(ActionType.CHECKPROPERTYASYNC);
+export const checkItemAsync = checkAction(ActionType.CHECKITEMASYNC);

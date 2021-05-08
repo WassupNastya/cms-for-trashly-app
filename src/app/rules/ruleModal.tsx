@@ -42,6 +42,7 @@ export const RuleModal: React.FC<Props> = ({ id, hide }) => {
     register,
     handleSubmit,
     formState: { errors },
+    reset,
   } = useForm({ reValidateMode: 'onBlur' });
 
   const [loading, setLoading] = useState(false);
@@ -71,8 +72,9 @@ export const RuleModal: React.FC<Props> = ({ id, hide }) => {
       field: keyof Rule
     ) => {
       setState({ ...state, [field]: e.target.value });
+      reset({ [field]: e.target.value });
     },
-    [state]
+    [state, reset]
   );
 
   const onSave = useCallback(() => {
@@ -103,9 +105,12 @@ export const RuleModal: React.FC<Props> = ({ id, hide }) => {
 
   const getRule = useCallback(
     (id: string) => {
-      dispatch(getRuleAsync(id, (response) => setState(response)));
+      dispatch(getRuleAsync(id, (response) => {
+        setState(response);
+        reset({ name: response.name });
+      }));
     },
-    [dispatch]
+    [dispatch, reset]
   );
 
   useEffect(() => {

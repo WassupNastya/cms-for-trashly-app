@@ -35,12 +35,6 @@ export const GroupModal: React.FC<Props> = ({ id, hide, onChangeSubItem }) => {
   const showSaveSnack = useSaveSnack();
   const handleResponse = useResponse();
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm({ reValidateMode: 'onBlur' });
-
   const [loading, setLoading] = useState(false);
   const [state, setState] = useState<Group>({
     name: '',
@@ -48,6 +42,13 @@ export const GroupModal: React.FC<Props> = ({ id, hide, onChangeSubItem }) => {
   });
   const [success, setSuccess] = useState(false);
   const [showDuplicateTooltip, setShowDuplicateTooltip] = useState(false);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm({ reValidateMode: 'onBlur', shouldUnregister: false });
 
   const title = useMemo(() => {
     return id == null ? 'Create' : 'Rename';
@@ -58,18 +59,20 @@ export const GroupModal: React.FC<Props> = ({ id, hide, onChangeSubItem }) => {
       dispatch(
         getGroupAsync(id, (response) => {
           setState(response);
+          reset({ name: response.name });
         })
       );
     },
-    [dispatch]
+    [dispatch, reset]
   );
 
   const handleChange = useCallback(
     (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
       if (showDuplicateTooltip) setShowDuplicateTooltip(false);
       setState({ ...state, name: e.target.value });
+      reset({ name: e.target.value });
     },
-    [state, showDuplicateTooltip]
+    [state, showDuplicateTooltip, reset]
   );
 
   const onSave = useCallback(() => {

@@ -45,6 +45,7 @@ export const ItemModal: React.FC<Props> = ({ id, hide, onChangeSubItem }) => {
     register,
     handleSubmit,
     formState: { errors },
+    reset,
   } = useForm({ reValidateMode: 'onBlur' });
 
   const [state, setState] = useState<Item>(emptyItem);
@@ -68,8 +69,9 @@ export const ItemModal: React.FC<Props> = ({ id, hide, onChangeSubItem }) => {
     ) => {
       if (showDuplicateTooltip) setShowDuplicateTooltip(false);
       setState({ ...state, [field]: e.target.value });
+      reset({ [field]: e.target.value });
     },
-    [state, showDuplicateTooltip]
+    [state, showDuplicateTooltip, reset]
   );
 
   const onSave = useCallback(() => {
@@ -113,9 +115,12 @@ export const ItemModal: React.FC<Props> = ({ id, hide, onChangeSubItem }) => {
 
   const getItem = useCallback(
     (id: string) => {
-      dispatch(getItemAsync(id, (response) => setState(response)));
+      dispatch(getItemAsync(id, (response) => {
+        setState(response);
+        reset({ name: response.name });
+      }));
     },
-    [dispatch]
+    [dispatch, reset]
   );
 
   useEffect(() => {

@@ -10,6 +10,8 @@ import { Category } from 'data/model';
 import { deleteCategoryAsync } from 'data/actions';
 import { useDialog } from 'app/common/useDialog';
 import { useSearch } from 'app/common/searchProvider';
+import { useCheck } from 'app/common/useCheck';
+import { Collection } from 'data/enums';
 
 import { CategoryModal } from './categoryModal';
 
@@ -19,6 +21,7 @@ export const Table: React.FC = () => {
   useCategories({ needEffect: true });
   const { rowsToDisplay, onDelete } = useDeleteUndo<Category>(categories);
   const { dialog, show, hide } = useDialog();
+  const checkBeforeDelete = useCheck(Collection.Categories);
 
   const actionCell = useCallback(
     (params: CellParams) => {
@@ -28,11 +31,15 @@ export const Table: React.FC = () => {
           isRename
           id={id}
           onEdit={() => show(id)}
-          onDelete={() => onDelete(id, deleteCategoryAsync, (el) => el.name)}
+          onDelete={() =>
+            checkBeforeDelete(id, () =>
+              onDelete(id, deleteCategoryAsync, (el) => el.name)
+            )
+          }
         />
       );
     },
-    [show, onDelete]
+    [show, onDelete, checkBeforeDelete]
   );
 
   const columns: ColDef[] = useMemo(

@@ -11,6 +11,8 @@ import { Item } from 'data/model';
 import { deleteItemAsync } from 'data/actions';
 import { useDialog } from 'app/common/useDialog';
 import { useSearch } from 'app/common/searchProvider';
+import { useCheck } from 'app/common/useCheck';
+import { Collection } from 'data/enums';
 
 import { ItemModal } from './itemModal';
 
@@ -20,6 +22,7 @@ export const Table: React.FC = () => {
   useItems({ needEffect: true });
   const { rowsToDisplay, onDelete } = useDeleteUndo<Item>(items);
   const { dialog, show, hide } = useDialog();
+  const checkBeforeDelete = useCheck(Collection.Items);
 
   const propertiesCell = useCallback((params: CellParams) => {
     const properties = params.value as string[];
@@ -39,11 +42,15 @@ export const Table: React.FC = () => {
         <MenuButton
           id={id}
           onEdit={() => show(id)}
-          onDelete={() => onDelete(id, deleteItemAsync, (el) => el.name)}
+          onDelete={() =>
+            checkBeforeDelete(id, () =>
+              onDelete(id, deleteItemAsync, (el) => el.name)
+            )
+          }
         />
       );
     },
-    [onDelete, show]
+    [onDelete, show, checkBeforeDelete]
   );
 
   const columns: ColDef[] = useMemo(

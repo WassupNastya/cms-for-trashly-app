@@ -10,6 +10,8 @@ import { Property } from 'data/model';
 import { deletePropertyAsync } from 'data/actions';
 import { useDialog } from 'app/common/useDialog';
 import { useSearch } from 'app/common/searchProvider';
+import { useCheck } from 'app/common/useCheck';
+import { Collection } from 'data/enums';
 
 import { PropertyModal } from './propertyModal';
 
@@ -18,6 +20,8 @@ export const Table: React.FC = () => {
 
   const { rowsToDisplay, onDelete } = useDeleteUndo<Property>(properties);
   const { dialog, show, hide } = useDialog();
+  const checkBeforeDelete = useCheck(Collection.Properties);
+
   useProperties({ needEffect: true });
 
   const actionCell = useCallback(
@@ -28,11 +32,15 @@ export const Table: React.FC = () => {
           isRename
           id={id}
           onEdit={() => show(id)}
-          onDelete={() => onDelete(id, deletePropertyAsync, (el) => el.name)}
+          onDelete={() =>
+            checkBeforeDelete(id, () =>
+              onDelete(id, deletePropertyAsync, (el) => el.name)
+            )
+          }
         />
       );
     },
-    [show, onDelete]
+    [show, onDelete, checkBeforeDelete]
   );
 
   const columns: ColDef[] = useMemo(

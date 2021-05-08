@@ -98,3 +98,27 @@ export const deleteEpic = (
       )
     );
 };
+
+export const checkEpic = (
+  actionType: string,
+  request: (
+    data: string
+  ) => Promise<void | string>
+) => {
+  return (
+    action$: ActionsObservable<{
+      type: string;
+      id: string;
+      onResponseCallback?: (response: string) => void;
+    }>
+  ) =>
+    action$.pipe(
+      filter(isOfType(actionType)),
+      mergeMap(({ id, onResponseCallback }) =>
+        from(request(id)).pipe(
+          tap((response) => onResponseCallback(response)),
+          ignoreElements()
+        )
+      )
+    );
+};

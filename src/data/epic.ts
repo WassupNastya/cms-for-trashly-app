@@ -24,6 +24,7 @@ import {
   setGroups,
   setProperties,
   setLocations,
+  checkItemAsync,
 } from './actions';
 import { ActionType } from './actionType';
 import {
@@ -53,8 +54,12 @@ import {
   getRules,
   getDecisions,
   uploadFile,
+  checkGroup,
+  checkCategory,
+  checkProperty,
+  checkItem
 } from './api';
-import { get, create, getAll, deleteEpic } from './templatesEpic';
+import { get, create, getAll, deleteEpic, checkEpic } from './templatesEpic';
 import { prepareItemForDownload } from './item/download';
 import { getItemEpic, getItemsEpic } from './item/request';
 import { prepareLocationForDownload } from './location/download';
@@ -286,6 +291,23 @@ export const uploadFilesEpic = (
     })
   );
 
+const checkGroupEpic = checkEpic(ActionType.CHECKGROUPASYNC, checkGroup);
+
+const checkCategoryEpic = checkEpic(
+  ActionType.CHECKCATEGORYASYNC,
+  checkCategory
+);
+
+const checkPropertyEpic = checkEpic(
+  ActionType.CHECKPROPERTYASYNC,
+  checkProperty
+);
+
+const checkItemEpic = checkEpic(
+  ActionType.CHECKITEMASYNC,
+  checkItem
+);
+
 export const epic = combineEpics(
   getLocationsEpic,
   getLocationEpic,
@@ -316,5 +338,9 @@ export const epic = combineEpics(
   deleteDecisionEpic,
   deleteLocationEpic,
   downloadEpic,
-  uploadFilesEpic
+  uploadFilesEpic,
+  checkGroupEpic,
+  checkCategoryEpic,
+  checkPropertyEpic,
+  checkItemEpic
 );

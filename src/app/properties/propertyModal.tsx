@@ -43,6 +43,7 @@ export const PropertyModal: React.FC<Props> = ({
     register,
     handleSubmit,
     formState: { errors },
+    reset
   } = useForm({ reValidateMode: 'onBlur' });
 
   const [loading, setLoading] = useState(false);
@@ -59,17 +60,21 @@ export const PropertyModal: React.FC<Props> = ({
 
   const getProperty = useCallback(
     (id: string) => {
-      dispatch(getPropertyAsync(id, (model) => setState(model)));
+      dispatch(getPropertyAsync(id, (model) => {
+        setState(model);
+        reset({ name: model.name });
+      }));
     },
-    [dispatch]
+    [dispatch, reset]
   );
 
   const handleChange = useCallback(
     (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
       if (showDuplicateTooltip) setShowDuplicateTooltip(false);
       setState({ ...state, name: e.target.value });
+      reset({ name: e.target.value });
     },
-    [state, showDuplicateTooltip]
+    [state, showDuplicateTooltip, reset]
   );
 
   const onSave = useCallback(() => {

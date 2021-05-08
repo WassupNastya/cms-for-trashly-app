@@ -10,6 +10,8 @@ import { useDeleteUndo } from 'app/common/useDeleteUndo';
 import { Group } from 'data/model';
 import { useDialog } from 'app/common/useDialog';
 import { useSearch } from 'app/common/searchProvider';
+import { useCheck } from 'app/common/useCheck';
+import { Collection } from 'data/enums';
 
 import { GroupModal } from './groupModal';
 
@@ -19,6 +21,7 @@ export const Table: React.FC = () => {
   useGroups({ needEffect: true });
   const { rowsToDisplay, onDelete } = useDeleteUndo<Group>(groups);
   const { dialog, show, hide } = useDialog();
+  const checkBeforeDelete = useCheck(Collection.Groups);
 
   const actionCell = useCallback(
     (params: CellParams) => {
@@ -28,11 +31,15 @@ export const Table: React.FC = () => {
           isRename
           id={id}
           onEdit={() => show(id)}
-          onDelete={() => onDelete(id, deleteGroupAsync, (el) => el.name)}
+          onDelete={() =>
+            checkBeforeDelete(id, () =>
+              onDelete(id, deleteGroupAsync, (el) => el.name)
+            )
+          }
         />
       );
     },
-    [show, onDelete]
+    [show, onDelete, checkBeforeDelete]
   );
 
   const columns: ColDef[] = useMemo(

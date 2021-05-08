@@ -10,7 +10,16 @@ import {
   Category,
   Rule,
 } from './model';
-import { create, deleteCategoryRequest, deleteGroupRequest, deletePropertyRequest, deleteRequest, get, getAll } from './templatesApi';
+import {
+  create,
+  deleteRequest,
+  get,
+  getAll,
+  checkForCategoryDependency,
+  checkForGroupDependency,
+  checkForPropertyDependency,
+  checkForItemDependency,
+} from './templatesApi';
 
 export const getItems = getAll<Item>(Collection.Items);
 export const getGroups = getAll<Group>(Collection.Groups);
@@ -37,9 +46,9 @@ export const getDecision = get<Decision>(Collection.Decisions);
 export const getLocation = get<Location>(Collection.Locations);
 
 export const deleteItem = deleteRequest(Collection.Items);
-export const deleteGroup = deleteGroupRequest();
-export const deleteCategory = deleteCategoryRequest();
-export const deleteProperty = deletePropertyRequest();
+export const deleteGroup = deleteRequest(Collection.Groups);
+export const deleteCategory = deleteRequest(Collection.Categories);
+export const deleteProperty = deleteRequest(Collection.Properties);
 export const deleteRule = deleteRequest(Collection.Rules);
 export const deleteDecision = deleteRequest(Collection.Decisions);
 export const deleteLocation = deleteRequest(Collection.Locations);
@@ -51,3 +60,8 @@ export const uploadFile = (filename: string, blob: Blob) =>
     .put(blob)
     .then(() => console.log(`${filename} is uploaded`))
     .catch((e) => console.log('Error: ', e));
+
+export const checkGroup = checkForGroupDependency();
+export const checkCategory = checkForCategoryDependency();
+export const checkProperty = checkForPropertyDependency();
+export const checkItem = checkForItemDependency();

@@ -76,7 +76,8 @@ export const deleteRequest = (collectionName: string) => {
 const checkDependencyError = (error) =>
   error === Exception.Dependency ? Response.Dependency : Response.ServerError;
 
-export const deleteGroupRequest = () => {
+
+export const checkForGroupDependency = () => {
   return (id: string) =>
     db
       .collection(Collection.Items)
@@ -96,12 +97,7 @@ export const deleteGroupRequest = () => {
                   .get()
                   .then((response) => {
                     if (response.size > 0) throw Exception.Dependency;
-                    else
-                      db.collection(Collection.Groups)
-                        .doc(id)
-                        .delete()
-                        .then(() => Response.Ok)
-                        .catch(() => Response.ServerError);
+                    else return Response.Ok;
                   });
               return Response.Ok;
             })
@@ -111,7 +107,7 @@ export const deleteGroupRequest = () => {
       .catch(checkDependencyError);
 };
 
-export const deleteCategoryRequest = () => {
+export const checkForCategoryDependency = () => {
   return (id: string) =>
     db
       .collection(Collection.Items)
@@ -131,12 +127,7 @@ export const deleteCategoryRequest = () => {
                   .get()
                   .then((response) => {
                     if (response.size > 0) throw Exception.Dependency;
-                    else
-                      db.collection(Collection.Categories)
-                        .doc(id)
-                        .delete()
-                        .then(() => Response.Ok)
-                        .catch(() => Response.ServerError);
+                    else return Response.Ok;
                   });
               return Response.Ok;
             })
@@ -146,7 +137,7 @@ export const deleteCategoryRequest = () => {
       .catch(checkDependencyError);
 };
 
-export const deletePropertyRequest = () => {
+export const checkForPropertyDependency = () => {
   return (id: string) =>
     db
       .collection(Collection.Items)
@@ -166,14 +157,31 @@ export const deletePropertyRequest = () => {
                   .get()
                   .then((response) => {
                     if (response.size > 0) throw Exception.Dependency;
-                    else
-                      db.collection(Collection.Properties)
-                        .doc(id)
-                        .delete()
-                        .then(() => Response.Ok)
-                        .catch(() => Response.ServerError);
+                    else return Response.Ok;
                   });
               return Response.Ok;
+            })
+            .catch(checkDependencyError);
+        return Response.Ok;
+      })
+      .catch(checkDependencyError);
+};
+
+export const checkForItemDependency = () => {
+  return (id: string) =>
+    db
+      .collection(Collection.Rules)
+      .where('item', '==', id)
+      .get()
+      .then((response) => {
+        if (response.size > 0) throw Exception.Dependency;
+        else
+          db.collection(Collection.Decisions)
+            .where('item', '==', id)
+            .get()
+            .then((response) => {
+              if (response.size > 0) throw Exception.Dependency;
+              else return Response.Ok;
             })
             .catch(checkDependencyError);
         return Response.Ok;

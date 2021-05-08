@@ -51,6 +51,7 @@ export const DecisionModal: React.FC<Props> = ({ id, hide }) => {
     register,
     handleSubmit,
     formState: { errors },
+    reset,
   } = useForm({ reValidateMode: 'onBlur' });
 
   useItems({ needEffect: true });
@@ -87,8 +88,9 @@ export const DecisionModal: React.FC<Props> = ({ id, hide }) => {
       field: keyof Decision
     ) => {
       setState({ ...state, [field]: e.target.value });
+      reset({ [field]: e.target.value });
     },
-    [state]
+    [state, reset]
   );
 
   const onSave = useCallback(() => {
@@ -119,9 +121,12 @@ export const DecisionModal: React.FC<Props> = ({ id, hide }) => {
 
   const getDecision = useCallback(
     (id: string) => {
-      dispatch(getDecisionAsync(id, (response) => setState(response)));
+      dispatch(getDecisionAsync(id, (response) => {
+        setState(response);
+        reset({ name: response.name });
+      }));
     },
-    [dispatch]
+    [dispatch, reset]
   );
 
   useEffect(() => {
