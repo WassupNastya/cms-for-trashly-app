@@ -12,11 +12,9 @@ import { Table as Rules } from 'app/rules/table';
 import { Table as Decisions } from 'app/decisions/table';
 import { LocationsTable as Locations } from 'app/locations/table';
 import { useSearch } from 'app/common/searchProvider';
-import withFirebaseAuth from 'react-with-firebase-auth';
-import { providers, firebaseAppAuth } from 'database';
 import { Login } from 'app/login/login';
 import { ProtectedRoute } from 'shared/protectedRoute';
-import { AuthProvider } from 'app/common/authProvider';
+import { useAuth } from 'app/common/authProvider';
 
 import './app.scss';
 
@@ -27,7 +25,7 @@ const tablesMap = new Map([
   [Tab.Properties, <Properties key="properties" />],
 ]);
 
-export const App = withFirebaseAuth({ providers, firebaseAppAuth })((props) => {
+export const App = () => {
   const location = useLocation();
 
   const theme = createMuiTheme({
@@ -43,71 +41,36 @@ export const App = withFirebaseAuth({ providers, firebaseAppAuth })((props) => {
   const component = useMemo(() => tablesMap.get(currentTab), [currentTab]);
 
   const { setSearchValue } = useSearch();
+  const { user } = useAuth();
 
   const onChange = (tab: Tab) => {
     setSearchValue('');
     setCurrentTab(tab);
   };
 
-  const {
-    user,
-    signOut,
-    signInWithGoogle,
-    signInWithEmailAndPassword,
-    createUserWithEmailAndPassword,
-    error,
-    loading,
-    setError,
-  } = props;
-
-  console.log('error: ', error);
-
   return (
     <MuiThemeProvider theme={theme}>
-      <AuthProvider
-        user={user}
-        signInWithGoogle={signInWithGoogle}
-        signOut={signOut}
-        signInWithEmailAndPassword={signInWithEmailAndPassword}
-        createUserWithEmailAndPassword={createUserWithEmailAndPassword}
-        error={error}
-        loading={loading}
-        setError={setError}
-      >
-        <Switch location={location}>
-          <Route
-            path="/login"
-            component={() => (!user ? <Login /> : <Redirect to="/" />)}
-          />
-          <div className="app">
-            <Bar />
-            <div className="page">
-              <Tools currentTab={currentTab} setCurrentTab={onChange} />
-              <ProtectedRoute
-                path={Root.Rules}
-                user={user}
-                component={<Rules />}
-              />
-              <ProtectedRoute
-                path={Root.Decisions}
-                user={user}
-                component={<Decisions />}
-              />
-              <ProtectedRoute
-                path={Root.Locations}
-                user={user}
-                component={<Locations />}
-              />
-              <ProtectedRoute
-                path={Root.Items}
-                user={user}
-                component={component}
-              />
-              <ProtectedRoute path="/" user={user} component={component} />
-            </div>
+      <Switch location={location}>
+        <Route
+          path="/login/new"
+          component={() => (!user ? <Login /> : <Redirect to="/" />)}
+        />
+        <Route
+          path="/login"
+          component={() => (!user ? <Login /> : <Redirect to="/" />)}
+        />
+        <div className="app">
+          <Bar />
+          <div className="page">
+            <Tools currentTab={currentTab} setCurrentTab={onChange} />
+            <ProtectedRoute path={Root.Rules} component={<Rules />} />
+            <ProtectedRoute path={Root.Decisions} component={<Decisions />} />
+            <ProtectedRoute path={Root.Locations} component={<Locations />} />
+            <ProtectedRoute path={Root.Items} component={component} />
+            <ProtectedRoute path="/" component={component} />
           </div>
-        </Switch>
-      </AuthProvider>
+        </div>
+      </Switch>
     </MuiThemeProvider>
   );
-});
+};

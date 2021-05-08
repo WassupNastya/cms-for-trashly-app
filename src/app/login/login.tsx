@@ -1,74 +1,56 @@
-import React, { useMemo, useState } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { Typography } from '@material-ui/core';
-import { useAuth } from 'app/common/authProvider';
+import backgroundImage from 'assets/background.svg';
+import { useHistory, useLocation } from 'react-router-dom';
 
 import { SignIn } from './signIn';
 import { SignUp } from './signUp';
 
 import './login.scss';
 
-enum LoginMode {
-  SignIn = 0,
-  SignUp,
-}
-
 export const Login: React.FC = () => {
-  const [mode, setMode] = useState(LoginMode.SignIn);
+  const history = useHistory();
+  const location = useLocation();
 
-  const { setError } = useAuth();
-
-  const linkSignUp = useMemo(
+  const linkSignUp = useCallback(
     () => (
       <Typography variant="body1" className="sign-link">
         New member?&nbsp;
-        <span
-          onClick={() => {
-            setError('');
-            setMode(LoginMode.SignUp);
-          }}
-        >
-          Sign up
-        </span>
+        <span onClick={() => history.push('/login/new')}>Sign up</span>
       </Typography>
     ),
-    [setError]
+    [history]
   );
 
-  const linkSignIn = useMemo(
+  const linkSignIn = useCallback(
     () => (
       <Typography variant="body1" className="sign-link">
         Already a member?&nbsp;
-        <span
-          onClick={() => {
-            setError('');
-            setMode(LoginMode.SignIn);
-          }}
-        >
-          Sign in
-        </span>
+        <span onClick={() => history.push('/login')}>Sign in</span>
       </Typography>
     ),
-    [setError]
+    [history]
   );
 
-  const form = useMemo(
-    () => (mode === LoginMode.SignIn ? <SignIn /> : <SignUp />),
-    [mode]
-  );
+  const isSignUp = useMemo(() => location.pathname.includes('/new'), [
+    location,
+  ]);
 
-  const link = useMemo(
-    () => (mode === LoginMode.SignIn ? linkSignUp : linkSignIn),
-    [mode, linkSignIn, linkSignUp]
-  );
+  const form = useMemo(() => (isSignUp ? <SignUp /> : <SignIn />), [isSignUp]);
 
-  const title = useMemo(
-    () => (mode === LoginMode.SignIn ? 'Sign in' : 'Sign up'),
-    [mode]
-  );
+  const link = useMemo(() => (isSignUp ? linkSignIn() : linkSignUp()), [
+    isSignUp,
+    linkSignIn,
+    linkSignUp,
+  ]);
+
+  const title = useMemo(() => (isSignUp ? 'Sign up' : 'Sign in'), [isSignUp]);
 
   return (
     <div className="login">
-      <div className="login-background"></div>
+      <div className="login-background">
+        <img src={backgroundImage} />
+      </div>
       <div className="login-form-wrapper">
         <div className="login-form">
           <Typography variant="h4" style={{ fontWeight: 500 }}>

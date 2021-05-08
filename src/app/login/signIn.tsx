@@ -7,10 +7,10 @@ import { useForm } from 'react-hook-form';
 
 import { ErrorString } from './errorString';
 
-import './signForm.scss';
+import './form.scss';
 
 export const SignIn: React.FC = () => {
-  const { signInWithGoogle, signInWithEmailAndPassword, error } = useAuth();
+  const { loginWithGoogle, signInWithEmailAndPassword } = useAuth();
   const {
     register,
     handleSubmit,
@@ -22,6 +22,9 @@ export const SignIn: React.FC = () => {
     password: '',
   });
 
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string>();
+
   const handleChange = useCallback(
     (
       e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -32,12 +35,35 @@ export const SignIn: React.FC = () => {
     [userData]
   );
 
+  const login = useCallback(() => {
+    setLoading(true);
+    loginWithGoogle()
+      .then(() => {
+        setLoading(false);
+      })
+      .catch((e) => {
+        setError(e.message);
+        setLoading(false);
+      });
+  }, [loginWithGoogle]);
+
+  const signIn = useCallback(() => {
+    setLoading(true);
+    signInWithEmailAndPassword(userData.email, userData.password)
+      .then(() => setLoading(false))
+      .catch((e) => {
+        setError(e.message);
+        setLoading(false);
+      });
+  }, [userData, signInWithEmailAndPassword]);
+
   return (
     <div className="sign-form-wrapper">
       <Button
         variant="outlined"
-        onClick={signInWithGoogle}
+        onClick={login}
         className="google-button"
+        disabled={loading}
       >
         <img src={google} alt="Login with Google." />
         Login with Google
@@ -73,6 +99,7 @@ export const SignIn: React.FC = () => {
           size="small"
           color="secondary"
           style={{ marginTop: '0.5rem' }}
+          disabled={loading}
         />
       </Tooltip>
       <Tooltip
@@ -89,6 +116,10 @@ export const SignIn: React.FC = () => {
               value: true,
               message: 'Password is required',
             },
+            minLength: {
+              value: 6,
+              message: 'Password should have at least 6 characters',
+            },
           })}
           fullWidth
           type="password"
@@ -100,15 +131,15 @@ export const SignIn: React.FC = () => {
           size="small"
           color="secondary"
           style={{ marginTop: '0.5rem', marginBottom: '0.8rem' }}
+          disabled={loading}
         />
       </Tooltip>
       {error && <ErrorString message={error} />}
       <Button
         variant="outlined"
         color="secondary"
-        onClick={handleSubmit(() =>
-          signInWithEmailAndPassword(userData.email, userData.password)
-        )}
+        onClick={handleSubmit(signIn)}
+        disabled={loading}
       >
         Sign in
       </Button>

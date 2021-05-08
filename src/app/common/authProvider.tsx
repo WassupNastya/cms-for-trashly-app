@@ -1,66 +1,60 @@
-import React, { ReactNode, useContext } from 'react';
+import React, { ReactNode, useContext, useEffect, useState } from 'react';
 import firebase from 'firebase';
+import { firebaseAppAuth, providers } from 'database';
 
 interface AuthContextProps {
+  signInWithEmailAndPassword: (
+    email: string,
+    password: string
+  ) => Promise<firebase.auth.UserCredential>;
+  signUpWithEmailAndPassword: (
+    email: string,
+    password: string
+  ) => Promise<firebase.auth.UserCredential>;
+  loginWithGoogle: () => Promise<firebase.auth.UserCredential>;
+  signOut: () => Promise<void>;
   user?: firebase.User;
-  signInWithGoogle: () => void;
-  createUserWithEmailAndPassword: (email: string, password: string) => void;
-  signInWithEmailAndPassword: (email: string, password: string) => void;
-  signOut: () => void;
-  error: string;
-  loading: boolean;
-  setError: (error: string) => void;
 }
 
 const AuthContext = React.createContext<AuthContextProps>({
-  signInWithGoogle: () =>
-    console.error(
-      'useAuth() can be used only inside <AuthProvider> component.'
-    ),
-  createUserWithEmailAndPassword: () =>
-    console.error(
-      'useAuth() can be used only inside <AuthProvider> component.'
-    ),
   signInWithEmailAndPassword: () =>
-    console.error(
-      'useAuth() can be used only inside <AuthProvider> component.'
-    ),
-  signOut: () =>
-    console.error(
-      'useAuth() can be used only inside <AuthProvider> component.'
-    ),
-  error: '',
-  loading: false,
-  setError: () =>
-    console.error(
-      'useAuth() can be used only inside <AuthProvider> component.'
-    ),
+    new Promise(() => console.error('useAuth() error')),
+  signUpWithEmailAndPassword: () =>
+    new Promise(() => console.error('useAuth() error')),
+  loginWithGoogle: () => new Promise(() => console.error('useAuth() error')),
+  signOut: () => new Promise(() => console.error('useAuth() error')),
 });
 
 interface AuthProviderProps {
-  user?: any;
-  signInWithGoogle: () => void;
-  createUserWithEmailAndPassword: (email: string, password: string) => void;
-  signInWithEmailAndPassword: (email: string, password: string) => void;
-  signOut: () => void;
-  error: string;
-  loading: boolean;
-  setError: (error: string) => void;
   children?: ReactNode;
 }
 
 export const AuthProvider = (props: AuthProviderProps) => {
+  const [user, setUser] = useState<firebase.User>();
+
+  const signInWithEmailAndPassword = (email: string, password: string) =>
+    firebaseAppAuth.signInWithEmailAndPassword(email, password);
+
+  const signUpWithEmailAndPassword = (email: string, password: string) =>
+    firebaseAppAuth.createUserWithEmailAndPassword(email, password);
+
+  const loginWithGoogle = () =>
+    firebaseAppAuth.signInWithPopup(providers.googleProvider);
+
+  const signOut = () => firebaseAppAuth.signOut();
+
+  useEffect(() => {
+    firebaseAppAuth.onAuthStateChanged(userAuth => setUser(userAuth));
+  }, []);
+
   return (
     <AuthContext.Provider
       value={{
-        user: props.user,
-        signInWithGoogle: props.signInWithGoogle,
-        signOut: props.signOut,
-        signInWithEmailAndPassword: props.signInWithEmailAndPassword,
-        createUserWithEmailAndPassword: props.createUserWithEmailAndPassword,
-        error: props.error,
-        loading: props.loading,
-        setError: props.setError
+        signInWithEmailAndPassword,
+        signUpWithEmailAndPassword,
+        loginWithGoogle,
+        signOut,
+        user
       }}
     >
       {props.children}

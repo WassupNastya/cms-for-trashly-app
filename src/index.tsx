@@ -6,6 +6,7 @@ import { createBrowserHistory } from 'history';
 import { SnackbarProvider } from 'notistack';
 import { Notistack } from 'shared/notistack/notistack';
 import { SearchProvider } from 'app/common/searchProvider';
+import { AuthProvider } from 'app/common/authProvider';
 
 import { store } from './core/store';
 import { App } from './app';
@@ -18,15 +19,19 @@ ReactDOM.render(
   <Provider store={store}>
     <Router history={history}>
       <React.StrictMode>
-        <SnackbarProvider
-          maxSnack={3}
-          anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-          content={(key, message) => <Notistack key={key} message={message} />}
-        >
-          <SearchProvider>
-            <App />
-          </SearchProvider>
-        </SnackbarProvider>
+        <AuthProvider>
+          <SnackbarProvider
+            maxSnack={3}
+            anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+            content={(key, message) => (
+              <Notistack key={key} message={message} />
+            )}
+          >
+            <SearchProvider>
+              <App />
+            </SearchProvider>
+          </SnackbarProvider>
+        </AuthProvider>
       </React.StrictMode>
     </Router>
   </Provider>,

@@ -7,25 +7,24 @@ import { useForm } from 'react-hook-form';
 
 import { ErrorString } from './errorString';
 
-import './SignForm.scss';
+import './form.scss';
 
 export const SignUp: React.FC = () => {
-  const {
-    signInWithGoogle,
-    createUserWithEmailAndPassword,
-    error,
-    loading,
-  } = useAuth();
+  const [userData, setUserData] = useState<UserData>({
+    email: '',
+    password: '',
+  });
+
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string>();
+
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm({ reValidateMode: 'onBlur' });
 
-  const [userData, setUserData] = useState<UserData>({
-    email: '',
-    password: '',
-  });
+  const { loginWithGoogle, signUpWithEmailAndPassword } = useAuth();
 
   const handleChange = useCallback(
     (
@@ -37,15 +36,33 @@ export const SignUp: React.FC = () => {
     [userData]
   );
 
-  const onCreateAccount = () => {
-    createUserWithEmailAndPassword(userData.email, userData.password);
-  };
+  const login = useCallback(() => {
+    setLoading(true);
+    loginWithGoogle()
+      .then(() => {
+        setLoading(false);
+      })
+      .catch((e) => {
+        setError(e.message);
+        setLoading(false);
+      });
+  }, [loginWithGoogle]);
+
+  const signUp = useCallback(() => {
+    setLoading(true);
+    signUpWithEmailAndPassword(userData.email, userData.password)
+      .then(() => setLoading(false))
+      .catch((e) => {
+        setError(e.message);
+        setLoading(false);
+      });
+  }, [userData, signUpWithEmailAndPassword]);
 
   return (
     <div className="sign-form-wrapper">
       <Button
         variant="outlined"
-        onClick={signInWithGoogle}
+        onClick={login}
         className="google-button"
         disabled={loading}
       >
@@ -100,6 +117,10 @@ export const SignUp: React.FC = () => {
               value: true,
               message: 'Password is required',
             },
+            minLength: {
+              value: 6,
+              message: 'Password should have at least 6 characters',
+            },
           })}
           type="password"
           id="password"
@@ -117,7 +138,7 @@ export const SignUp: React.FC = () => {
       <Button
         variant="outlined"
         color="secondary"
-        onClick={handleSubmit(onCreateAccount)}
+        onClick={handleSubmit(signUp)}
         disabled={loading}
       >
         Create an account
