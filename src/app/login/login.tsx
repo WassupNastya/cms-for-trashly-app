@@ -48,9 +48,10 @@ export const Login: React.FC = () => {
 
   return (
     <div className="login">
-      <div className="login-background">
-        <img src={backgroundImage} />
-      </div>
+      <div
+        className="login-background"
+        style={{ backgroundImage: `url(${backgroundImage})` }}
+      ></div>
       <div className="login-form-wrapper">
         <div className="login-form">
           <Typography variant="h4" style={{ fontWeight: 500 }}>
