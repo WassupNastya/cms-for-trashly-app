@@ -44,7 +44,10 @@ export const create = (collectionName: string) => {
       .where('name', '==', data.name)
       .get()
       .then((response) => {
-        if (response.size > 0) throw Exception.Duplicate;
+        const createDuplicate = isEmpty(data.id) && response.docs.length > 0;
+        const editDuplicate = !isEmpty(data.id) && response.docs.length > 1;
+
+        if (createDuplicate || editDuplicate) throw Exception.Duplicate;
         else
           db.collection(collectionName)
             .doc(id)
