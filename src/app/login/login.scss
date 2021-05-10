@@ -13,6 +13,7 @@
     align-items: center;
 
     .login-form {
+      padding: 1rem;
       width: 25rem;
     }
 
@@ -37,10 +38,10 @@
 @media (min-width: 1281px) {
   .login {
     .login-form-wrapper {
-      width: 50%;
+      width: 48%;
     }
     .login-background {
-      width: 50%;
+      width: 52%;
     }
   }
 }
