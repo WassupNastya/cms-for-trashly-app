@@ -30,6 +30,7 @@ export const Table: React.FC<Props> = ({
           columns={columns}
           disableSelectionOnClick
           disableColumnMenu
+          pageSize={15}
         />
       )}
     </Grid>

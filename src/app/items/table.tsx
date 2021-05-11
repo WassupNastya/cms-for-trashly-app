@@ -5,7 +5,6 @@ import { MenuButton } from 'shared/menuButton';
 import { Table as TableTemplate } from 'shared/table';
 import { CellParams, ColDef } from '@material-ui/data-grid';
 import { useItems } from 'app/common/useData';
-import { Chip } from '@material-ui/core';
 import { useDeleteUndo } from 'app/common/useDeleteUndo';
 import { Item } from 'data/model';
 import { deleteItemAsync } from 'data/actions';
@@ -13,6 +12,7 @@ import { useDialog } from 'app/common/useDialog';
 import { useSearch } from 'app/common/searchProvider';
 import { useCheck } from 'app/common/useCheck';
 import { Collection } from 'data/enums';
+import { PropertiesCell } from 'shared/propertiesCell';
 
 import { ItemModal } from './itemModal';
 
@@ -28,13 +28,7 @@ export const Table: React.FC = () => {
 
   const propertiesCell = useCallback((params: CellParams) => {
     const properties = params.value as string[];
-    return (
-      <div style={{ width: '100%' }}>
-        {properties.map((label, key) => (
-          <Chip key={key} label={label} style={{ marginRight: '0.4rem' }} />
-        ))}
-      </div>
-    );
+    return <PropertiesCell list={properties} />;
   }, []);
 
   const actionCell = useCallback(

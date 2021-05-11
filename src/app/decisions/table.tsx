@@ -4,13 +4,13 @@ import { StoreType } from 'core/rootReducer';
 import { MenuButton } from 'shared/menuButton';
 import { Table as TableTemplate } from 'shared/table';
 import { CellParams, ColDef } from '@material-ui/data-grid';
-import { Chip } from '@material-ui/core';
 import { useDecisions } from 'app/common/useData';
 import { useDeleteUndo } from 'app/common/useDeleteUndo';
 import { deleteDecisionAsync } from 'data/actions';
 import { Decision } from 'data/model';
 import { useDialog } from 'app/common/useDialog';
 import { useSearch } from 'app/common/searchProvider';
+import { PropertiesCell } from 'shared/propertiesCell';
 
 import { DecisionModal } from './decisionModal';
 
@@ -26,11 +26,7 @@ export const Table: React.FC = () => {
   const propertiesCell = useCallback((params: CellParams) => {
     const properties = params.value as string[];
     return (
-      <div style={{ width: '100%' }}>
-        {properties.map((label, key) => (
-          <Chip key={key} label={label} style={{ marginRight: '0.4rem' }} />
-        ))}
-      </div>  
+      <PropertiesCell list={properties} /> 
     );
   }, []);
 

@@ -5,12 +5,12 @@ import { MenuButton } from 'shared/menuButton';
 import { Table as TableTemplate } from 'shared/table';
 import { CellParams, ColDef } from '@material-ui/data-grid';
 import { useProperties, useRules } from 'app/common/useData';
-import { Chip } from '@material-ui/core';
 import { useDeleteUndo } from 'app/common/useDeleteUndo';
 import { deleteRuleAsync } from 'data/actions';
 import { Rule } from 'data/model';
 import { useDialog } from 'app/common/useDialog';
 import { useSearch } from 'app/common/searchProvider';
+import { PropertiesCell } from 'shared/propertiesCell';
 
 import { RuleModal } from './ruleModal';
 
@@ -26,13 +26,7 @@ export const Table: React.FC = () => {
 
   const propertiesCell = useCallback((params: CellParams) => {
     const properties = params.value as string[];
-    return (
-      <div style={{ width: '100%' }}>
-        {properties.map((label, key) => (
-          <Chip key={key} label={label} style={{ marginRight: '0.4rem' }} />
-        ))}
-      </div>
-    );
+    return <PropertiesCell list={properties} />;
   }, []);
 
   const actionCell = useCallback(
