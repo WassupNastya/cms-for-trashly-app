@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { StoreType } from 'core/rootReducer';
 import { MenuButton } from 'shared/menuButton';
@@ -18,7 +18,9 @@ import { CategoryModal } from './categoryModal';
 export const Table: React.FC = () => {
   const categories = useSelector((state: StoreType) => state.data.categories);
 
-  useCategories({ needEffect: true });
+  const [loading, setLoading] = useState(false);
+
+  useCategories({ needEffect: true, setLoading });
   const { rowsToDisplay, onDelete } = useDeleteUndo<Category>(categories);
   const { dialog, show, hide } = useDialog();
   const checkBeforeDelete = useCheck(Collection.Categories);
@@ -64,7 +66,7 @@ export const Table: React.FC = () => {
 
   return (
     <>
-      <TableTemplate columns={columns} rows={filteredRows}></TableTemplate>
+      <TableTemplate columns={columns} rows={filteredRows} loading={loading}></TableTemplate>
       {dialog((id) => (
         <CategoryModal hide={hide} id={id} />
       ))}

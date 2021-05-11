@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Table } from 'shared/table';
 import { StoreType } from 'core/rootReducer';
@@ -16,7 +16,9 @@ import { LocationModal } from './locationModal';
 export const LocationsTable: React.FC = () => {
   const locations = useSelector((state: StoreType) => state.data.locations);
 
-  useLocations({ needEffect: true });
+  const [loading, setLoading] = useState(false);
+
+  useLocations({ needEffect: true, setLoading });
   const { rowsToDisplay, onDelete } = useDeleteUndo<Location>(locations);
   const { dialog, show, hide } = useDialog();
 
@@ -62,7 +64,7 @@ export const LocationsTable: React.FC = () => {
 
   return (
     <>
-      <Table columns={columns} rows={filteredRows}></Table>
+      <Table columns={columns} rows={filteredRows} loading={loading}></Table>
       {dialog((id) => (
         <LocationModal hide={hide} id={id} />
       ))}

@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { StoreType } from 'core/rootReducer';
 import { MenuButton } from 'shared/menuButton';
@@ -17,7 +17,9 @@ import { DecisionModal } from './decisionModal';
 export const Table: React.FC = () => {
   const decisions = useSelector((state: StoreType) => state.data.decisions);
 
-  useDecisions({ needEffect: true });
+  const [loading, setLoading] = useState(false);
+
+  useDecisions({ needEffect: true, setLoading });
   const { rowsToDisplay, onDelete } = useDeleteUndo<Decision>(decisions);
   const { dialog, show, hide } = useDialog();
 
@@ -28,7 +30,7 @@ export const Table: React.FC = () => {
         {properties.map((label, key) => (
           <Chip key={key} label={label} style={{ marginRight: '0.4rem' }} />
         ))}
-      </div>
+      </div>  
     );
   }, []);
 
@@ -80,7 +82,7 @@ export const Table: React.FC = () => {
 
   return (
     <>
-      <TableTemplate columns={columns} rows={filteredRows}></TableTemplate>
+      <TableTemplate columns={columns} rows={filteredRows} loading={loading}></TableTemplate>
       {dialog((id) => (
         <DecisionModal hide={hide} id={id} />
       ))}

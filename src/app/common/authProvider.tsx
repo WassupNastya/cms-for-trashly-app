@@ -44,7 +44,7 @@ export const AuthProvider = (props: AuthProviderProps) => {
   const signOut = () => firebaseAppAuth.signOut();
 
   useEffect(() => {
-    firebaseAppAuth.onAuthStateChanged(userAuth => setUser(userAuth));
+    firebaseAppAuth.onAuthStateChanged((userAuth) => setUser(userAuth));
   }, []);
 
   return (
@@ -54,7 +54,7 @@ export const AuthProvider = (props: AuthProviderProps) => {
         signUpWithEmailAndPassword,
         loginWithGoogle,
         signOut,
-        user
+        user,
       }}
     >
       {props.children}

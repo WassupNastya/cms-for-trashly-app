@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { StoreType } from 'core/rootReducer';
 import { MenuButton } from 'shared/menuButton';
@@ -19,7 +19,9 @@ import { ItemModal } from './itemModal';
 export const Table: React.FC = () => {
   const items = useSelector((state: StoreType) => state.data.items);
 
-  useItems({ needEffect: true });
+  const [loading, setLoading] = useState(false);
+
+  useItems({ needEffect: true, setLoading });
   const { rowsToDisplay, onDelete } = useDeleteUndo<Item>(items);
   const { dialog, show, hide } = useDialog();
   const checkBeforeDelete = useCheck(Collection.Items);
@@ -84,7 +86,11 @@ export const Table: React.FC = () => {
 
   return (
     <>
-      <TableTemplate columns={columns} rows={filteredRows}></TableTemplate>
+      <TableTemplate
+        columns={columns}
+        rows={filteredRows}
+        loading={loading}
+      ></TableTemplate>
       {dialog((id) => (
         <ItemModal hide={hide} id={id} />
       ))}

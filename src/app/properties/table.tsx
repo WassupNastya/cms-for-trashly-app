@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { MenuButton } from 'shared/menuButton';
 import { Table as TableTemplate } from 'shared/table';
@@ -18,11 +18,13 @@ import { PropertyModal } from './propertyModal';
 export const Table: React.FC = () => {
   const properties = useSelector((state: StoreType) => state.data.properties);
 
+  const [loading, setLoading] = useState(false);
+
   const { rowsToDisplay, onDelete } = useDeleteUndo<Property>(properties);
   const { dialog, show, hide } = useDialog();
   const checkBeforeDelete = useCheck(Collection.Properties);
 
-  useProperties({ needEffect: true });
+  useProperties({ needEffect: true, setLoading });
 
   const actionCell = useCallback(
     (params: CellParams) => {
@@ -65,7 +67,11 @@ export const Table: React.FC = () => {
 
   return (
     <>
-      <TableTemplate columns={columns} rows={filteredRows}></TableTemplate>
+      <TableTemplate
+        columns={columns}
+        rows={filteredRows}
+        loading={loading}
+      ></TableTemplate>
       {dialog((id) => (
         <PropertyModal hide={hide} id={id} />
       ))}

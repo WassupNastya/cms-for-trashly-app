@@ -15,6 +15,7 @@ import { useSearch } from 'app/common/searchProvider';
 import { Login } from 'app/login/login';
 import { ProtectedRoute } from 'shared/protectedRoute';
 import { useAuth } from 'app/common/authProvider';
+import { Loading } from 'shared/tableLoading/loading';
 
 import './app.scss';
 
@@ -50,27 +51,31 @@ export const App = () => {
 
   return (
     <MuiThemeProvider theme={theme}>
-      <Switch location={location}>
-        <Route
-          path="/login/new"
-          component={() => (!user ? <Login /> : <Redirect to="/" />)}
-        />
-        <Route
-          path="/login"
-          component={() => (!user ? <Login /> : <Redirect to="/" />)}
-        />
-        <div className="app">
-          <Bar />
-          <div className="page">
-            <Tools currentTab={currentTab} setCurrentTab={onChange} />
-            <ProtectedRoute path={Root.Rules} component={<Rules />} />
-            <ProtectedRoute path={Root.Decisions} component={<Decisions />} />
-            <ProtectedRoute path={Root.Locations} component={<Locations />} />
-            <ProtectedRoute path={Root.Items} component={component} />
-            <ProtectedRoute path="/" component={component} />
+      {user === undefined ? (
+        <Loading fullScreen />
+      ) : (
+        <Switch location={location}>
+          <Route
+            path="/login/new"
+            component={() => (!user ? <Login /> : <Redirect to="/" />)}
+          />
+          <Route
+            path="/login"
+            component={() => (!user ? <Login /> : <Redirect to="/" />)}
+          />
+          <div className="app">
+            <Bar />
+            <div className="page">
+              <Tools currentTab={currentTab} setCurrentTab={onChange} />
+              <ProtectedRoute path={Root.Rules} component={<Rules />} />
+              <ProtectedRoute path={Root.Decisions} component={<Decisions />} />
+              <ProtectedRoute path={Root.Locations} component={<Locations />} />
+              <ProtectedRoute path={Root.Items} component={component} />
+              <ProtectedRoute path="/" component={component} />
+            </div>
           </div>
-        </div>
-      </Switch>
+        </Switch>
+      )}
     </MuiThemeProvider>
   );
 };

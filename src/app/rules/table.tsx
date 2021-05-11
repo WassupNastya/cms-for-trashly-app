@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { StoreType } from 'core/rootReducer';
 import { MenuButton } from 'shared/menuButton';
@@ -17,7 +17,9 @@ import { RuleModal } from './ruleModal';
 export const Table: React.FC = () => {
   const rules = useSelector((state: StoreType) => state.data.rules);
 
-  useRules({ needEffect: true });
+  const [loading, setLoading] = useState(false);
+
+  useRules({ needEffect: true, setLoading });
   useProperties({ needEffect: true });
   const { rowsToDisplay, onDelete } = useDeleteUndo<Rule>(rules);
   const { dialog, show, hide } = useDialog();
@@ -78,7 +80,11 @@ export const Table: React.FC = () => {
 
   return (
     <>
-      <TableTemplate columns={columns} rows={filteredRows}></TableTemplate>
+      <TableTemplate
+        columns={columns}
+        rows={filteredRows}
+        loading={loading}
+      ></TableTemplate>
       {dialog((id) => (
         <RuleModal hide={hide} id={id} />
       ))}

@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { StoreType } from 'core/rootReducer';
 import { Table as TableTemplate } from 'shared/table';
@@ -18,7 +18,9 @@ import { GroupModal } from './groupModal';
 export const Table: React.FC = () => {
   const groups = useSelector((state: StoreType) => state.data.groups);
 
-  useGroups({ needEffect: true });
+  const [loading, setLoading] = useState(false);
+
+  useGroups({ needEffect: true, setLoading });
   const { rowsToDisplay, onDelete } = useDeleteUndo<Group>(groups);
   const { dialog, show, hide } = useDialog();
   const checkBeforeDelete = useCheck(Collection.Groups);
@@ -64,7 +66,7 @@ export const Table: React.FC = () => {
 
   return (
     <>
-      <TableTemplate columns={columns} rows={filteredRows}></TableTemplate>
+      <TableTemplate columns={columns} rows={filteredRows} loading={loading}></TableTemplate>
       {dialog((id) => (
         <GroupModal hide={hide} id={id} />
       ))}
