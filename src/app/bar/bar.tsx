@@ -8,16 +8,21 @@ import { UserButton } from 'shared/userButton/userButton';
 
 import './bar.scss';
 
-export const Bar: React.FC= () => {
+export const Bar: React.FC = () => {
   const location = useLocation();
 
   const initialState = useMemo(() => {
-    switch(location.pathname) {
-      case Root.Rules: return MainTab.RecyclableItems;
-      case Root.Decisions: return MainTab.Decisions;
-      case Root.Locations: return MainTab.Locations;
-      case Root.Users: return MainTab.Users;
-      default: return MainTab.RecyclableItems;
+    switch (location.pathname) {
+      case Root.Rules:
+        return MainTab.RecyclableItems;
+      case Root.Decisions:
+        return MainTab.Decisions;
+      case Root.Locations:
+        return MainTab.Locations;
+      case Root.Users:
+        return MainTab.Users;
+      default:
+        return MainTab.RecyclableItems;
     }
   }, [location.pathname]);
 
@@ -38,30 +43,64 @@ export const Bar: React.FC= () => {
     <div className="bar">
       <AppBar position="static">
         <Toolbar>
-          <Tabs
-            value={currentTab}
-            onChange={(e) => e.preventDefault()}
-          >
+          <Tabs value={currentTab} onChange={(e) => e.preventDefault()}>
             <Tab
-              label={<Link onClick={() => setCurrentTab(0)} to={Root.Items}>Recyclable items</Link>}
+              label={
+                <Link onClick={() => setCurrentTab(0)} to={Root.Items}>
+                  Recyclable items
+                </Link>
+              }
               value={MainTab.RecyclableItems}
             />
-            <Tab label={<Link onClick={() => setCurrentTab(1)} to={Root.Rules}>Rules</Link>} value={MainTab.Rules} />
-            <Tab label={<Link onClick={() => setCurrentTab(2)} to={Root.Decisions}>Decisions</Link>} value={MainTab.Decisions} />
-            <Tab label={<Link onClick={() => setCurrentTab(3)} to={Root.Locations}>Locations</Link>} value={MainTab.Locations} />
-            <Tab label={<Link onClick={() => setCurrentTab(4)} to={Root.Users}>Users</Link>} value={MainTab.Users} style={{ display: 'none' }} />
-          </Tabs>
-          <div className="info">
-            <IconButton color="secondary" onClick={handleClick}>
-              <HelpOutline />
-            </IconButton>
-            <CustomPopover
-              open={open}
-              onClose={handleClose}
-              anchorEl={anchorEl}
+            <Tab
+              label={
+                <Link onClick={() => setCurrentTab(1)} to={Root.Rules}>
+                  Rules
+                </Link>
+              }
+              value={MainTab.Rules}
             />
+            <Tab
+              label={
+                <Link onClick={() => setCurrentTab(2)} to={Root.Decisions}>
+                  Decisions
+                </Link>
+              }
+              value={MainTab.Decisions}
+            />
+            <Tab
+              label={
+                <Link onClick={() => setCurrentTab(3)} to={Root.Locations}>
+                  Locations
+                </Link>
+              }
+              value={MainTab.Locations}
+            />
+            <Tab
+              label={
+                <Link onClick={() => setCurrentTab(4)} to={Root.Users}>
+                  Users
+                </Link>
+              }
+              value={MainTab.Users}
+              style={{ display: 'none' }}
+            />
+          </Tabs>
+          <div style={{ marginLeft: 'auto', display: 'flex' }}>
+            {currentTab !== MainTab.Users && (
+              <div className="info">
+                <IconButton color="secondary" onClick={handleClick}>
+                  <HelpOutline />
+                </IconButton>
+                <CustomPopover
+                  open={open}
+                  onClose={handleClose}
+                  anchorEl={anchorEl}
+                />
+              </div>
+            )}
+            <UserButton setCurrentTab={setCurrentTab} />
           </div>
-          <UserButton setCurrentTab={setCurrentTab} />
         </Toolbar>
       </AppBar>
     </div>
