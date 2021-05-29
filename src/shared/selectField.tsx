@@ -28,6 +28,7 @@ interface Props<T> {
   helperTextLabel?: string;
   onChangeSubItem?: (name: string) => void;
   style?: React.CSSProperties;
+  disableClearable?: boolean;
 }
 
 export const SelectField: <T>(props: Props<T>) => JSX.Element = <T,>({
@@ -42,6 +43,7 @@ export const SelectField: <T>(props: Props<T>) => JSX.Element = <T,>({
   helperTextLabel,
   onChangeSubItem,
   style,
+  disableClearable
 }: Props<T>): JSX.Element => {
   const { show, dialog } = useCreateDialog();
 
@@ -50,6 +52,7 @@ export const SelectField: <T>(props: Props<T>) => JSX.Element = <T,>({
       <Autocomplete
         disabled={disabled}
         multiple={multiple}
+        disableClearable={disableClearable}
         fullWidth
         size="small"
         renderInput={(params) => (

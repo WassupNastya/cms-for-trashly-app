@@ -7,7 +7,7 @@ import {
   tap,
 } from 'rxjs/operators';
 import { isOfType } from 'typesafe-actions';
-import { forkJoin } from 'rxjs';
+import { forkJoin, from } from 'rxjs';
 
 import {
   Category,
@@ -18,13 +18,14 @@ import {
   Rule,
   Decision,
   DataForDownload,
+  User,
 } from './model';
 import {
   setCategories,
   setGroups,
   setProperties,
   setLocations,
-  checkItemAsync,
+  setUsers,
 } from './actions';
 import { ActionType } from './actionType';
 import {
@@ -57,7 +58,11 @@ import {
   checkGroup,
   checkCategory,
   checkProperty,
-  checkItem
+  checkItem,
+  createUser,
+  getUsers,
+  getUser,
+  getUserById
 } from './api';
 import { get, create, getAll, deleteEpic, checkEpic } from './templatesEpic';
 import { prepareItemForDownload } from './item/download';
@@ -90,6 +95,8 @@ const getLocationsEpic = getAll<Location>(
   setLocations
 );
 
+const getUsersEpic = getAll<User>(ActionType.GETUSERSASYNC, getUsers, setUsers);
+
 const createItemEpic = create<Item>(ActionType.CREATEITEMASYNC, createItem);
 const createGroupEpic = create<Group>(ActionType.CREATEGROUPASYNC, createGroup);
 const createCategoryEpic = create<Category>(
@@ -114,6 +121,7 @@ const getGroupEpic = get<Group>(ActionType.GETGROUPASYNC, getGroup);
 const getCategoryEpic = get<Category>(ActionType.GETCATEGORYASYNC, getCategory);
 const getPropertyEpic = get<Property>(ActionType.GETPROPERTYASYNC, getProperty);
 const getLocationEpic = get<Location>(ActionType.GETLOCATIONASYNC, getLocation);
+const getUserByIdEpic = get<User>(ActionType.GETUSERBYIDASYNC, getUserById);
 
 const deleteItemEpic = deleteEpic(ActionType.DELETEITEMASYNC, deleteItem);
 const deleteGroupEpic = deleteEpic(ActionType.DELETEGROUPASYNC, deleteGroup);
@@ -308,6 +316,27 @@ const checkItemEpic = checkEpic(
   checkItem
 );
 
+const createUserEpic = create<User>(ActionType.CREATEUSERASYNC, createUser);
+
+export const getUserEpic = (
+  action$: ActionsObservable<{
+    type: string;
+    email: string;
+    onResponseCallback: (user?: User) => void;
+  }>
+) =>
+  action$.pipe(
+    filter(isOfType(ActionType.GETUSERASYNC)),
+    mergeMap(({ email, onResponseCallback }) => {
+      return from(getUser(email)).pipe(
+        tap((response) => {
+          onResponseCallback(response);
+        }),
+        ignoreElements()
+      );
+    })
+  );
+
 export const epic = combineEpics(
   getLocationsEpic,
   getLocationEpic,
@@ -342,5 +371,9 @@ export const epic = combineEpics(
   checkGroupEpic,
   checkCategoryEpic,
   checkPropertyEpic,
-  checkItemEpic
+  checkItemEpic,
+  createUserEpic,
+  getUsersEpic,
+  getUserEpic,
+  getUserByIdEpic
 );

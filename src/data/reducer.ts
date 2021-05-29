@@ -7,6 +7,7 @@ import {
   Item,
   Property,
   Rule,
+  User,
 } from './model';
 
 export interface StateType {
@@ -17,6 +18,7 @@ export interface StateType {
   properties: Property[];
   rules: Rule[];
   decisions: Decision[];
+  users: User[];
 }
 
 const InitialState: StateType = {
@@ -27,6 +29,7 @@ const InitialState: StateType = {
   properties: [],
   rules: [],
   decisions: [],
+  users: []
 };
 
 export const reducer = (state = InitialState, action: Action) => {
@@ -51,6 +54,9 @@ export const reducer = (state = InitialState, action: Action) => {
     }
     case ActionType.SETCATEGORIES: {
       return { ...state, categories: action.data };
+    }
+    case ActionType.SETUSERS: {
+      return { ...state, users: action.data };
     }
     default:
       return state;

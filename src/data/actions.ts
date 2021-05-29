@@ -9,8 +9,16 @@ import {
   Decision,
   Action,
   DataForDownload,
+  User,
 } from './model';
-import { checkAction, create, deleteAction, get, getAll, setAll } from './templateAction';
+import {
+  checkAction,
+  create,
+  deleteAction,
+  get,
+  getAll,
+  setAll,
+} from './templateAction';
 
 export const getItemsAsync = getAll(ActionType.GETITEMSASYNC);
 export const setItems = setAll(ActionType.SETITEMS);
@@ -33,6 +41,9 @@ export const setCategories = setAll(ActionType.SETCATEGORIES);
 export const getLocationsAsync = getAll(ActionType.GETLOCATIONSASYNC);
 export const setLocations = setAll(ActionType.SETLOCATIONS);
 
+export const getUsersAsync = getAll(ActionType.GETUSERSASYNC);
+export const setUsers = setAll(ActionType.SETUSERS);
+
 export const getItemAsync = get<Item>(ActionType.GETITEMASYNC);
 export const getGroupAsync = get<Group>(ActionType.GETGROUPASYNC);
 export const getCategoryAsync = get<Category>(ActionType.GETCATEGORYASYNC);
@@ -40,6 +51,7 @@ export const getPropertyAsync = get<Property>(ActionType.GETPROPERTYASYNC);
 export const getRuleAsync = get<Rule>(ActionType.GETRULEASYNC);
 export const getDecisionAsync = get<Decision>(ActionType.GETDECISIONASYNC);
 export const getLocationAsync = get<Location>(ActionType.GETLOCATIONASYNC);
+export const getUserByIdAsync = get<User>(ActionType.GETUSERBYIDASYNC);
 
 export const createItemAsync = create<Item>(ActionType.CREATEITEMASYNC);
 export const createGroupAsync = create<Group>(ActionType.CREATEGROUPASYNC);
@@ -56,6 +68,7 @@ export const createDecisionAsync = create<Decision>(
 export const createLocationAsync = create<Location>(
   ActionType.CREATELOCATIONASYNC
 );
+export const createUserAsync = create<User>(ActionType.CREATEUSERASYNC);
 
 export const deleteItemAsync = deleteAction(ActionType.DELETEITEMASYNC);
 export const deleteGroupAsync = deleteAction(ActionType.DELETEGROUPASYNC);
@@ -81,3 +94,10 @@ export const checkGroupAsync = checkAction(ActionType.CHECKGROUPASYNC);
 export const checkCategoryAsync = checkAction(ActionType.CHECKCATEGORYASYNC);
 export const checkPropertyAsync = checkAction(ActionType.CHECKPROPERTYASYNC);
 export const checkItemAsync = checkAction(ActionType.CHECKITEMASYNC);
+
+export const getUserAsync: (
+  email: string,
+  onResponseCallback: (user?: User) => void
+) => Action = (email, onResponseCallback) => {
+  return { type: ActionType.GETUSERASYNC, email, onResponseCallback };
+};

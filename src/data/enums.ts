@@ -3,6 +3,7 @@ export enum Root {
   Rules = '/rules',
   Decisions = '/decisions',
   Locations = '/locations',
+  Users = '/users'
 }
 
 export enum Tab {
@@ -26,7 +27,8 @@ export enum Collection {
   Properties = 'properties',
   Rules = 'rules',
   Decisions = 'decisions',
-  Locations = 'locations'
+  Locations = 'locations',
+  Users = 'users'
 }
 
 export enum Response {
@@ -39,4 +41,18 @@ export enum Response {
 export enum Exception {
   Dependency = 'Dependency',
   Duplicate = 'Duplicate'
+}
+
+export enum MainTab {
+  RecyclableItems = 0,
+  Rules = 1,
+  Decisions = 2,
+  Locations = 3,
+  Users = 4,
+}
+
+export enum Role {
+  Viewer = 'Viewer',
+  Editor = 'Editor',
+  Admin = 'Administrator',
 }

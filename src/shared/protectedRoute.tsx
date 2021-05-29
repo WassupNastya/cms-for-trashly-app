@@ -12,6 +12,7 @@ export const ProtectedRoute = (props: Props) => {
 
   return (
     <Route
+      exact
       path={props.path}
       component={() => (user ? props.component : <Redirect to="/login" />)}
     />

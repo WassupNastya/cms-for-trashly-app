@@ -13,6 +13,7 @@ import { useSearch } from 'app/common/searchProvider';
 import { useCheck } from 'app/common/useCheck';
 import { Collection } from 'data/enums';
 import { PropertiesCell } from 'shared/propertiesCell';
+import { useRoles } from 'app/common/rolesProvider';
 
 import { ItemModal } from './itemModal';
 
@@ -25,6 +26,7 @@ export const Table: React.FC = () => {
   const { rowsToDisplay, onDelete } = useDeleteUndo<Item>(items);
   const { dialog, show, hide } = useDialog();
   const checkBeforeDelete = useCheck(Collection.Items);
+  const { isViewer } = useRoles();
 
   const propertiesCell = useCallback((params: CellParams) => {
     const properties = params.value as string[];
@@ -67,9 +69,10 @@ export const Table: React.FC = () => {
         flex: 1,
         renderCell: actionCell,
         sortable: false,
+        hide: isViewer
       },
     ],
-    [actionCell, propertiesCell]
+    [actionCell, propertiesCell, isViewer]
   );
 
   const { filterItem } = useSearch();

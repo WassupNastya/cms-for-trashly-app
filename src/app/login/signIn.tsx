@@ -4,6 +4,8 @@ import { Button, TextField, Tooltip } from '@material-ui/core';
 import { useAuth } from 'app/common/authProvider';
 import google from 'assets/google.svg';
 import { useForm } from 'react-hook-form';
+import { useDispatch } from 'react-redux';
+import { useNewUser } from 'app/common/useNewUser';
 
 import { ErrorString } from './errorString';
 
@@ -25,6 +27,8 @@ export const SignIn: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string>();
 
+  const dispatch = useDispatch();
+
   const handleChange = useCallback(
     (
       e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -35,17 +39,20 @@ export const SignIn: React.FC = () => {
     [userData]
   );
 
+  const createNewUser = useNewUser();
+
   const login = useCallback(() => {
     setLoading(true);
     loginWithGoogle()
-      .then(() => {
+      .then((user) => {
+        createNewUser(user);
         setLoading(false);
       })
       .catch((e) => {
         setError(e.message);
         setLoading(false);
       });
-  }, [loginWithGoogle]);
+  }, [loginWithGoogle, createNewUser]);
 
   const signIn = useCallback(() => {
     setLoading(true);

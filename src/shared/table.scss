@@ -36,5 +36,9 @@
       background-color: white;
       border: 1px solid #D8D8D8;
     }
+    
+    .MuiDataGrid-colCell:focus, .MuiDataGrid-cell:focus {
+      outline: unset;
+    }
   }
 }

@@ -12,6 +12,7 @@ import { useDialog } from 'app/common/useDialog';
 import { useSearch } from 'app/common/searchProvider';
 import { useCheck } from 'app/common/useCheck';
 import { Collection } from 'data/enums';
+import { useRoles } from 'app/common/rolesProvider';
 
 import { GroupModal } from './groupModal';
 
@@ -24,13 +25,14 @@ export const Table: React.FC = () => {
   const { rowsToDisplay, onDelete } = useDeleteUndo<Group>(groups);
   const { dialog, show, hide } = useDialog();
   const checkBeforeDelete = useCheck(Collection.Groups);
+  const { isViewer } = useRoles();
 
   const actionCell = useCallback(
     (params: CellParams) => {
       const id = params.value.toString();
       return (
         <MenuButton
-          isRename
+          editLabel="Rename"
           id={id}
           onEdit={() => show(id)}
           onDelete={() =>
@@ -53,9 +55,10 @@ export const Table: React.FC = () => {
         flex: 1,
         renderCell: actionCell,
         sortable: false,
+        hide: isViewer,
       },
     ],
-    [actionCell]
+    [actionCell, isViewer]
   );
 
   const { filterItem } = useSearch();

@@ -6,6 +6,7 @@ import {
   getRulesAsync,
   getDecisionsAsync,
   getLocationsAsync,
+  getUsersAsync,
 } from 'data/actions';
 import { useCallback, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
@@ -120,3 +121,17 @@ export const useLocations = ({ setLoading, needEffect }: UseDataProps) => {
   return getLocations;
 };
 
+export const useUsers = ({ setLoading, needEffect }: UseDataProps) => {
+  const dispatch = useDispatch();
+
+  const getUsers = useCallback(() => {
+    setLoading?.(true);
+    dispatch(getUsersAsync(setLoading));
+  }, [dispatch, setLoading]);
+
+  useEffect(() => {
+    if (needEffect) getUsers();
+  }, [needEffect, getUsers]);
+
+  return getUsers;
+};

@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { Table } from 'shared/table';
+import { Table as TableTemplate } from 'shared/table';
 import { StoreType } from 'core/rootReducer';
 import { MenuButton } from 'shared/menuButton';
 import { CellParams, ColDef } from '@material-ui/data-grid';
@@ -10,10 +10,11 @@ import { deleteLocationAsync } from 'data/actions';
 import { Location } from 'data/model';
 import { useDialog } from 'app/common/useDialog';
 import { useSearch } from 'app/common/searchProvider';
+import { useRoles } from 'app/common/rolesProvider';
 
 import { LocationModal } from './locationModal';
 
-export const LocationsTable: React.FC = () => {
+export const Table: React.FC = () => {
   const locations = useSelector((state: StoreType) => state.data.locations);
 
   const [loading, setLoading] = useState(false);
@@ -21,6 +22,7 @@ export const LocationsTable: React.FC = () => {
   useLocations({ needEffect: true, setLoading });
   const { rowsToDisplay, onDelete } = useDeleteUndo<Location>(locations);
   const { dialog, show, hide } = useDialog();
+  const { isViewer } = useRoles();
 
   const actionCell = useCallback(
     (params: CellParams) => {
@@ -51,9 +53,10 @@ export const LocationsTable: React.FC = () => {
         renderCell: actionCell,
         flex: 1,
         sortable: false,
+        hide: isViewer
       },
     ],
-    [actionCell]
+    [actionCell, isViewer]
   );
 
   const { filterItem } = useSearch();
@@ -64,7 +67,7 @@ export const LocationsTable: React.FC = () => {
 
   return (
     <>
-      <Table columns={columns} rows={filteredRows} loading={loading}></Table>
+      <TableTemplate columns={columns} rows={filteredRows} loading={loading}></TableTemplate>
       {dialog((id) => (
         <LocationModal hide={hide} id={id} />
       ))}

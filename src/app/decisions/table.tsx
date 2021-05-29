@@ -11,6 +11,7 @@ import { Decision } from 'data/model';
 import { useDialog } from 'app/common/useDialog';
 import { useSearch } from 'app/common/searchProvider';
 import { PropertiesCell } from 'shared/propertiesCell';
+import { useRoles } from 'app/common/rolesProvider';
 
 import { DecisionModal } from './decisionModal';
 
@@ -22,6 +23,7 @@ export const Table: React.FC = () => {
   useDecisions({ needEffect: true, setLoading });
   const { rowsToDisplay, onDelete } = useDeleteUndo<Decision>(decisions);
   const { dialog, show, hide } = useDialog();
+  const { isViewer } = useRoles();
 
   const propertiesCell = useCallback((params: CellParams) => {
     const properties = params.value as string[];
@@ -65,9 +67,10 @@ export const Table: React.FC = () => {
         renderCell: actionCell,
         flex: 1,
         sortable: false,
+        hide: isViewer
       },
     ],
-    [actionCell, propertiesCell]
+    [actionCell, propertiesCell, isViewer]
   );
 
   const { filterItem } = useSearch();

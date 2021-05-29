@@ -7,20 +7,13 @@ interface Props {
   disabled?: boolean;
 }
 
-const options = [
-  'Usually',
-  'If available',
-  'For a fee',
-  'Probably',
-  'See details',
-  'If applicable',
-];
+const options = ['Viewer', 'Editor', 'Administrator'];
 
-export const TypeSelect: React.FC<Props> = ({ value, onChange, disabled }) => {
+export const RoleSelect: React.FC<Props> = ({ value, onChange, disabled }) => {
   return (
-    <div style={{ width: '48%' }}>
+    <div>
       <SelectField
-        label="Type"
+        label="Role"
         options={options}
         value={value}
         getOptionLabel={(x) => x}

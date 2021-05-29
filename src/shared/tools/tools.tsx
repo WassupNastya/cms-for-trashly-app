@@ -14,6 +14,7 @@ import { useSearch } from 'app/common/searchProvider';
 import { GroupModal } from 'app/groups/groupModal';
 import { CategoryModal } from 'app/categories/categoryModal';
 import { PropertyModal } from 'app/properties/propertyModal';
+import { useRoles } from 'app/common/rolesProvider';
 
 import './tools.scss';
 
@@ -26,12 +27,14 @@ export const Tools: React.FC<Props> = ({ currentTab, setCurrentTab }) => {
   const location = useLocation();
   const { dialog, show, hide } = useDialog();
   const { searchValue, setSearchValue } = useSearch();
+  const { isViewer } = useRoles();
 
   const whereI = useMemo(() => {
     if (location.pathname === '/' || location.pathname === Root.Items)
       return Root.Items;
     else if (location.pathname === Root.Rules) return Root.Rules;
     else if (location.pathname === Root.Decisions) return Root.Decisions;
+    else if (location.pathname === Root.Users) return Root.Users;
     return Root.Locations;
   }, [location.pathname]);
 
@@ -61,6 +64,10 @@ export const Tools: React.FC<Props> = ({ currentTab, setCurrentTab }) => {
     }
   }, [hide, whereI, currentTab]);
 
+  const hideButton = useMemo(() => {
+    return whereI === Root.Users || isViewer;
+  }, [whereI, isViewer]);
+
   return (
     <div className="tools">
       <Tabs
@@ -83,10 +90,12 @@ export const Tools: React.FC<Props> = ({ currentTab, setCurrentTab }) => {
             onChange={(e) => setSearchValue(e.target.value)}
           />
         </form>
-        <Button style={{ backgroundColor: '#00BCCA' }} onClick={() => show()}>
-          <Add />
-          <div className="buttonTitle">{buttonTitle}</div>
-        </Button>
+        {!hideButton && (
+          <Button style={{ backgroundColor: '#00BCCA' }} onClick={() => show()}>
+            <Add />
+            <div className="buttonTitle">{buttonTitle}</div>
+          </Button>
+        )}
         {dialog(() => modal)}
       </div>
     </div>
