@@ -35,8 +35,8 @@ export const createItem = create(Collection.Items);
 export const createCategory = create(Collection.Categories);
 export const createProperty = create(Collection.Properties);
 export const createGroup = create(Collection.Groups);
-export const createRule = create(Collection.Rules);
-export const createDecision = create(Collection.Decisions);
+export const createRule = create(Collection.Rules, 'disableCheck');
+export const createDecision = create(Collection.Decisions, 'disableCheck');
 export const createLocation = create(Collection.Locations);
 export const createUser = create(Collection.Users);
 

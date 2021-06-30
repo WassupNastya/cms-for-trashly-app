@@ -33,13 +33,13 @@ export const getAll = <T>(collectionName: string) => {
   };
 };
 
-export const create = (collectionName: string) => {
+export const create = (collectionName: string, mode: 'disableCheck' | 'enableCheck' = 'enableCheck') => {
   return (data) => {
     const id = !isEmpty(data.id)
       ? data.id
       : db.collection(collectionName).doc().id;
 
-    return db
+    return mode === 'enableCheck' ? db
       .collection(collectionName)
       .where('name', '==', data.name)
       .get()
@@ -62,7 +62,13 @@ export const create = (collectionName: string) => {
         error === Exception.Duplicate
           ? Response.Duplicate
           : Response.ServerError
-      );
+      ) : db.collection(collectionName)
+        .doc(id)
+        .set({
+          ...data,
+          id,
+        })
+        .catch(() => Response.ServerError);
   };
 };
 
