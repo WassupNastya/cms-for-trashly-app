@@ -6,7 +6,7 @@ CMS с функционалом для хранения и обработки д
 
 ## Tech Stack
 
-Cloud Firestore, Firebase Storage
+Cloud Firestore, Firebase Storage\
 TypeScript, React, Redux, Webpack  
 Sass, Material UI  
 Eslint, Prettier
